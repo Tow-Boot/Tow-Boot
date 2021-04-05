@@ -38,4 +38,39 @@ let
 in
 
 {
+  #
+  # Virtualized targets
+  # -------------------
+  #
+  qemu-arm = armv7l.buildUBoot {
+    # doc/board/emulation/qemu-arm.rst
+    # qemu-system-arm -nographic -machine virt -bios result/u-boot.bin
+    defconfig = "qemu_arm_defconfig";
+    extraMeta.platforms = ["armv7l-linux"];
+    filesToInstall = ["u-boot.bin" ".config"];
+  };
+
+  qemu-arm64 = aarch64.buildUBoot {
+    # doc/board/emulation/qemu-arm.rst
+    # qemu-system-aarch64 -nographic -machine virt -cpu cortex-a57 -bios result/u-boot.bin
+    defconfig = "qemu_arm64_defconfig";
+    extraMeta.platforms = ["aarch64-linux"];
+    filesToInstall = ["u-boot.bin" ".config"];
+  };
+
+  qemu-x86 = i686.buildUBoot {
+    # doc/board/emulation/qemu-x86.rst
+    # qemu-system-i386 -nographic -bios result/u-boot.rom
+    defconfig = "qemu-x86_defconfig";
+    extraMeta.platforms = ["i686-linux"];
+    filesToInstall = ["u-boot.rom" ".config"];
+  };
+
+  qemu-x86_64 = x86_64.buildUBoot {
+    # doc/board/emulation/qemu-x86.rst
+    # qemu-system-x86_64 -nographic -bios result/u-boot.rom
+    defconfig = "qemu-x86_64_defconfig";
+    extraMeta.platforms = ["x86_64-linux"];
+    filesToInstall = ["u-boot.rom" ".config"];
+  };
 }
