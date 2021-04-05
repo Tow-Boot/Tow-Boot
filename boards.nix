@@ -44,6 +44,18 @@ let
   };
 in
 
+# Board names here may differ from U-Boot naming.
+# The scheme is as follows:
+#
+#     "${vendor}-${boardName}"
+#
+# Both identifiers are camelCase'd.
+# The vendor identifier is the same for all of their boards.
+# The board identifier *may* repeat the vendor name if it is part of the board name.
+# The board identifier is generally not shortened.
+#
+# Note that some special identifiers are not actually following the scheme.
+# Main ones are the qemu identifiers.
 {
   #
   # Pine64 boards
