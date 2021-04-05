@@ -35,9 +35,22 @@ let
   # FIXME: I don't actually want to directly use buildUBoot...
   #        but this is a starting point for the nix interface.
   inherit (aarch64) buildUBoot;
+
+  allwinnerA64 = { defconfig }: buildUBoot {
+    inherit defconfig;
+    extraMeta.platforms = ["aarch64-linux"];
+    BL31 = "${aarch64.armTrustedFirmwareAllwinner}/bl31.bin";
+    filesToInstall = ["u-boot-sunxi-with-spl.bin" ".config"];
+  };
 in
 
 {
+  #
+  # Pine64 boards
+  # -------------
+  #
+  pine64-pineA64LTS = allwinnerA64 { defconfig = "pine64-lts_defconfig"; };
+
   #
   # Virtualized targets
   # -------------------
