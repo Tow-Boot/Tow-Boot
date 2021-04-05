@@ -98,4 +98,41 @@ in
     extraMeta.platforms = ["x86_64-linux"];
     filesToInstall = ["u-boot.rom" ".config"];
   };
+
+  #
+  # EFI payloads
+  # -------------
+  #
+
+  efi-x86 = i686.buildUBoot {
+    # doc/uefi/u-boot_on_efi.rst
+    # ```
+    #  # Somehow get a 32 bit OVMF.fd
+    #  $ env -i nix-build -A efi-x86
+    #  $ mkdir -p tmp/EFI/BOOT
+    #  $ cp result/u-boot-payload.efi tmp/EFI/BOOT/BOOTIA32.EFI
+    #  $ chmod +rw -R tmp/
+    #  $ qemu-system-i386 -nographic -bios ???/bios32.bin -drive file=fat:rw:tmp
+    # ```
+    # Using `-drive file=fat` seems to not work as expected with a read-only store path.
+    defconfig = "efi-x86_payload32_defconfig";
+    extraMeta.platforms = ["i686-linux"];
+    filesToInstall = ["u-boot-payload.efi" ".config"];
+  };
+
+  efi-x86_64 = x86_64.buildUBoot {
+    # doc/uefi/u-boot_on_efi.rst
+    # ```
+    #  $ env -i nix-build -I nixpkgs=channel:nixos-unstable '<nixpkgs>' -A OVMF.fd --out-link ovmf-x86_64
+    #  $ env -i nix-build -A efi-x86_64
+    #  $ mkdir -p tmp/EFI/BOOT
+    #  $ cp result/u-boot-payload.efi tmp/EFI/BOOT/BOOTX64.EFI
+    #  $ chmod +rw -R tmp/
+    #  $ qemu-system-x86_64 -nographic -bios ovmf-x86_64-fd/FV/OVMF.fd -drive file=fat:rw:tmp/
+    # ```
+    # Using `-drive file=fat` seems to not work as expected with a read-only store path.
+    defconfig = "efi-x86_payload64_defconfig";
+    extraMeta.platforms = ["x86_64-linux"];
+    filesToInstall = ["u-boot-payload.efi" ".config"];
+  };
 }
