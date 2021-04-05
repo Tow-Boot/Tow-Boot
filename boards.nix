@@ -26,6 +26,15 @@ let
   armv7l  = pkgsFor "armv7l-linux";
   i686    = pkgsFor "i686-linux";
   x86_64  = pkgsFor "x86_64-linux";
+
+  #
+  # Builder functions
+  # =================
+  #
+
+  # FIXME: I don't actually want to directly use buildUBoot...
+  #        but this is a starting point for the nix interface.
+  inherit (aarch64) buildUBoot;
 in
 
 {
