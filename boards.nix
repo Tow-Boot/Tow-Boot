@@ -64,6 +64,20 @@ in
   pine64-pineA64LTS = allwinnerA64 { defconfig = "pine64-lts_defconfig"; };
 
   #
+  # Sandbox
+  # -------
+  #
+  uBoot-sandbox = pkgs.buildUBoot {
+    # doc/arch/sandbox.rst
+    defconfig = "sandbox_defconfig";
+    filesToInstall = ["u-boot" "u-boot.dtb" ".config"];
+    buildInputs = with pkgs; [
+      SDL2
+      perl
+    ];
+  };
+
+  #
   # Virtualized targets
   # -------------------
   #
