@@ -79,6 +79,12 @@ in
   pine64-pinebookPro = rk3399 { defconfig = "pinebook-pro-rk3399_defconfig"; };
 
   #
+  # Raspberry Pi
+  # -------------
+  #
+  raspberryPi-3 = simpleAArch64 { defconfig = "rpi_3_defconfig"; };
+
+  #
   # Sandbox
   # -------
   #
