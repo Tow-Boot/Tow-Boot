@@ -83,6 +83,7 @@ in
   # -------------
   #
   raspberryPi-3 = simpleAArch64 { defconfig = "rpi_3_defconfig"; };
+  raspberryPi-4 = simpleAArch64 { defconfig = "rpi_4_defconfig"; };
 
   #
   # Sandbox
