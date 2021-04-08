@@ -36,6 +36,12 @@ let
   #        but this is a starting point for the nix interface.
   inherit (aarch64) buildUBoot;
 
+  simpleAArch64 = { defconfig }: buildUBoot {
+    inherit defconfig;
+    extraMeta.platforms = ["aarch64-linux"];
+    filesToInstall = ["u-boot.bin" ".config"];
+  };
+
   allwinnerA64 = { defconfig }: buildUBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
