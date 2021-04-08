@@ -1,6 +1,17 @@
-{ pkgs }:
+{ pkgs }: let pkgs' = pkgs; in # Break cycle
 
 let
+  addOverlay = pkgs: pkgs.extend (final: super: {
+    # FIXME: I don't actually want to directly use buildUBoot...
+    #        but this is a starting point for the nix interface.
+    buildTowBoot = args: final.buildUBoot ({
+      pname = "tow-boot-${args.defconfig}";
+      version = "tbd";
+    } // args);
+  });
+
+  pkgs = addOverlay pkgs';
+
   #
   # Targets setup
   # =============
@@ -22,34 +33,34 @@ let
     else crossPackageSets.${wanted}
   ;
 
-  aarch64 = pkgsFor "aarch64-linux";
-  armv7l  = pkgsFor "armv7l-linux";
-  i686    = pkgsFor "i686-linux";
-  x86_64  = pkgsFor "x86_64-linux";
+  # Hmmm... `.extend` (and similar) won't work for `pkgsCross` and friend :(
+  aarch64 = addOverlay (pkgsFor "aarch64-linux");
+  armv7l  = addOverlay (pkgsFor  "armv7l-linux");
+  i686    = addOverlay (pkgsFor    "i686-linux");
+  x86_64  = addOverlay (pkgsFor  "x86_64-linux");
 
   #
   # Builder functions
   # =================
   #
 
-  # FIXME: I don't actually want to directly use buildUBoot...
-  #        but this is a starting point for the nix interface.
-  inherit (aarch64) buildUBoot;
-
-  simpleAArch64 = { defconfig }: buildUBoot {
+  # When the output is `u-boot.bin`, and requires no additional inputs.
+  simpleAArch64 = { pkgs, defconfig }: pkgs.buildTowBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
     filesToInstall = ["u-boot.bin" ".config"];
   };
 
-  allwinnerA64 = { defconfig }: buildUBoot {
+  # For Allwinner A64 based hardware
+  allwinnerA64 = { defconfig }: aarch64.buildTowBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
     BL31 = "${aarch64.armTrustedFirmwareAllwinner}/bl31.bin";
     filesToInstall = ["u-boot-sunxi-with-spl.bin" ".config"];
   };
 
-  rk3399 = { defconfig }: buildUBoot {
+  # For Rockchip RK3399 based hardware
+  rk3399 = { defconfig }: aarch64.buildTowBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
     BL31 = "${aarch64.armTrustedFirmwareRK3399}/bl31.elf";
@@ -82,14 +93,14 @@ in
   # Raspberry Pi
   # -------------
   #
-  raspberryPi-3 = simpleAArch64 { defconfig = "rpi_3_defconfig"; };
-  raspberryPi-4 = simpleAArch64 { defconfig = "rpi_4_defconfig"; };
+  raspberryPi-3 = simpleAArch64 { pkgs = aarch64; defconfig = "rpi_3_defconfig"; };
+  raspberryPi-4 = simpleAArch64 { pkgs = aarch64; defconfig = "rpi_4_defconfig"; };
 
   #
   # Sandbox
   # -------
   #
-  uBoot-sandbox = pkgs.buildUBoot {
+  uBoot-sandbox = pkgs.buildTowBoot {
     # doc/arch/sandbox.rst
     defconfig = "sandbox_defconfig";
     filesToInstall = ["u-boot" "u-boot.dtb" ".config"];
@@ -103,7 +114,7 @@ in
   # Virtualized targets
   # -------------------
   #
-  qemu-arm = armv7l.buildUBoot {
+  qemu-arm = armv7l.buildTowBoot {
     # doc/board/emulation/qemu-arm.rst
     # qemu-system-arm -nographic -machine virt -bios result/u-boot.bin
     defconfig = "qemu_arm_defconfig";
@@ -111,7 +122,7 @@ in
     filesToInstall = ["u-boot.bin" ".config"];
   };
 
-  qemu-arm64 = aarch64.buildUBoot {
+  qemu-arm64 = aarch64.buildTowBoot {
     # doc/board/emulation/qemu-arm.rst
     # qemu-system-aarch64 -nographic -machine virt -cpu cortex-a57 -bios result/u-boot.bin
     defconfig = "qemu_arm64_defconfig";
@@ -119,7 +130,7 @@ in
     filesToInstall = ["u-boot.bin" ".config"];
   };
 
-  qemu-x86 = i686.buildUBoot {
+  qemu-x86 = i686.buildTowBoot {
     # doc/board/emulation/qemu-x86.rst
     # qemu-system-i386 -nographic -bios result/u-boot.rom
     defconfig = "qemu-x86_defconfig";
@@ -127,7 +138,7 @@ in
     filesToInstall = ["u-boot.rom" ".config"];
   };
 
-  qemu-x86_64 = x86_64.buildUBoot {
+  qemu-x86_64 = x86_64.buildTowBoot {
     # doc/board/emulation/qemu-x86.rst
     # qemu-system-x86_64 -nographic -bios result/u-boot.rom
     defconfig = "qemu-x86_64_defconfig";
@@ -140,7 +151,7 @@ in
   # -------------
   #
 
-  efi-x86 = i686.buildUBoot {
+  efi-x86 = i686.buildTowBoot {
     # doc/uefi/u-boot_on_efi.rst
     # ```
     #  # Somehow get a 32 bit OVMF.fd
@@ -156,7 +167,7 @@ in
     filesToInstall = ["u-boot-payload.efi" ".config"];
   };
 
-  efi-x86_64 = x86_64.buildUBoot {
+  efi-x86_64 = x86_64.buildTowBoot {
     # doc/uefi/u-boot_on_efi.rst
     # ```
     #  $ env -i nix-build -I nixpkgs=channel:nixos-unstable '<nixpkgs>' -A OVMF.fd --out-link ovmf-x86_64
