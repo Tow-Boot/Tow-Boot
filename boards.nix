@@ -62,6 +62,7 @@ in
   # -------------
   #
   pine64-pineA64LTS = allwinnerA64 { defconfig = "pine64-lts_defconfig"; };
+  pine64-pinebookA64 = allwinnerA64 { defconfig = "pinebook_defconfig"; };
 
   #
   # Sandbox
