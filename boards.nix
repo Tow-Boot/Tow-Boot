@@ -42,6 +42,13 @@ let
     BL31 = "${aarch64.armTrustedFirmwareAllwinner}/bl31.bin";
     filesToInstall = ["u-boot-sunxi-with-spl.bin" ".config"];
   };
+
+  rk3399 = { defconfig }: buildUBoot {
+    inherit defconfig;
+    extraMeta.platforms = ["aarch64-linux"];
+    BL31 = "${aarch64.armTrustedFirmwareRK3399}/bl31.elf";
+    filesToInstall = ["u-boot.itb" "idbloader.img" ".config"];
+  };
 in
 
 # Board names here may differ from U-Boot naming.
