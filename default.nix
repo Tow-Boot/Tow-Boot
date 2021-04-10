@@ -3,7 +3,7 @@ builtins.trace ":: Tow-Boot build infrastructure" (
 { pkgs ? import ./nixpkgs.nix {} }:
 
 let
-  outputs = import ./boards.nix {
+  outputs = import ./boards {
     inherit pkgs;
   };
   outputsCount = builtins.length (builtins.attrNames outputs);
