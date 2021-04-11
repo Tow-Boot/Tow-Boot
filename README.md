@@ -89,18 +89,13 @@ your boring `x86_64` machines too?
 
 Because of the pun on towboats.
 
-
 * * *
 
-TODO
-----
+License
+-------
 
- - Menu-driven interface
-     - Add better support for scripts-driven menu
- - Settings saved in environment
-     - For dedicated storage [already supported upstream]
-     - For shared storage [to be determined]
- - "Pretty"
-     - Boot logos
-     - Reduce logging verbosity by default
-     - "Enhanced" graphical menu drivers?
+The Nix expressions are under the license declared in `COPYING`, the MIT
+License. This applies only to the packaging infrastructure.
+
+U-Boot derived code is licensed the same as U-Boot, which is GPL-2.0+. All
+patches are owned by their authors under the same license.
