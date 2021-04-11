@@ -72,6 +72,12 @@ stdenv.mkDerivation ({
   };
 
   patches = [
+    ./patches/0001-Tow-Boot-Provide-opinionated-boot-flow.patch
+    ./patches/0001-Tow-Boot-treewide-Identify-as-Tow-Boot.patch
+    ./patches/0001-bootmenu-improvements.patch
+    ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
+    ./patches/0001-splash-improvements.patch
+    ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
   ] ++ patches;
 
   postPatch = ''

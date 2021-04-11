@@ -1,0 +1,72 @@
+From 7ee45663963c7370dea8d687f9a1ec0183ea16cd Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 9 Apr 2021 17:38:16 -0400
+Subject: [PATCH] [Tow-Boot] Provide opinionated boot flow
+
+---
+ include/config_distro_bootcmd.h |  6 +++++-
+ include/tow-boot_env.h          | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+ create mode 100644 include/tow-boot_env.h
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index 2627c2a6a5..3ead5ecf68 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -9,6 +9,8 @@
+ #ifndef _CONFIG_CMD_DISTRO_BOOTCMD_H
+ #define _CONFIG_CMD_DISTRO_BOOTCMD_H
+ 
++#include <tow-boot_env.h>
++
+ /*
+  * A note on error handling: It is possible for BOOT_TARGET_DEVICES to
+  * reference a device that is not enabled in the U-Boot configuration, e.g.
+@@ -495,7 +497,9 @@
+ 		BOOTENV_SET_VIRTIO_NEED_INIT                              \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+-		"done\0"
++		"done\0" \
++	\
++	TOW_BOOT_ENV
+ 
+ #ifndef CONFIG_BOOTCOMMAND
+ #define CONFIG_BOOTCOMMAND "run distro_bootcmd"
+diff --git a/include/tow-boot_env.h b/include/tow-boot_env.h
+new file mode 100644
+index 0000000000..c08c04b11c
+--- /dev/null
++++ b/include/tow-boot_env.h
+@@ -0,0 +1,28 @@
++#ifndef _TOW_BOOT_ENV_H
++#define _TOW_BOOT_ENV_H
++
++#ifdef CONFIG_CMD_POWEROFF
++#define TOW_BOOT_MAYBE_POWEROFF "bootmenu_7=Power off=poweroff\0"
++#else
++#define TOW_BOOT_MAYBE_POWEROFF
++#endif
++
++// TODO: replace all `sleep 5` with a pause waiting for user input (press any key)
++#define TOW_BOOT_ENV \
++	"setup_leds=\0" \
++	"bootcmd=run setup_leds; run distro_bootcmd\0" \
++	"bootmenu_delay=-1\0" \
++	"bootmenu_0=Default U-Boot boot=run distro_bootcmd; echo \"Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_1=Boot from eMMC=run bootcmd_mmc0; echo \"eMMC Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_2=Boot from SD=run bootcmd_mmc1; echo \"SD Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_3=Boot from USB=run bootcmd_usb0; echo \"USB Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_4=Boot PXE=run bootcmd_pxe; echo \"PXE Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_5=Boot DHCP=run bootcmd_dhcp; echo \"DHCP Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_6=Reboot=reset\0" \
++	TOW_BOOT_MAYBE_POWEROFF \
++	"menucmd=bootmenu\0"
++
++// TODO: per-board LED setup scripts.
++	//"setup_leds=led helios64:red:fault off; led helios64:green:status on\0"
++
++#endif
+-- 
+2.29.2
+

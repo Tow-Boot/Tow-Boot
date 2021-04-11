@@ -1,0 +1,52 @@
+From 659510efe678f73c40df9bdd7dc46d428b76090b Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 6 Apr 2021 22:25:26 -0400
+Subject: [PATCH] [Tow-Boot] treewide: Identify as Tow-Boot
+
+The idea is not to hide this is built on top of U-Boot.
+
+The goal of this change is to **clearly identify this is not a standard
+U-Boot build**.
+
+This way, support questions shouldn't end up in U-Boot's support
+channels. Hopefully.
+
+What about `spl_phase_name`??? Well... Remove one location where U-Boot
+identifier would be used front and center... And really, it'll help
+identify which part of the board init is happening! Win-win!
+---
+ Makefile      | 2 +-
+ include/spl.h | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 193aa4d1c9..ad1539d09e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1811,7 +1811,7 @@ prepare: prepare0
+ # Use sed to remove leading zeros from PATCHLEVEL to avoid using octal numbers
+ define filechk_version.h
+ 	(echo \#define PLAIN_VERSION \"$(UBOOTRELEASE)\"; \
+-	echo \#define U_BOOT_VERSION \"U-Boot \" PLAIN_VERSION; \
++	echo \#define U_BOOT_VERSION \"Tow-Boot \" PLAIN_VERSION; \
+ 	echo \#define U_BOOT_VERSION_NUM $(VERSION); \
+ 	echo \#define U_BOOT_VERSION_NUM_PATCH $$(echo $(PATCHLEVEL) | \
+ 		sed -e "s/^0*//"); \
+diff --git a/include/spl.h b/include/spl.h
+index 4f6e0e53f5..db5a680de9 100644
+--- a/include/spl.h
++++ b/include/spl.h
+@@ -169,8 +169,9 @@ static inline const char *spl_phase_name(enum u_boot_phase phase)
+ 	case PHASE_SPL:
+ 		return "SPL";
+ 	case PHASE_BOARD_F:
++		return "BOARD_F";
+ 	case PHASE_BOARD_R:
+-		return "U-Boot";
++		return "BOARD_R";
+ 	default:
+ 		return "phase?";
+ 	}
+-- 
+2.29.2
+

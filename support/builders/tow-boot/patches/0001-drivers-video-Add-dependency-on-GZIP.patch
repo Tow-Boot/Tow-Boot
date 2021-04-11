@@ -1,0 +1,30 @@
+From b05a6e100f1911fba54b357f9469dfc734568218 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 8 Apr 2021 22:48:33 -0400
+Subject: [PATCH] drivers: video: Add dependency on GZIP
+
+`gunzip_bmp()` uses `gunzip()` in `cmd/bmp.c`.
+
+If the board did not enable `CONFIG_GZIP` in any other manner, the
+dependency ends up unmet.
+
+This can be observed in e.g. `qemu-x86_defconfig`
+---
+ drivers/video/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
+index 63ae2ba43c..2d4427212b 100644
+--- a/drivers/video/Kconfig
++++ b/drivers/video/Kconfig
+@@ -965,6 +965,7 @@ config SPLASH_SOURCE
+ config VIDEO_BMP_GZIP
+ 	bool "Gzip compressed BMP image support"
+ 	depends on CMD_BMP || SPLASH_SCREEN
++	select GZIP
+ 	help
+ 	  If this option is set, additionally to standard BMP
+ 	  images, gzipped BMP images can be displayed via the
+-- 
+2.29.2
+
