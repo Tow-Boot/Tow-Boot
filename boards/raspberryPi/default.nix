@@ -4,8 +4,8 @@ let
   inherit (systems) aarch64;
 
   build = args: aarch64.buildTowBoot ({
-    extraMeta.platforms = ["aarch64-linux"];
-    filesToInstall = ["u-boot.bin" ".config"];
+    meta.platforms = ["aarch64-linux"];
+    filesToInstall = ["u-boot.bin"];
     withPoweroff = false;
   } // args);
 in
