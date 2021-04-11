@@ -1,49 +1,117 @@
-{ lib, buildUBoot, runCommandNoCC }:
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: Copyright (c) 2003-2021 Eelco Dolstra and the Nixpkgs/NixOS contributors
+# SPDX-FileCopyrightText: Copyright (c) 2021 Samuel Dionne-Riel and respective contributors
+#
+# This builder function is heavily based off of the buildUBoot function from
+# Nixpkgs.
+#
+# It does not need to be kept synchronized.
+#
+# Origin: https://github.com/NixOS/nixpkgs/blob/a4b21085fa836e545dcbd905e27329563c389c6e/pkgs/misc/uboot/default.nix
+
+{ stdenv
+, lib
+, fetchurl
+, fetchpatch
+, fetchFromGitHub
+, bc
+, bison
+, dtc
+, flex
+, openssl
+, swig
+, meson-tools
+, armTrustedFirmwareAllwinner
+, armTrustedFirmwareRK3328
+, armTrustedFirmwareRK3399
+, armTrustedFirmwareS905
+, buildPackages
+, runCommandNoCC
+}:
 
 {
     extraConfig ? ""
-  , extraMakeFlags ? []
+  , makeFlags ? []
+
+  , filesToInstall
+  , defconfig
+  , patches ? []
+  , meta ? {}
 
   # The following options should only be disabled when it breaks a build.
   , withLogo ? true
   , withTTF ? true
   , withPoweroff ? true
   , ...
-# FIXME: I don't actually want to directly use buildUBoot...
-#        but this is a starting point for the nix interface.
 } @ args:
 
-buildUBoot ({
-  src = builtins.fetchGit /Users/samuel/tmp/u-boot/u-boot;
-  pname = "tow-boot-${args.defconfig}";
-  version = "tbd";
-} // args // {
+let
+  uBootVersion = "2021.04";
 
-  # Inject defines for things lacking actual configuration options.
-  NIX_CFLAGS_COMPILE = lib.optionals withLogo [
-    "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${toString (1920*1080*4)}"
-    "-DCONFIG_VIDEO_LOGO"
+  # For now, monotonically increasing number.
+  # Represents released versions.
+  towBootIdentifier = "001";
+
+  # To produce the bitmap image:
+  #     convert input.png -depth 8 -colors 256 -compress none output.bmp
+  # This tiny build produces the `.gz` file that will actually be used.
+  compressedLogo = runCommandNoCC "uboot-logo" {} ''
+    mkdir -p $out
+    cp ${../../../assets/tow-boot-splash.bmp} $out/logo.bmp
+    (cd $out; gzip -9 -k logo.bmp)
+  '';
+in
+stdenv.mkDerivation ({
+  pname = "tow-boot-${defconfig}";
+
+  version = "${uBootVersion}-${towBootIdentifier}";
+
+  src = fetchurl {
+    url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
+    sha256 = "06p1vymf0dl6jc2xy5w7p42mpgppa46lmpm2ishmgsycnldqnhqd";
+  };
+
+  patches = [
+  ] ++ patches;
+
+  postPatch = ''
+    patchShebangs tools
+    patchShebangs arch/arm/mach-rockchip
+  '';
+
+  nativeBuildInputs = [
+    bc
+    bison
+    dtc
+    flex
+    openssl
+    (buildPackages.python3.withPackages (p: [
+      p.libfdt
+      p.setuptools # for pkg_resources
+    ]))
+    swig
   ];
 
-  extraMakeFlags =
-    let
-      # To produce the bitmap image:
-      #     convert input.png -depth 8 -colors 256 -compress none output.bmp
-      # This tiny build produces the `.gz` file that will actually be used.
-      compressedLogo = runCommandNoCC "uboot-logo" {} ''
-        mkdir -p $out
-        cp ${../../../assets/tow-boot-splash.bmp} $out/logo.bmp
-        (cd $out; gzip -9 -k logo.bmp)                          
-      '';
-    in
-    lib.optionals withLogo [
-      # Even though the build will actively use the compressed bmp.gz file,
-      # we have to provide the uncompressed file and file name here.
-      "LOGO_BMP=${compressedLogo}/logo.bmp"
-    ] ++ extraMakeFlags
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
+
+  hardeningDisable = [ "all" ];
+
+  makeFlags = [
+    "DTC=dtc"
+    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+  ] ++ lib.optionals withLogo [
+    # Even though the build will actively use the compressed bmp.gz file,
+    # we have to provide the uncompressed file and file name here.
+    "LOGO_BMP=${compressedLogo}/logo.bmp"
+  ] ++ makeFlags
   ;
 
   extraConfig = ''
+    # Identity
+    # --------
+
+    CONFIG_IDENT_STRING="${towBootIdentifier}"
+
     # Behaviour
     # ---------
 
@@ -112,4 +180,40 @@ buildUBoot ({
     # Additional configuration (if needed)
     ${extraConfig}
   '';
-})
+
+  # Inject defines for things lacking actual configuration options.
+  NIX_CFLAGS_COMPILE = lib.optionals withLogo [
+    "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${toString (1920*1080*4)}"
+    "-DCONFIG_VIDEO_LOGO"
+  ];
+
+  passAsFile = [ "extraConfig" ];
+
+  configurePhase = ''
+    runHook preConfigure
+    make ${defconfig}
+    cat $extraConfigPath >> .config
+    runHook postConfigure
+  '';
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p $out
+    cp .config $out
+    cp ${lib.concatStringsSep " " filesToInstall} $out
+    runHook postInstall
+  '';
+
+  # make[2]: *** No rule to make target 'lib/efi_loader/helloworld.efi', needed by '__build'.  Stop.
+  enableParallelBuilding = false;
+
+  dontStrip = true;
+
+  meta = with lib; {
+    homepage = "https://github.com/Tow-Boot/Tow-Boot";
+    description = "Your boring SBC firmware";
+    license = licenses.gpl2;
+    maintainers = with maintainers; [ samueldr ];
+  } // meta;
+
+} // removeAttrs args [ "meta" "patches" "makeFlags" "extraConfig" ])
