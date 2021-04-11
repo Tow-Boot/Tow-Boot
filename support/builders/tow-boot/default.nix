@@ -33,7 +33,7 @@
     extraConfig ? ""
   , makeFlags ? []
 
-  , filesToInstall
+  , filesToInstall ? []
   , defconfig
   , patches ? []
   , meta ? {}
@@ -206,7 +206,9 @@ stdenv.mkDerivation ({
     runHook preInstall
     mkdir -p $out
     cp .config $out
+    ${lib.optionalString (builtins.length filesToInstall > 0) ''
     cp ${lib.concatStringsSep " " filesToInstall} $out
+    ''}
     runHook postInstall
   '';
 
