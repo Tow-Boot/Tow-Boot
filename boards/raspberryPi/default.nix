@@ -7,6 +7,9 @@ let
     meta.platforms = ["aarch64-linux"];
     filesToInstall = ["u-boot.bin"];
     withPoweroff = false;
+    patches = [
+      ./0001-configs-rpi-allow-for-bigger-kernels.patch
+    ];
   } // args);
 in
 {
