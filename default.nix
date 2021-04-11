@@ -1,11 +1,15 @@
 builtins.trace ":: Tow-Boot build infrastructure" (
 
+# This is a "clean" Nixpkgs. No overlays have been applied yet.
 { pkgs ? import ./nixpkgs.nix {} }:
 
+# Break the cycle
+let pkgs' = pkgs; in
+
 let
-  outputs = import ./boards {
-    inherit pkgs;
-  };
+  pkgs = import ./support/overlay { pkgs = pkgs'; };
+
+  outputs = import ./boards { inherit (pkgs) Tow-Boot; };
   outputsCount = builtins.length (builtins.attrNames outputs);
 in
 

@@ -1,151 +1,12 @@
-{ pkgs }: let pkgs' = pkgs; in # Break cycle
+{ Tow-Boot }:
 
 let
-  addOverlay = pkgs: pkgs.extend (final: super: {
-    # FIXME: I don't actually want to directly use buildUBoot...
-    #        but this is a starting point for the nix interface.
-    buildTowBoot =
-    let
-      inherit (final) lib;
-    in
-    {
-        extraConfig ? ""
-      , extraMakeFlags ? []
-
-      # The following options should only be disabled when it breaks a build.
-      , withLogo ? true
-      , withTTF ? true
-      , withPoweroff ? true
-      , ...
-    } @ args: final.buildUBoot ({
-      pname = "tow-boot-${args.defconfig}";
-      version = "tbd";
-    } // args // {
-
-      # Inject defines for things lacking actual configuration options.
-      NIX_CFLAGS_COMPILE = lib.optionals withLogo [
-        "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${toString (1920*1080*4)}"
-        "-DCONFIG_VIDEO_LOGO"
-      ];
-
-      extraMakeFlags =
-        let
-          # To produce the bitmap image:
-          #     convert input.png -depth 8 -colors 256 -compress none output.bmp
-          # This tiny build produces the `.gz` file that will actually be used.
-          compressedLogo = super.runCommandNoCC "uboot-logo" {} ''
-            mkdir -p $out
-            cp ${../assets/tow-boot-splash.bmp} $out/logo.bmp
-            (cd $out; gzip -9 -k logo.bmp)                          
-          '';
-        in
-        lib.optionals withLogo [
-          # Even though the build will actively use the compressed bmp.gz file,
-          # we have to provide the uncompressed file and file name here.
-          "LOGO_BMP=${compressedLogo}/logo.bmp"
-        ] ++ extraMakeFlags
-      ;
-
-      extraConfig = ''
-        # Behaviour
-        # ---------
-
-        # Boot menu required for the menu (duh)
-        CONFIG_CMD_BOOTMENU=y
-
-        # Boot menu and default boot configuration
-
-        # Gives *some* time for the user to act.
-        # Though an already-knowledgeable user will know they can use the key
-        # before the message is shown.
-        # Conversely, CTRL+C can cancel the default boot, showing the menu as
-        # expected In reality, this gives us MUCH MORE slop in the time window
-        # than 1 second.
-        CONFIG_BOOTDELAY=1
-
-        # This would be escape, but the USB drivers don't really play well and
-        # escape doesn't work from the keyboard.
-        CONFIG_AUTOBOOT_MENUKEY=27
-
-        # So we'll fake that using CTRL+C is what we want...
-        # It's only a side-effect.
-        CONFIG_AUTOBOOT_PROMPT="Press CTRL+C for the boot menu."
-
-        # And this ends up causing the menu to be used on CTRL+C (or escape)
-        CONFIG_AUTOBOOT_USE_MENUKEY=y
-
-        ${lib.optionalString withPoweroff ''
-        # Additional commands
-        CONFIG_CMD_CLS=y
-        CONFIG_CMD_POWEROFF=y
-        ''}
-
-        # Looks
-        # -----
-
-        # Ensures white text on black background
-        CONFIG_SYS_WHITE_ON_BLACK=y
-
-        ${lib.optionalString withTTF ''
-        # Truetype console configuration
-        CONFIG_CONSOLE_TRUETYPE=y
-        CONFIG_CONSOLE_TRUETYPE_NIMBUS=y
-        CONFIG_CONSOLE_TRUETYPE_SIZE=26
-        # Ensure the chosen font is used
-        CONFIG_CONSOLE_TRUETYPE_CANTORAONE=n
-        CONFIG_CONSOLE_TRUETYPE_ANKACODER=n
-        CONFIG_CONSOLE_TRUETYPE_RUFSCRIPT=n
-        ''}
-
-        ${lib.optionalString withLogo ''
-        # For the splash screen
-        CONFIG_CMD_BMP=y
-        CONFIG_SPLASHIMAGE_GUARD=y
-        CONFIG_SPLASH_SCREEN=y
-        CONFIG_SPLASH_SCREEN_ALIGN=y
-        CONFIG_VIDEO_BMP_GZIP=y
-        CONFIG_VIDEO_BMP_LOGO=y
-        CONFIG_VIDEO_BMP_RLE8=n
-        CONFIG_BMP_16BPP=y
-        CONFIG_BMP_24BPP=y
-        CONFIG_BMP_32BPP=y
-        CONFIG_SPLASH_SOURCE=n
-        ''}
-
-        # Additional configuration (if needed)
-        ${extraConfig}
-      '';
-    });
-  });
-
-  pkgs = addOverlay pkgs';
-
-  #
-  # Targets setup
-  # =============
-  #
-
-  crossPackageSets = {
-    aarch64-linux = pkgs.pkgsCross.aarch64-multiplatform;
-    armv7l-linux  = pkgs.pkgsCross.armv7l-hf-multiplatform;
-    i686-linux    =
-      if pkgs.system == "x86_64-linux"
-      then pkgs.pkgsi686Linux
-      else pkgs.pkgsCross.gnu32
-    ;
-    x86_64-linux  = pkgs.pkgsCross.gnu64;
-  };
-
-  pkgsFor = wanted:
-    if pkgs.system == wanted then pkgs
-    else crossPackageSets.${wanted}
+  inherit (Tow-Boot.systems)
+    aarch64
+    armv7l
+    i686
+    x86_64
   ;
-
-  # Hmmm... `.extend` (and similar) won't work for `pkgsCross` and friend :(
-  aarch64 = addOverlay (pkgsFor "aarch64-linux");
-  armv7l  = addOverlay (pkgsFor  "armv7l-linux");
-  i686    = addOverlay (pkgsFor    "i686-linux");
-  x86_64  = addOverlay (pkgsFor  "x86_64-linux");
 
   #
   # Builder functions
@@ -153,16 +14,16 @@ let
   #
 
   # When the output is `u-boot.bin`, and requires no additional inputs.
-  simpleAArch64 = { pkgs, defconfig, ... } @ args: pkgs.buildTowBoot ({
+  simpleAArch64 = { defconfig, ... } @ args: aarch64.buildTowBoot ({
     extraMeta.platforms = ["aarch64-linux"];
     filesToInstall = ["u-boot.bin" ".config"];
-  } // (removeAttrs args [ "pkgs" ]));
+  } // args);
 
   # For Allwinner A64 based hardware
   allwinnerA64 = { defconfig }: aarch64.buildTowBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
-    BL31 = "${aarch64.armTrustedFirmwareAllwinner}/bl31.bin";
+    BL31 = "${aarch64.nixpkgs.armTrustedFirmwareAllwinner}/bl31.bin";
     filesToInstall = ["u-boot-sunxi-with-spl.bin" ".config"];
   };
 
@@ -170,7 +31,7 @@ let
   rk3399 = { defconfig, postPatch ? "", postInstall ? "" }: aarch64.buildTowBoot {
     inherit defconfig;
     extraMeta.platforms = ["aarch64-linux"];
-    BL31 = "${aarch64.armTrustedFirmwareRK3399}/bl31.elf";
+    BL31 = "${aarch64.nixpkgs.armTrustedFirmwareRK3399}/bl31.elf";
     filesToInstall = [
       ".config"
       "u-boot.itb"
@@ -229,12 +90,10 @@ in
   # -------------
   #
   raspberryPi-3 = simpleAArch64 {
-    pkgs = aarch64;
     defconfig = "rpi_3_defconfig";
     withPoweroff = false;
   };
   raspberryPi-4 = simpleAArch64 {
-    pkgs = aarch64;
     defconfig = "rpi_4_defconfig";
     withPoweroff = false;
   };
@@ -243,11 +102,11 @@ in
   # Sandbox
   # -------
   #
-  uBoot-sandbox = pkgs.buildTowBoot {
+  uBoot-sandbox = Tow-Boot.buildTowBoot {
     # doc/arch/sandbox.rst
     defconfig = "sandbox_defconfig";
     filesToInstall = ["u-boot" "u-boot.dtb" ".config"];
-    buildInputs = with pkgs; [
+    buildInputs = with Tow-Boot.nixpkgs; [
       SDL2
       perl
     ];
