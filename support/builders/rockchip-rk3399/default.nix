@@ -1,14 +1,13 @@
 { buildTowBoot, TF-A }:
 
 # For Rockchip RK3399 based hardware
-{ defconfig, postPatch ? "", postInstall ? "" }:
+{ defconfig, postPatch ? "", postInstall ? "" } @ args:
 
-buildTowBoot {
+buildTowBoot ({
   inherit defconfig;
-  extraMeta.platforms = ["aarch64-linux"];
+  meta.platforms = ["aarch64-linux"];
   BL31 = "${TF-A}/bl31.elf";
   filesToInstall = [
-    ".config"
     "u-boot.itb"
     "idbloader.img"
   ];
@@ -33,5 +32,4 @@ buildTowBoot {
     CONFIG_SYS_SPI_U_BOOT_OFFS=0x80000
     CONFIG_SPL_DM_SEQ_ALIAS=y
   '';
-}
-
+} // args)
