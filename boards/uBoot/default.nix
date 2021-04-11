@@ -19,6 +19,9 @@ in
       SDL2
       perl
     ];
+    patches = [
+      ./0001-sandbox-Force-window-size.patch
+    ];
   };
 
   # Virtualization targets

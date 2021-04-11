@@ -1,0 +1,26 @@
+From 2e4c85ef18469d593b0156c7a15c3c1de0e3ca0b Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 6 Apr 2021 20:44:39 -0400
+Subject: [PATCH] sandbox: Force window size
+
+For 1:1 rendering.
+---
+ arch/sandbox/cpu/sdl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/sandbox/cpu/sdl.c b/arch/sandbox/cpu/sdl.c
+index 8102649be3..4ec1178996 100644
+--- a/arch/sandbox/cpu/sdl.c
++++ b/arch/sandbox/cpu/sdl.c
+@@ -128,7 +128,7 @@ int sandbox_sdl_init_display(int width, int height, int log2_bpp,
+ 	SDL_Window *screen = SDL_CreateWindow("U-Boot", SDL_WINDOWPOS_UNDEFINED,
+ 					      SDL_WINDOWPOS_UNDEFINED,
+ 					      sdl.vis_width, sdl.vis_height,
+-					      SDL_WINDOW_RESIZABLE);
++					      0);
+ 	if (!screen) {
+ 		printf("Unable to initialise SDL screen: %s\n",
+ 		       SDL_GetError());
+-- 
+2.29.2
+
