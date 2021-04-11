@@ -66,5 +66,7 @@ in
     rockchipRK399 = aarch64.callPackage ../builders/rockchip-rk3399 {
       TF-A = aarch64.armTrustedFirmwareRK3399;
     };
+
+    holeyGPTDiskImageBuilder = callPackage ../builders/image/holey-gpt { };
   });
 }
