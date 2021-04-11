@@ -100,4 +100,4 @@ Hint:
 
 See:
 
- - [U-Boot: doc/uefi/u-boot_on_efi.rst](https://source.denx.de/u-boot/u-boot/-/blob/master/doc/uefi/u-boot_on_efi.rst)
+ - [U-Boot: doc/develop/uefi/u-boot_on_efi.rst](https://source.denx.de/u-boot/u-boot/-/blob/master/doc/develop/uefi/u-boot_on_efi.rst)
