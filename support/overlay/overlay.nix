@@ -52,13 +52,18 @@ in
     # The basic Tow-Boot builder
     buildTowBoot = self.callPackage ../builders/tow-boot { };
 
+    inherit (self.callPackage ./arm-trusted-firmware { })
+      armTrustedFirmwareAllwinner
+      armTrustedFirmwareRK3399
+    ;
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
-      TF-A = aarch64.nixpkgs.armTrustedFirmwareAllwinner;
+      TF-A = aarch64.armTrustedFirmwareAllwinner;
     };
 
     rockchipRK399 = aarch64.callPackage ../builders/rockchip-rk3399 {
-      TF-A = aarch64.nixpkgs.armTrustedFirmwareRK3399;
+      TF-A = aarch64.armTrustedFirmwareRK3399;
     };
   });
 }
