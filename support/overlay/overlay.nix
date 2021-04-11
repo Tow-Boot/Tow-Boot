@@ -7,6 +7,7 @@ in
   Tow-Boot = lib.makeScope final.newScope (self:
 
   let
+    inherit (self) callPackage;
     inherit (self.systems)
       aarch64
       armv7l
@@ -50,9 +51,9 @@ in
     };
 
     # The basic Tow-Boot builder
-    buildTowBoot = self.callPackage ../builders/tow-boot { };
+    buildTowBoot = callPackage ../builders/tow-boot { };
 
-    inherit (self.callPackage ./arm-trusted-firmware { })
+    inherit (callPackage ./arm-trusted-firmware { })
       armTrustedFirmwareAllwinner
       armTrustedFirmwareRK3399
     ;
