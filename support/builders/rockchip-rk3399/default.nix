@@ -64,4 +64,4 @@ buildTowBoot ({
     CONFIG_SYS_SPI_U_BOOT_OFFS=0x80000
     CONFIG_SPL_DM_SEQ_ALIAS=y
   '';
-} // args)
+} // removeAttrs args [ "postPatch" ])
