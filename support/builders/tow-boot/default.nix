@@ -40,7 +40,7 @@
 
   # The following options should only be disabled when it breaks a build.
   , withLogo ? true
-  , withTTF ? true
+  , withTTF ? false # Too many issues for the time being...
   , withPoweroff ? true
   , ...
 } @ args:
