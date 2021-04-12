@@ -15,6 +15,9 @@ let
   };
 in
 buildTowBoot ({
+  # Does not actually turn off tested boards...
+  withPoweroff = false;
+
   inherit defconfig;
   inherit
     sectorSize
