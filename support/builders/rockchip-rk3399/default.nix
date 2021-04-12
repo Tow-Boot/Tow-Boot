@@ -1,7 +1,7 @@
 { buildTowBoot, TF-A, GPTDiskImageBuilder }:
 
 # For Rockchip RK3399 based hardware
-{ defconfig, postPatch ? "", postInstall ? "" } @ args:
+{ defconfig, postPatch ? "", postInstall ? "", ... } @ args:
 
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
