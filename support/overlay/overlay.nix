@@ -60,6 +60,8 @@ in
 
     amlogicFirmware = callPackage ./amlogic-firmware { };
 
+    gxlimg = callPackage ./gxlimg { };
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
       TF-A = aarch64.armTrustedFirmwareAllwinner;
