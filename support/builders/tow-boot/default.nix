@@ -146,9 +146,10 @@ stdenv.mkDerivation ({
     # And this ends up causing the menu to be used on CTRL+C (or escape)
     CONFIG_AUTOBOOT_USE_MENUKEY=y
 
-    ${lib.optionalString withPoweroff ''
     # Additional commands
     CONFIG_CMD_CLS=y
+
+    ${lib.optionalString withPoweroff ''
     CONFIG_CMD_POWEROFF=y
     ''}
 
