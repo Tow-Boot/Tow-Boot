@@ -48,9 +48,27 @@ stdenvNoCC.mkDerivation rec {
     # This fragment is used to compute the (aligned) size of the partition.
     # It is used *only* to track the tally of the space used, thus the starting
     # offset of the next partition. The filesystem sizes are untouched.
-    sizeFragment = ''
+    sizeFragment = partition: ''
+      # If a partition asks to start at a specific offset, restart tally at
+      # that location.
+      ${optionalString (partition ? offset) ''
+        offset=$((${toString partition.offset}))
+
+        if (( offset < totalSize )); then
+          echo "Partition wanted to start at $offset while we were already at $totalSize"
+          echo "As of right now, partitions need to be in order."
+          exit 1
+        else
+          totalSize=$offset
+        fi
+      ''}
       start=$totalSize
-      size=$(($(du --apparent-size -B 512 "$input_img" | awk '{ print $1 }') * 512))
+      ${
+        if partition ? length then
+        ''size=$((${toString partition.length}))''
+        else
+        ''size=$(($(du --apparent-size -B 512 "$input_img" | awk '{ print $1 }') * 512))''
+      }
       size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
       size=$(( size * ${alignment} ))
       totalSize=$(( totalSize + size ))
@@ -89,7 +107,7 @@ stdenvNoCC.mkDerivation rec {
       else
         ''
           input_img="${partition}/${partition.filename}"
-          ${sizeFragment}
+          ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
           (
@@ -122,7 +140,7 @@ stdenvNoCC.mkDerivation rec {
       else
         ''
           input_img="${partition}/${partition.filename}"
-          ${sizeFragment}
+          ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
           echo "$start / $size"
