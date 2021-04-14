@@ -12,14 +12,12 @@
 }:
 
 let
-  firmwarePartition = {
-    name = "Firmware (Tow-Boot)";
-    partitionLabel = "Firmware (Tow-Boot)";
-    partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
-    partitionType = "8DA63339-0007-60C0-C436-083AC8230908";
-    offset = partitionOffset * sectorSize;
-    length = partitionSize;
-    filename = firmwareFile;
+  firmwarePartition = imageBuilder.firmwarePartition {
+    inherit
+      firmwareFile
+      partitionOffset
+      partitionSize
+    ;
   };
 in
 
