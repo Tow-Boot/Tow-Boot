@@ -36,6 +36,7 @@
   , filesToInstall ? []
   , defconfig
   , patches ? []
+  , nativeBuildInputs ? []
   , meta ? {}
 
   # The following options should only be disabled when it breaks a build.
@@ -96,7 +97,7 @@ stdenv.mkDerivation ({
       p.setuptools # for pkg_resources
     ]))
     swig
-  ];
+  ] ++ nativeBuildInputs;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
 
@@ -224,4 +225,10 @@ stdenv.mkDerivation ({
     maintainers = with maintainers; [ samueldr ];
   } // meta;
 
-} // removeAttrs args [ "meta" "patches" "makeFlags" "extraConfig" ])
+} // removeAttrs args [
+  "extraConfig"
+  "makeFlags"
+  "meta"
+  "nativeBuildInputs"
+  "patches"
+])
