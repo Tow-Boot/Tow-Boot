@@ -1,32 +1,33 @@
-{ runCommandNoCC, vboot_reference, util-linux }:
+{ imageBuilder }:
 
-{ partitionOffset # in 512 bytes sectors
+# This is a thin wrapper around `makeGPT`.
+# Its main purpose is to pre-configure a couple of desired values.
+{ name
+, partitionOffset # in `sectorSize` bytes sectors
 , partitionSize   # in bytes
-, size ? (partitionSize + 512*partitionOffset) + 2*1024*1024 # 2MiB more than the minimum size
+, sectorSize
+, size ? (partitionSize + sectorSize*partitionOffset) + 2*1024*1024 # 2MiB more than the minimum size
+, firmwareFile
+, partitions ? []
 }:
 
-runCommandNoCC "gpt-image" {
-  inherit partitionOffset;
-  inherit size;
-  partitionSize = partitionSize / 512;
-  # "Linux reserved" partition type
-  partType = "8DA63339-0007-60C0-C436-083AC8230908";
+let
+  firmwarePartition = {
+    name = "Firmware (Tow-Boot)";
+    partitionLabel = "Firmware (Tow-Boot)";
+    partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
+    partitionType = "8DA63339-0007-60C0-C436-083AC8230908";
+    offset = partitionOffset * sectorSize;
+    length = partitionSize;
+    filename = firmwareFile;
+  };
+in
 
-  # An arbitrary partition UUID for reproducible builds.
-  partUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
+imageBuilder.diskImage.makeGPT {
+  inherit name;
+  diskID = "01234567";
 
-  nativeBuildInputs = [
-    util-linux
-    vboot_reference
-  ];
-} ''
-  echo ":: Creating a GPT image"
-  echo "   with partition at $partitionOffset, $partitionSize sectors long"
-  (PS4=" $ "; set -x
-  fallocate -l $size $out
-  cgpt create $out
-  cgpt add -b $partitionOffset -s $partitionSize -l "Firmware (Tow-Boot)" -t $partType -u $partUUID $out
-  cgpt boot -p $out
-  cgpt show -v $out
-  )
-''
+  partitions = [
+    firmwarePartition
+  ] ++ partitions;
+}
