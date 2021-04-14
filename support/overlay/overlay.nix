@@ -71,6 +71,10 @@ in
       TF-A = aarch64.armTrustedFirmwareRK3399;
     };
 
+    amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
+      gxlimg = final.Tow-Boot.gxlimg;
+    };
+
     holeyGPTDiskImageBuilder = callPackage ../builders/image/holey-gpt { };
     GPTDiskImageBuilder = callPackage ../builders/image/gpt { };
   });
