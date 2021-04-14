@@ -58,6 +58,8 @@ in
       armTrustedFirmwareRK3399
     ;
 
+    amlogicFirmware = callPackage ./amlogic-firmware { };
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
       TF-A = aarch64.armTrustedFirmwareAllwinner;
