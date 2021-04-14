@@ -147,6 +147,7 @@ stdenv.mkDerivation ({
     CONFIG_AUTOBOOT_USE_MENUKEY=y
 
     # Additional commands
+    CONFIG_CMD_BDI=y
     CONFIG_CMD_CLS=y
 
     ${lib.optionalString withPoweroff ''
