@@ -75,7 +75,23 @@ in
       gxlimg = final.Tow-Boot.gxlimg;
     };
 
-    imageBuilder = callPackage ../image-builder { };
+    imageBuilder = (callPackage ../image-builder { }).overrideScope'(self: super: {
+      firmwarePartition =
+        { firmwareFile
+        , partitionOffset
+        , partitionSize
+        , sectorSize ? 512
+        }: {
+          name = "Firmware (Tow-Boot)";
+          partitionLabel = "Firmware (Tow-Boot)";
+          partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
+          partitionType = "8DA63339-0007-60C0-C436-083AC8230908";
+          offset = partitionOffset * sectorSize;
+          length = partitionSize;
+          filename = firmwareFile;
+        }
+      ;
+    });
     holeyGPTDiskImageBuilder = callPackage ../builders/image/holey-gpt { };
     GPTDiskImageBuilder = callPackage ../builders/image/gpt { };
   });
