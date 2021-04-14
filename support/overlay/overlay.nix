@@ -75,6 +75,7 @@ in
       gxlimg = final.Tow-Boot.gxlimg;
     };
 
+    imageBuilder = callPackage ../image-builder { };
     holeyGPTDiskImageBuilder = callPackage ../builders/image/holey-gpt { };
     GPTDiskImageBuilder = callPackage ../builders/image/gpt { };
   });
