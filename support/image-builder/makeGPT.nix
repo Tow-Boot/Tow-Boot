@@ -59,6 +59,19 @@ stdenvNoCC.mkDerivation rec {
     # It is used *only* to track the tally of the space used, thus the starting
     # offset of the next partition. The filesystem sizes are untouched.
     sizeFragment = partition: ''
+      # If a partition asks to start at a specific offset, restart tally at
+      # that location.
+      ${optionalString (partition ? offset) ''
+        offset=$((${toString partition.offset}))
+
+        if (( offset < totalSize )); then
+          echo "Partition wanted to start at $offset while we were already at $totalSize"
+          echo "As of right now, partitions need to be in order."
+          exit 1
+        else
+          totalSize=$offset
+        fi
+      ''}
       start=$totalSize
       ${
         if partition ? length then
