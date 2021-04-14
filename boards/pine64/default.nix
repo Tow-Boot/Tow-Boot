@@ -1,7 +1,12 @@
 { allwinnerA64, rockchipRK399, fetchpatch }:
 
 {
-  pine64-pineA64LTS = allwinnerA64 { defconfig = "pine64-lts_defconfig"; };
+  pine64-pineA64LTS = allwinnerA64 {
+    defconfig = "pine64-lts_defconfig";
+    patches = [
+      ./0001-configs-pine64-lts-Enable-SPI-flash.patch
+    ];
+  };
   pine64-pinebookA64 = allwinnerA64 { defconfig = "pinebook_defconfig"; };
   pine64-pinebookPro = rockchipRK399 {
     defconfig = "pinebook-pro-rk3399_defconfig";
