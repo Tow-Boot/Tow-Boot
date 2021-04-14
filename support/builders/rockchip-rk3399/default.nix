@@ -1,4 +1,4 @@
-{ buildTowBoot, TF-A, GPTDiskImageBuilder, runCommandNoCC }:
+{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC }:
 
 # For Rockchip RK3399 based hardware
 { defconfig, postPatch ? "", postInstall ? "", ... } @ args:
@@ -9,12 +9,21 @@ let
   partitionOffset = 64; # in sectors
   secondOffset = 16384; # in sectors
   sectorSize = 512;
-  baseImage = GPTDiskImageBuilder {
-    name = "disk-image";
+
+  firmwarePartition = imageBuilder.firmwarePartition {
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
     firmwareFile = "${firmware}/firmware.shared.img";
+  };
+
+  baseImage = imageBuilder.diskImage.makeGPT {
+    name = "disk-image";
+    diskID = "01234567";
+
+    partitions = [
+      firmwarePartition
+    ];
   };
 
   firmware = buildTowBoot ({
