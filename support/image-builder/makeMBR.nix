@@ -15,6 +15,7 @@ let
     "ext2"  = "83";
     "ext3"  = "83";
     "ext4"  = "83";
+    "EBBR-firmware" = "93";
   };
 in
 {
