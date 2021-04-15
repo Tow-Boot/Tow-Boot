@@ -1,25 +1,47 @@
-{ buildTowBoot, TF-A, holeyGPTDiskImageBuilder }:
+{ lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, spiInstallerImageBuilder }:
 
 # For Allwinner A64 and Allwinner A64 compatible based hardware
-{ defconfig, ... } @ args:
+{ defconfig, withSPI ? false, ... } @ args:
 
 let
-  offset = 8 * 1024; # in bytes... `seek * bs`
-  firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
-  baseImage = holeyGPTDiskImageBuilder {
-    pad = (offset + firmwareMaxSize) / 512; # in sectors
-  };
-in
-buildTowBoot ({
-  meta.platforms = ["aarch64-linux"];
-  BL31 = "${TF-A}/bl31.bin";
-  filesToInstall = ["u-boot-sunxi-with-spl.bin"];
+  baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
+    name = "disk-image";
+    diskID = "01234567";
+    headerHole =
+      # Offset the SoC looks at... bs=1024 * seek=8
+      (imageBuilder.size.MiB 8) +
+      # Actual space the firmware can take
+      (imageBuilder.size.MiB 4)
+    ;
+    postBuild = ''
+      dd if=${firmware}/u-boot-sunxi-with-spl.bin of=$img bs=1024 seek=8 conv=notrunc
+    '';
 
-  postInstall = ''
-    echo ":: Preparing holey GPT image with embedded firmware..."
-    (PS4=" $ "; set -x
-    cat ${baseImage} > $out/disk-image.img
-    dd if=u-boot-sunxi-with-spl.bin of=$out/disk-image.img bs=1024 seek=8 conv=notrunc
-    )
-  '';
-} // args)
+    partitions = [
+      # No firmware partition here; it's hidden in the space before the GPT.
+    ] ++ extraPartitions;
+  };
+
+  baseImage = baseImage' [];
+  spiInstallerImage = baseImage' [
+    (spiInstallerImageBuilder {
+      inherit defconfig;
+      firmware = "${firmware}/u-boot-sunxi-with-spl.bin";
+    })
+  ];
+
+  firmware = buildTowBoot ({
+    meta.platforms = ["aarch64-linux"];
+    BL31 = "${TF-A}/bl31.bin";
+    filesToInstall = ["u-boot-sunxi-with-spl.bin"];
+  } // args);
+in
+runCommandNoCC firmware.name {} ''
+  mkdir -p "$out"
+  cp -rvt $out/ ${firmware}/.config
+  cp -rvt $out/ ${firmware}/*
+  cp -rv ${baseImage}/*.img $out/disk-image.img
+  ${lib.optionalString withSPI ''
+  cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
+  ''}
+''

@@ -18,3 +18,5 @@ The firmware image, which can manually be embedded to a storage device
 
 A pre-embedded disk image meant for usage with shared storage, using the
 "holey GPT" strategy.
+
+When `withSPI` is true, it also outputs an SPI installer image.
