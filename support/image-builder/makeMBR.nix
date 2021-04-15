@@ -35,6 +35,13 @@ let
 
   # Default alignment.
   alignment = toString (imageBuilder.size.MiB 1);
+
+  image = partition: 
+    if lib.isDerivation partition then
+      "${partition}/${partition.filename}"
+    else
+      partition.filename
+  ;
 in
 stdenvNoCC.mkDerivation rec {
   name = "disk-image-${_name}";
@@ -107,7 +114,7 @@ stdenvNoCC.mkDerivation rec {
         (gapFragment partition)
       else
         ''
-          input_img="${partition}/${partition.filename}"
+          input_img="${image partition}"
           ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
@@ -140,7 +147,7 @@ stdenvNoCC.mkDerivation rec {
         (gapFragment partition)
       else
         ''
-          input_img="${partition}/${partition.filename}"
+          input_img="${image partition}"
           ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
