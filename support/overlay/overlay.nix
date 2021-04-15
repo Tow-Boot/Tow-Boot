@@ -75,7 +75,10 @@ in
       gxlimg = final.Tow-Boot.gxlimg;
     };
 
-    imageBuilder = (callPackage ../image-builder { }).overrideScope'(self: super: {
+    imageBuilder = (callPackage ../image-builder {
+      # Some acrobatics needed because splicing doesn't seem to work here :/
+      make_ext4fs = final.buildPackages.callPackage ./make_ext4fs { };
+    }).overrideScope'(self: super: {
       firmwarePartition =
         { firmwareFile
         , partitionOffset

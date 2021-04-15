@@ -1,4 +1,4 @@
-{ lib, newScope }:
+{ lib, newScope, make_ext4fs }:
 
 let
   inherit (lib) makeScope;
@@ -15,7 +15,7 @@ makeScope newScope (self:
     # All known supported filesystems for image generation.
     # Use stand-alone (outside of a disk image) is supported.
     fileSystem = {
-      makeExt4 = callPackage ./makeExt4.nix {};
+      makeExt4 = callPackage ./makeExt4.nix { inherit make_ext4fs; };
       makeFAT32 = callPackage ./makeFAT32.nix {};
       # Specialization of `makeFAT32` with (1) filesystemType showing as ESP,
       # and (2) the name defaults to ESP.
