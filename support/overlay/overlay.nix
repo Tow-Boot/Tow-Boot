@@ -102,6 +102,7 @@ in
           offset = partitionOffset * sectorSize;
           length = partitionSize;
           filename = firmwareFile;
+          filesystemType = "EBBR-firmware";
         }
       ;
     });
