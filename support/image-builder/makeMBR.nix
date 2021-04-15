@@ -22,6 +22,7 @@ in
   , partitions
   # Without the prefixed `0x`
   , diskID
+  , postBuild ? ""
 }:
 
 let
@@ -152,6 +153,7 @@ stdenvNoCC.mkDerivation rec {
     echo "Information about the image:"
     ls -lh $img
     sfdisk -V --list $img
+    ${postBuild}
   '';
 }
 
