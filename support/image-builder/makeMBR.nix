@@ -24,7 +24,15 @@ in
   # Without the prefixed `0x`
   , diskID
   , postBuild ? ""
+  # Default alignment at 1MiB
+  , alignment ? imageBuilder.size.MiB 1
+  , sectorSize ? 512
 }:
+
+let
+  alignment' = alignment;
+  sectorSize' = sectorSize;
+in
 
 let
   _name = name;
@@ -34,8 +42,8 @@ let
       fn partition
   ) partitions);
 
-  # Default alignment.
-  alignment = toString (imageBuilder.size.MiB 1);
+  alignment = toString alignment';
+  sectorSize = toString sectorSize';
 
   image = partition: 
     if lib.isDerivation partition then
@@ -103,7 +111,8 @@ stdenvNoCC.mkDerivation rec {
 
     cat <<EOF > script.sfdisk
     label: dos
-    grain: 1024
+    grain: ${alignment}
+    sector-size: ${sectorSize}
     label-id: 0x${diskID}
     EOF
 
@@ -121,8 +130,8 @@ stdenvNoCC.mkDerivation rec {
 
           (
           # The size is /1024; otherwise it's in sectors.
-          echo -n 'start='"$((start/1024))"'KiB'
-          echo -n ', size='"$((size/1024))"'KiB'
+          echo -n 'start='"$((start/${sectorSize}))"
+          echo -n ', size='"$((size/${sectorSize}))"
           echo -n ', type=${types."${partition.filesystemType}"}'
           ${optionalString (partition ? bootable && partition.bootable)
               "echo -n ', bootable'"}
