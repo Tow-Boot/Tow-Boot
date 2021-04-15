@@ -1,4 +1,4 @@
-{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC, mkScript, writeText }:
+{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerImageBuilder }:
 
 # For Rockchip RK3399 based hardware
 { defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", ... } @ args:
@@ -10,49 +10,11 @@ let
   secondOffset = 16384; # in sectors
   sectorSize = 512;
 
-  flashscript = writeText "${defconfig}-flash.cmd" ''
-    echo
-    echo
-    echo Firmware installer
-    echo
-    echo
-
-    # We know this is the second partition.
-    if load $devtype $devnum:2 $kernel_addr_r firmware.spiflash.bin; then
-      sf probe
-      sf erase 0 +$filesize
-      sf write $kernel_addr_r 0 $filesize
-      echo "Flashing seems to have been successful! Resetting in 5 seconds"
-      sleep 5
-      reset
-    fi
-  '';
-
-  bootcmd = writeText "${defconfig}-boot.cmd" ''
-    setenv bootmenu_0 'Flash firmware to SPI=setenv script flash.scr; run boot_a_script'
-    setenv bootmenu_1 'Completely erase SPI=sf probe; echo "Currently erasing..."; sf erase 0 +1000000; echo "Done!"; sleep 5; bootmenu -1'
-    setenv bootmenu_2 'Reboot=reset'
-    setenv bootmenu_3
-    bootmenu -1
-  '';
-
   firmwarePartition = imageBuilder.firmwarePartition {
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
     firmwareFile = "${firmware}/firmware.shared.img";
-  };
-
-  installerPartition = imageBuilder.fileSystem.makeExt4 {
-    name = "spi-installer";
-    partitionID = "44444444-4444-4444-0000-000000000003";
-    size = imageBuilder.size.MiB 8;
-    bootable = true;
-    populateCommands = ''
-      cp -v ${mkScript bootcmd} ./boot.scr
-      cp -v ${mkScript flashscript} ./flash.scr
-      cp -v ${firmware}/firmware.spiflash.bin ./firmware.spiflash.bin
-    '';
   };
 
   baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
@@ -65,7 +27,12 @@ let
   };
 
   baseImage = baseImage' [];
-  installerImage = baseImage' [ installerPartition ];
+  spiInstallerImage = baseImage' [
+    (spiInstallerImageBuilder {
+      inherit defconfig;
+      firmware = "${firmware}/firmware.spiflash.bin";
+    })
+  ];
 
   firmware = buildTowBoot ({
     # Does not actually turn off tested boards...
@@ -114,16 +81,10 @@ let
     '' + extraConfig;
   } // removeAttrs args [ "postPatch" "postInstall" "extraConfig" ]);
 in
-runCommandNoCC firmware.name {
-  inherit
-    sectorSize
-    partitionOffset
-    secondOffset
-  ;
-} ''
+runCommandNoCC firmware.name { } ''
   mkdir -p "$out"
   cp -rvt $out/ ${firmware}/.config
   cp -rvt $out/ ${firmware}/*
   cp -rv ${baseImage}/*.img $out/disk-image.img
-  cp -rv ${installerImage}/*.img $out/spi-installer.img
+  cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
 ''
