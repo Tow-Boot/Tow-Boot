@@ -62,6 +62,14 @@ in
 
     gxlimg = callPackage ./gxlimg { };
 
+    mkScript = file: final.runCommandNoCC "out.scr" {
+      nativeBuildInputs = [
+        final.buildPackages.ubootTools
+      ];
+    } ''
+      mkimage -C none -A arm64 -T script -d ${file} $out
+    '';
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
       TF-A = aarch64.armTrustedFirmwareAllwinner;
