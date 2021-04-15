@@ -25,6 +25,7 @@ in
   , partitions
   , diskID
   , headerHole ? 0 # in bytes
+  , postBuild ? ""
 }:
 
 let
@@ -186,6 +187,7 @@ stdenvNoCC.mkDerivation rec {
     echo "Information about the image:"
     ls -lh $img
     cgpt show $img
+    ${postBuild}
   '';
 }
 
