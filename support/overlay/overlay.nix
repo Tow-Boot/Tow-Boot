@@ -83,7 +83,7 @@ in
       gxlimg = final.Tow-Boot.gxlimg;
     };
 
-    spiInstallerImageBuilder = callPackage ../builders/spi-installer { };
+    spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
 
     imageBuilder = (callPackage ../image-builder {
       # Some acrobatics needed because splicing doesn't seem to work here :/

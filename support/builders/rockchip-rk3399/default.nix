@@ -1,4 +1,4 @@
-{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerImageBuilder }:
+{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
 
 # For Rockchip RK3399 based hardware
 { defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", ... } @ args:
@@ -28,7 +28,7 @@ let
 
   baseImage = baseImage' [];
   spiInstallerImage = baseImage' [
-    (spiInstallerImageBuilder {
+    (spiInstallerPartitionBuilder {
       inherit defconfig;
       firmware = "${firmware}/firmware.spiflash.bin";
     })

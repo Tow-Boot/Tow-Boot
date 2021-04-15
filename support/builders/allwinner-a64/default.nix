@@ -1,4 +1,4 @@
-{ lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, spiInstallerImageBuilder }:
+{ lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, spiInstallerPartitionBuilder }:
 
 # For Allwinner A64 and Allwinner A64 compatible based hardware
 { defconfig, withSPI ? false, ... } @ args:
@@ -24,7 +24,7 @@ let
 
   baseImage = baseImage' [];
   spiInstallerImage = baseImage' [
-    (spiInstallerImageBuilder {
+    (spiInstallerPartitionBuilder {
       inherit defconfig;
       firmware = "${firmware}/u-boot-sunxi-with-spl.bin";
     })
