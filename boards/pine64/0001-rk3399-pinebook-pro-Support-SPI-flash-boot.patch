@@ -1,0 +1,30 @@
+From bbe884365e8c98ec28ccfbfe4f28079bb180493b Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Wed, 14 Apr 2021 21:22:34 -0400
+Subject: [PATCH] rk3399-pinebook-pro: Support SPI flash boot
+
+---
+ arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi b/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+index 1eafb40ce3..55eb697065 100644
+--- a/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+@@ -8,11 +8,11 @@
+ 
+ / {
+ 	chosen {
+-		u-boot,spl-boot-order = "same-as-spl", &sdhci, &spiflash, &sdmmc;
++		u-boot,spl-boot-order = "same-as-spl", &spiflash, &sdhci, &sdmmc;
+ 	};
+ 
+ 	config {
+-		u-boot,spl-payload-offset = <0x60000>; /* @ 384KB */
++		u-boot,spl-payload-offset = <0x80000>;
+ 	};
+ };
+ 
+-- 
+2.29.2
+
