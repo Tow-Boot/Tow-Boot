@@ -3,6 +3,7 @@
 {
   pine64-pineA64LTS = allwinnerA64 {
     defconfig = "pine64-lts_defconfig";
+    withSPI = true;
     patches = [
       ./0001-configs-pine64-lts-Enable-SPI-flash.patch
     ];
