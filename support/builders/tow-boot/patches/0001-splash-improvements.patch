@@ -283,7 +283,7 @@ index 2b9313e03f..9f733c56e0 100644
 -	ret = splash_screen_prepare();
 -	if (ret)
 -		return ret;
-+	int x = BMP_ALIGN_CENTER, y = BMP_ALIGN_CENTER;
++	int x = -1, y = -1;
  
 -	splash_get_pos(&x, &y);
 -
