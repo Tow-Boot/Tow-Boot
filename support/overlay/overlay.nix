@@ -106,6 +106,5 @@ in
         }
       ;
     });
-    holeyGPTDiskImageBuilder = callPackage ../builders/image/holey-gpt { };
   });
 }
