@@ -58,7 +58,7 @@ let
   # This tiny build produces the `.gz` file that will actually be used.
   compressedLogo = runCommandNoCC "uboot-logo" {} ''
     mkdir -p $out
-    cp ${../../../assets/tow-boot-splash.bmp} $out/logo.bmp
+    cp ${../../../assets/splash.bmp} $out/logo.bmp
     (cd $out; gzip -9 -k logo.bmp)
   '';
 in
