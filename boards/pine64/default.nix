@@ -28,4 +28,10 @@
       })
     ];
   };
+  pine64-rockpro64 = rockchipRK399 {
+    defconfig = "rockpro64-rk3399_defconfig";
+    patches = [
+      ./0001-rockpro64-rk3399-Configure-SPI-flash-boot-offset.patch
+    ];
+  };
 }

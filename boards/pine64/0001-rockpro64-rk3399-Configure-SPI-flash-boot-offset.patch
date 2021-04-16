@@ -1,0 +1,25 @@
+From 6002d63dcd4354b9ece9effc30e0013cf289faa4 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 15 Apr 2021 22:06:53 -0400
+Subject: [PATCH] rockpro64-rk3399: Configure SPI flash boot offset
+
+---
+ arch/arm/dts/rk3399-rockpro64-u-boot.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/rk3399-rockpro64-u-boot.dtsi b/arch/arm/dts/rk3399-rockpro64-u-boot.dtsi
+index 37dff04adf..98da90e61f 100644
+--- a/arch/arm/dts/rk3399-rockpro64-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-rockpro64-u-boot.dtsi
+@@ -11,7 +11,7 @@
+ 	};
+ 
+ 	config {
+-		u-boot,spl-payload-offset = <0x60000>; /* @ 384KB */
++		u-boot,spl-payload-offset = <0x80000>; 
+ 	};
+ };
+ 
+-- 
+2.29.2
+
