@@ -4,21 +4,24 @@
 { defconfig, withSPI ? false, ... } @ args:
 
 let
+  sectorSize = 512;
+  partitionOffset = 16; # 8KiB in
+  firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
+
+  firmwarePartition = imageBuilder.firmwarePartition {
+    inherit sectorSize;
+    partitionOffset = partitionOffset; # in sectors
+    partitionSize = firmwareMaxSize; # in bytes
+    firmwareFile = "${firmware}/u-boot-sunxi-with-spl.bin";
+  };
+
   baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
     name = "disk-image";
     diskID = "01234567";
-    headerHole =
-      # Offset the SoC looks at... bs=1024 * seek=8
-      (imageBuilder.size.MiB 8) +
-      # Actual space the firmware can take
-      (imageBuilder.size.MiB 4)
-    ;
-    postBuild = ''
-      dd if=${firmware}/u-boot-sunxi-with-spl.bin of=$img bs=1024 seek=8 conv=notrunc
-    '';
+    partitionEntriesCount = 48;
 
     partitions = [
-      # No firmware partition here; it's hidden in the space before the GPT.
+      firmwarePartition
     ] ++ extraPartitions;
   };
 
