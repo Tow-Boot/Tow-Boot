@@ -1,6 +1,7 @@
 { stdenvNoCC, lib
 , imageBuilder
-, vboot_reference
+, gptfdisk
+, utillinux
 }:
 
 /*  */ let scope = { "diskImage.makeGPT" =
@@ -26,7 +27,15 @@ in
   , diskID
   , headerHole ? 0 # in bytes
   , postBuild ? ""
+  # Default alignment at 1MiB
+  , alignment ? imageBuilder.size.MiB 1
+  , sectorSize ? 512
 }:
+
+let
+  alignment' = alignment;
+  sectorSize' = sectorSize;
+in
 
 let
   _name = name;
@@ -36,8 +45,8 @@ let
       fn partition
   ) partitions);
 
-  # Default alignment.
-  alignment = toString (imageBuilder.size.MiB 1);
+  alignment = toString alignment';
+  sectorSize = toString sectorSize';
 
   image = partition: 
     if lib.isDerivation partition then
@@ -52,7 +61,8 @@ stdenvNoCC.mkDerivation rec {
   img = "${placeholder "out"}/${filename}";
 
   nativeBuildInputs = [
-    vboot_reference
+    gptfdisk
+    utillinux
   ];
 
   buildCommand = let
@@ -102,21 +112,18 @@ stdenvNoCC.mkDerivation rec {
   in ''
     mkdir -p $out
 
-    # 34 is the base GPT header size, as added to -p by cgpt.
-    gptSize=$((${toString headerHole} + 34*512))
+    # LBA0 and LBA1 contains the PMBR and GPT.
+    #
+    #  2 is LBA2, where the header hole starts.
+    # 32 is the default GPT header size in sectors.
+    gptSize=$((${toString headerHole} + 2*512 + 32*512))
 
-    touch commands.sh
-
-    cat <<EOF > commands.sh
-    # Zeroes the GPT
-    cgpt create -z $img
-
-    # Create the GPT with space if desired
-    cgpt create -p ${toString (headerHole / 512)} $img
-
-    # Add the PMBR
-    cgpt boot -p $img
-
+    cat <<EOF > script.sfdisk
+    label: gpt
+    label-id: 0x${diskID}
+    unit: sectors
+    first-lba: $((gptSize / ${sectorSize}))
+    sector-size: ${sectorSize}
     EOF
 
     totalSize=$((gptSize))
@@ -131,25 +138,24 @@ stdenvNoCC.mkDerivation rec {
           ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${if partition ? filesystemType then partition.filesystemType else ""}"
 
-
           (
-          printf "cgpt add"
-          printf " -b %s" "$((start/512))"
-          printf " -s %s" "$((size/512))"
-          printf " -t %s" '${
+          # The size is /1024; otherwise it's in sectors.
+          echo -n 'start='"$((start/${sectorSize}))"
+          echo -n ', size='"$((size/${sectorSize}))"
+          echo -n ', type=${
             if partition ? partitionType then
               partition.partitionType
             else
               types.${partition.filesystemType}
           }'
           ${optionalString (partition ? partitionUUID)
-              "printf ' -u %s' '${partition.partitionUUID}'"}
+              "echo -n ', uuid=${partition.partitionUUID}'"}
           ${optionalString (partition ? bootable && partition.bootable)
-              "printf ' -B 1'"}
+              ''echo -n ', attrs="LegacyBIOSBootable"' ''}
           ${optionalString (partition ? partitionLabel)
-              "printf ' -l \"%s\"' '${partition.partitionLabel}'"}
-          printf " $img\n"
-          ) >> commands.sh
+              ''echo -n ', name="${partition.partitionLabel}"' ''}
+          echo "" # Finishes the command
+          ) >> script.sfdisk
         ''
     )}
 
@@ -157,14 +163,14 @@ stdenvNoCC.mkDerivation rec {
     totalSize=$(( totalSize + 34*512 ))
 
     echo "--- script ----"
-    cat commands.sh
+    cat script.sfdisk
     echo "--- script ----"
 
     echo
     echo "Making image, $totalSize bytes..."
     truncate -s $((totalSize)) $img
 
-    PS4=" > " sh -x commands.sh
+    sfdisk $img < script.sfdisk
 
     totalSize=$((gptSize))
     echo
@@ -184,9 +190,16 @@ stdenvNoCC.mkDerivation rec {
     )}
 
     echo
+    echo "Moving GPT partitions"
+    # We add 2 here since we have the size of the hole, which starts at LBA2.
+    # Note that this assumes the reserved hole in the GPT header has to be
+    # before the actual GPT header. It is desirable here.
+    sgdisk -j $((${toString (headerHole)}/512+2)) $img
+
+    echo
     echo "Information about the image:"
     ls -lh $img
-    cgpt show $img
+    sfdisk -V --list $img
     ${postBuild}
   '';
 }
