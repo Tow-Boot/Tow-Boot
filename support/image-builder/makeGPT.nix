@@ -30,11 +30,13 @@ in
   # Default alignment at 1MiB
   , alignment ? imageBuilder.size.MiB 1
   , sectorSize ? 512
+  , partitionEntriesCount ? 128 # Default per the spec
 }:
 
 let
   alignment' = alignment;
   sectorSize' = sectorSize;
+  partitionEntriesCount' = partitionEntriesCount;
 in
 
 let
@@ -47,6 +49,7 @@ let
 
   alignment = toString alignment';
   sectorSize = toString sectorSize';
+  partitionEntriesCount = toString partitionEntriesCount';
 
   image = partition: 
     if lib.isDerivation partition then
@@ -115,15 +118,17 @@ stdenvNoCC.mkDerivation rec {
     # LBA0 and LBA1 contains the PMBR and GPT.
     #
     #  2 is LBA2, where the header hole starts.
-    # 32 is the default GPT header size in sectors.
-    gptSize=$((${toString headerHole} + 2*512 + 32*512))
+    # One partition entry is 128 bytes long.
+    gptSize=$((${toString headerHole} + 2*512 + ${partitionEntriesCount}*128))
 
     cat <<EOF > script.sfdisk
     label: gpt
     label-id: 0x${diskID}
     unit: sectors
-    first-lba: $((gptSize / ${sectorSize}))
+    first-lba: $((gptSize%${sectorSize} ? gptSize/${sectorSize} + 1 : gptSize/${sectorSize}))
     sector-size: ${sectorSize}
+    table-length: ${partitionEntriesCount}
+    grain: 512
     EOF
 
     totalSize=$((gptSize))
