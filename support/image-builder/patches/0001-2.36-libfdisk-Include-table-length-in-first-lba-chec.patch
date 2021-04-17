@@ -1,0 +1,46 @@
+From f1b07c9d9d9639fb615613c8245ab7a986450c5c Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 17 Apr 2021 02:58:23 -0400
+Subject: [PATCH] [2.36] libfdisk: Include table-length in first-lba checks
+
+Otherwise, sfdisk would error out on its own dump, as first-lba would be
+earlier than "plausible" assuming the default table size.
+---
+ libfdisk/src/gpt.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/libfdisk/src/gpt.c b/libfdisk/src/gpt.c
+index b8bdf6c2f..70b995cc1 100644
+--- a/libfdisk/src/gpt.c
++++ b/libfdisk/src/gpt.c
+@@ -746,6 +746,7 @@ static int count_first_last_lba(struct fdisk_context *cxt,
+ {
+ 	int rc = 0;
+ 	uint64_t flba = 0, llba = 0;
++	uint64_t nents = GPT_NPARTITIONS;
+ 
+ 	assert(cxt);
+ 	assert(first);
+@@ -753,10 +754,16 @@ static int count_first_last_lba(struct fdisk_context *cxt,
+ 
+ 	*first = *last = 0;
+ 
+-	/* UEFI default */
+-	rc = gpt_calculate_last_lba(NULL, GPT_NPARTITIONS, &llba, cxt);
++	/* Get the table length from the script, if given */
++	if (cxt->script) {
++		rc = get_script_u64(cxt, &nents, "table-length");
++		if (rc < 0)
++			return rc;
++	}
++
++	rc = gpt_calculate_last_lba(NULL, nents, &llba, cxt);
+ 	if (rc == 0)
+-		gpt_calculate_first_lba(NULL, GPT_NPARTITIONS, &flba, cxt);
++		gpt_calculate_first_lba(NULL, nents, &flba, cxt);
+ 	if (rc)
+ 		return rc;
+ 
+-- 
+2.28.0
+

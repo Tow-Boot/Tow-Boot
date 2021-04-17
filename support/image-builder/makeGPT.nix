@@ -1,7 +1,8 @@
 { stdenvNoCC, lib
 , imageBuilder
 , gptfdisk
-, utillinux
+, buildPackages # for utillinux until patch gets upstream
+#, utillinux
 }:
 
 /*  */ let scope = { "diskImage.makeGPT" =
@@ -20,6 +21,12 @@ let
     "ext3"  = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
     "ext4"  = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
   };
+
+  patched-utillinux = buildPackages.utillinux.overrideAttrs({patches ? [], ...}: {
+    patches = patches ++ [
+      ./patches/0001-2.36-libfdisk-Include-table-length-in-first-lba-chec.patch
+    ];
+  });
 in
 {
   name
@@ -65,7 +72,7 @@ stdenvNoCC.mkDerivation rec {
 
   nativeBuildInputs = [
     gptfdisk
-    utillinux
+    patched-utillinux
   ];
 
   buildCommand = let
