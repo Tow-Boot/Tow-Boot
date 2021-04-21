@@ -27,6 +27,10 @@ rockchipRK399 {
       url = "https://patchwork.ozlabs.org/series/232334/mbox/";
       sha256 = "0abmc82dccwmf8fjg7lyxx33r0dfc9h2hrx5d32sjl6mfj88hkj7";
     })
+    (fetchpatch {
+      url = "https://patchwork.ozlabs.org/series/237654/mbox/";
+      sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
+    })
   ];
   BL31 = "${TF-A}/bl31.elf";
 }
