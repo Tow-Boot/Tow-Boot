@@ -1,6 +1,9 @@
 { Tow-Boot, allwinnerA64, rockchipRK399 }:
 
 {
+  pine64-pineA64 = allwinnerA64 {
+    defconfig = "pine64_plus_defconfig";
+  };
   pine64-pineA64LTS = allwinnerA64 {
     defconfig = "pine64-lts_defconfig";
     withSPI = true;
