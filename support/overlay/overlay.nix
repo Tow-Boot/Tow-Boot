@@ -56,6 +56,7 @@ in
     inherit (callPackage ./arm-trusted-firmware { })
       armTrustedFirmwareAllwinner
       armTrustedFirmwareRK3399
+      armTrustedFirmwareS905
     ;
 
     amlogicFirmware = callPackage ./amlogic-firmware { };
