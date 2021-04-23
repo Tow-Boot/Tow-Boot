@@ -41,12 +41,12 @@ new file mode 100644
 index 0000000000..c08c04b11c
 --- /dev/null
 +++ b/include/tow-boot_env.h
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,26 @@
 +#ifndef _TOW_BOOT_ENV_H
 +#define _TOW_BOOT_ENV_H
 +
 +#ifdef CONFIG_CMD_POWEROFF
-+#define TOW_BOOT_MAYBE_POWEROFF "bootmenu_7=Power off=poweroff\0"
++#define TOW_BOOT_MAYBE_POWEROFF "bootmenu_8=Power off=poweroff\0"
 +#else
 +#define TOW_BOOT_MAYBE_POWEROFF
 +#endif
@@ -60,9 +60,10 @@ index 0000000000..c08c04b11c
 +	"bootmenu_1=Boot from eMMC=run bootcmd_mmc0; echo \"eMMC Boot failed.\"; sleep 5; $menucmd -1\0" \
 +	"bootmenu_2=Boot from SD=run bootcmd_mmc1; echo \"SD Boot failed.\"; sleep 5; $menucmd -1\0" \
 +	"bootmenu_3=Boot from USB=run bootcmd_usb0; echo \"USB Boot failed.\"; sleep 5; $menucmd -1\0" \
-+	"bootmenu_4=Boot PXE=run bootcmd_pxe; echo \"PXE Boot failed.\"; sleep 5; $menucmd -1\0" \
-+	"bootmenu_5=Boot DHCP=run bootcmd_dhcp; echo \"DHCP Boot failed.\"; sleep 5; $menucmd -1\0" \
-+	"bootmenu_6=Reboot=reset\0" \
++	"bootmenu_4=Boot from NVME=run bootcmd_nvme0; echo \"NVME Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_5=Boot PXE=run bootcmd_pxe; echo \"PXE Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_6=Boot DHCP=run bootcmd_dhcp; echo \"DHCP Boot failed.\"; sleep 5; $menucmd -1\0" \
++	"bootmenu_7=Reboot=reset\0" \
 +	TOW_BOOT_MAYBE_POWEROFF \
 +	"menucmd=bootmenu\0"
 +
