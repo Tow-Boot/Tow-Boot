@@ -11,15 +11,22 @@ Notes specific to Fedora.
 Partitioning shared storage with the graphical installer
 --------------------------------------------------------
 
+When using the **shared firmware storage strategy**, you will need to be
+careful with the partitioning. Pay attention to what the installer will do when
+partitioning the disk.
+
 Use your preferred tool to partition your disk as desired, make sure to include
-an EFI system partition big enough.
+an EFI system partition (ESP) big enough.
 
 In the installer, choose *Custom* and add mount points and format the
 partitions you have created.
 
-No testing with *Advanced-Custom (Blivet-GUI)* was done, but assuming it will
-not re-write the partition table from scratch and not touch the firmware
-partition, it may work as well.
+> No testing with *Advanced-Custom (Blivet-GUI)* was done, but assuming it will
+> not re-write the partition table from scratch and not touch the firmware
+> partition, it may work as well.
+
+When using **dedicated firmware storage**, nothing special has to be done to
+keep the *initial boot firmware* working.
 
 
 Bootloader Installation
@@ -39,7 +46,7 @@ Additionally, the EFI bootloader shim appears not to work under the conditions.
 > Fedora. Please suggest better supported alternatives.
 
 You will need to do the following manipulation in the ESP after the
-installation.
+installation, before rebooting.
 
 ```
 $ sudo -i
