@@ -160,6 +160,10 @@ stdenv.mkDerivation ({
     # Ensures white text on black background
     CONFIG_SYS_WHITE_ON_BLACK=y
 
+    ${lib.optionalString (!withTTF) ''
+    # CONFIG_CONSOLE_TRUETYPE is not set
+    # CONFIG_CONSOLE_TRUETYPE_NIMBUS is not set
+    ''}
     ${lib.optionalString withTTF ''
     # Truetype console configuration
     CONFIG_CONSOLE_TRUETYPE=y
