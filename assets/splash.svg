@@ -11,31 +11,39 @@
    inkscape:export-xdpi="96"
    inkscape:export-filename="splash.png"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="tow-boot.svg"
+   sodipodi:docname="splash.svg"
    id="svg8"
    version="1.1"
-   viewBox="0 0 152.39999 57.414586"
-   height="217"
-   width="576">
+   viewBox="0 0 66.145837 47.624942"
+   height="179.99977"
+   width="250.00003">
   <defs
-     id="defs2" />
+     id="defs2">
+    <rect
+       x="491.18369"
+       y="113.98802"
+       width="19.191658"
+       height="51.274002"
+       id="rect106" />
+  </defs>
   <sodipodi:namedview
+     inkscape:snap-grids="true"
      lock-margins="true"
-     fit-margin-bottom="48"
-     fit-margin-right="48"
-     fit-margin-left="48"
-     fit-margin-top="48"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
      units="px"
      inkscape:guide-bbox="true"
-     showguides="false"
+     showguides="true"
      inkscape:pagecheckerboard="true"
      showgrid="false"
      inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g963"
      inkscape:document-units="px"
-     inkscape:cy="71.20557"
-     inkscape:cx="94.953712"
-     inkscape:zoom="1"
+     inkscape:cy="116.55623"
+     inkscape:cx="124.63245"
+     inkscape:zoom="2.8284271"
      inkscape:pageshadow="2"
      inkscape:pageopacity="1"
      borderopacity="1.0"
@@ -48,41 +56,94 @@
        inkscape:label=""
        id="guide865"
        orientation="-1,0"
-       position="-57.374465,-60.568492" />
-    <sodipodi:guide
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false"
-       inkscape:label=""
-       id="guide867"
-       orientation="0,1"
-       position="-57.374465,-60.568492" />
+       position="-86.241456,7.704961" />
     <sodipodi:guide
        inkscape:color="rgb(0,0,255)"
        inkscape:locked="false"
        inkscape:label=""
        id="guide871"
        orientation="0,1"
-       position="-311.37447,58.493991" />
+       position="-340.24145,126.76744" />
     <sodipodi:guide
        inkscape:color="rgb(0,0,255)"
        inkscape:locked="false"
        inkscape:label=""
        id="guide873"
        orientation="0,1"
-       position="196.62553,-227.25598" />
+       position="167.75855,-158.98252" />
     <sodipodi:guide
        id="guide875"
        orientation="1,0"
-       position="-311.37447,58.493991" />
+       position="-340.24145,126.76744" />
     <sodipodi:guide
        id="guide877"
        orientation="1,0"
-       position="196.62553,-227.25598" />
+       position="167.75855,-158.98252" />
     <inkscape:grid
-       originy="-1.0963264"
-       originx="-311.37439"
+       originy="-79.159516"
+       originx="-340.24123"
        id="grid879"
        type="xygrid" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide861"
+       orientation="0,1"
+       position="0,37.041606" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide863"
+       orientation="0,1"
+       position="0,10.583273" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide866"
+       orientation="-1,0"
+       position="10.583333,47.624939" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide868"
+       orientation="-1,0"
+       position="43.65625,47.624939" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide870"
+       orientation="-1,0"
+       position="54.239583,47.624939" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide872"
+       orientation="-1,0"
+       position="55.5625,47.624939" />
+    <sodipodi:guide
+       id="guide874"
+       orientation="1,0"
+       position="66.145836,29.104136" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide876"
+       orientation="0,1"
+       position="0,34.660356" />
+    <sodipodi:guide
+       inkscape:color="rgb(0,0,255)"
+       inkscape:locked="false"
+       inkscape:label=""
+       id="guide878"
+       orientation="0,1"
+       position="0,13.493689" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -97,45 +158,89 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-311.37448,-1.0963264)"
+     transform="translate(-340.24146,-79.159484)"
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:6.04764px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="454.09824"
-       y="18.332056"
+       id="text104"
+       style="font-size:2.80455px;line-height:6.61458px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;white-space:pre;shape-inside:url(#rect106);fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;" />
+    <g
+       id="g1129">
+      <g
+         transform="translate(22.99116,26.318324)"
+         id="g963">
+        <g
+           id="g1010">
+          <text
+             transform="scale(0.96598235,1.0352156)"
+             id="text102"
+             y="72.986832"
+             x="373.61807"
+             style="font-size:15.665px;line-height:0.8;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             xml:space="preserve"><tspan
+               y="72.986832"
+               x="373.61807"
+               id="tspan937"
+               sodipodi:role="line"
+               style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:'Encode Sans Compressed';-inkscape-font-specification:'Encode Sans Compressed Heavy';text-align:end;text-anchor:end;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px">Tow-</tspan><tspan
+               y="86.525063"
+               x="373.61807"
+               id="tspan939"
+               sodipodi:role="line"
+               style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:'Encode Sans Compressed';-inkscape-font-specification:'Encode Sans Compressed Heavy';text-align:end;text-anchor:end;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px">Boot</tspan></text>
+          <rect
+             y="65.805748"
+             x="371.4899"
+             height="21.166666"
+             width="1.3229166"
+             id="rect941"
+             style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.764996;stroke-linecap:round;stroke-linejoin:round" />
+          <rect
+             style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:0;stroke:none;stroke-width:0.764996;stroke-linecap:round;stroke-linejoin:round"
+             id="rect941-3"
+             width="10.583334"
+             height="11.265603"
+             x="360.90656"
+             y="71.361992" />
+        </g>
+        <rect
+           transform="rotate(90)"
+           style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:0;stroke:none;stroke-width:0.764995;stroke-linecap:round;stroke-linejoin:round"
+           id="rect980-5"
+           width="10.583334"
+           height="10.583333"
+           x="89.882767"
+           y="-352.96906" />
+        <path
+           id="rect941-3-6"
+           style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:0;stroke:none;stroke-width:0.764995;stroke-linecap:round;stroke-linejoin:round"
+           d="m 372.8128,71.361965 h 10.58334 V 81.945298 H 372.8128 Z" />
+        <rect
+           y="-352.96906"
+           x="52.84116"
+           height="10.583333"
+           width="10.583334"
+           id="rect980-5-3"
+           style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:0;stroke:none;stroke-width:0.764995;stroke-linecap:round;stroke-linejoin:round"
+           transform="rotate(90)" />
+        <path
+           d="m 317.2503,71.361965 h 10.58333 V 81.945298 H 317.2503 Z"
+           style="color:#000000;overflow:visible;fill:#ffffff;fill-opacity:0;stroke:none;stroke-width:0.764995;stroke-linecap:round;stroke-linejoin:round"
+           id="rect941-3-6-5" />
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:5.6623px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="350.45779"
+       y="137.12067"
        id="text835-2"><tspan
-         sodipodi:role="line"
-         id="tspan833-6"
-         x="454.09824"
-         y="18.332056"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">Powered by:                                </tspan><tspan
-         id="tspan855"
-         sodipodi:role="line"
-         x="454.09824"
-         y="24.985878"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">   ______               ___            __  </tspan><tspan
-         id="tspan857"
-         sodipodi:role="line"
-         x="454.09824"
-         y="31.639698"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">  /_  __/__ _    ______/ _ )___  ___  / /_ </tspan><tspan
-         id="tspan859"
-         sodipodi:role="line"
-         x="454.09824"
-         y="38.293518"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">   / / / _ \ |/|/ /___/ _  / _ \/ _ \/ __/ </tspan><tspan
-         id="tspan861"
-         sodipodi:role="line"
-         x="454.09824"
-         y="44.947342"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">  /_/  \___/__,__/   /____/\___/\___/\__/  </tspan><tspan
          id="tspan863"
          sodipodi:role="line"
-         x="454.09824"
-         y="50.99498"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.04764px;font-family:'M+ 1mn';-inkscape-font-specification:'M+ 1mn';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583" /></text>
+         x="350.45779"
+         y="137.12067"
+         style="font-style:italic;font-variant:normal;font-weight:200;font-stretch:normal;font-size:5.6623px;font-family:'Encode Sans Compressed';-inkscape-font-specification:'Encode Sans Compressed Ultra-Light';text-align:end;text-anchor:end;fill:#ffffff;stroke-width:0.264583">Powered by:</tspan></text>
   </g>
 </svg>
