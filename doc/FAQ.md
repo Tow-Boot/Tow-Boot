@@ -34,3 +34,26 @@ work fine. Up to one system with shared storage using the pre-built images.
 
 If you craft your own image, you might be able to put more than one firmware
 for shared storage, if the location the different SoC uses does not conflict.
+
+
+Why isn't this upstream?
+------------------------
+
+There are four main reasons it could be. The first is easy: because I've not
+gotten around to posting a patch for it yet. Please press us to it for these
+kind of changes!
+
+The second is that the implementation is more experimental than final. It is
+good enough for *Tow-Boot*, but the implementation needs more finishing touches
+and more testing before being sent upstream. Think of these changes as if it
+was part of a "staging" workflow, first maturing here.
+
+The third is for changes that go against the opinions of upstream. These may
+be changes to default options, or opinionated changes made in an unacceptable
+form for upstream. Generally speaking, those changes represent opinionated
+user-experience changes.
+
+Finally, the main fourth reason is for board enablement. Generally speaking
+those changes are provided by or on behalf of the vendor, and it is not our job
+to provide those upstream. We try to avoid board enablement that have not
+already been sent to upstream.
