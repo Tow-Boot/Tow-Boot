@@ -14,7 +14,7 @@ let
       in
     ''
       substituteInPlace include/tow-boot_env.h \
-        --replace 'setup_leds=\0' 'setup_leds=${setup_leds}\0'
+        --replace 'setup_leds=echo\0' 'setup_leds=${setup_leds}\0'
     '';
   };
 in
