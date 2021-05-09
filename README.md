@@ -1,5 +1,5 @@
 <div align="center"><a href="https://tow-boot.org/"><img src="assets/splash.png" alt="Tow-Boot" title="Tow-Boot" width="250" height="180" /></a></div>
-<div align="right"><em>An opinionated distribution of U-Boot.</em></div>
+<div align="center"><em>An opinionated distribution of U-Boot.</em></div>
 
 What is this?
 -------------
