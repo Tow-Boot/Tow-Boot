@@ -100,8 +100,12 @@ in
         }: {
           name = "Firmware (Tow-Boot)";
           partitionLabel = "Firmware (Tow-Boot)";
+          # In theory this shouldn't be static, every partition should have a
+          # unique identifier, but that's not really possible here.
           partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
-          partitionType = "8DA63339-0007-60C0-C436-083AC8230908";
+          # https://github.com/ARM-software/ebbr/issues/84
+          # For now, we're "owning" this GUID.
+          partitionType = "67401509-72E7-4628-B1AF-EDD128E4316A";
           offset = partitionOffset * sectorSize;
           length = partitionSize;
           filename = firmwareFile;
