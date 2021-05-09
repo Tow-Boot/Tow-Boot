@@ -23,6 +23,7 @@ rockchipRK399 {
   patches = [
     ./0001-rk3399-light-pinebook-power-and-standby-leds-during-.patch
     ./0001-rk3399-pinebook-pro-Support-SPI-flash-boot.patch
+    ./0001-rk3399-pinebook-pro-Disable-cdn_dp.patch
     (fetchpatch {
       url = "https://patchwork.ozlabs.org/series/232334/mbox/";
       sha256 = "0abmc82dccwmf8fjg7lyxx33r0dfc9h2hrx5d32sjl6mfj88hkj7";
