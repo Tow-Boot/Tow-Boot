@@ -73,18 +73,27 @@ stdenv.mkDerivation ({
   };
 
   patches = [
-    ./patches/0001-Tow-Boot-Provide-opinionated-boot-flow.patch
-    ./patches/0001-Tow-Boot-treewide-Identify-as-Tow-Boot.patch
-    ./patches/0001-bootmenu-improvements.patch
-    ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
-    ./patches/0001-splash-improvements.patch
-    ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
+    # Misc patches to upstream
     ./patches/0001-cmd-Add-pause-command.patch
     ./patches/0001-cmd-env-Add-indirect-to-indirectly-set-values.patch
     ./patches/0001-lib-export-vsscanf.patch
+
+    # Misc patches, not upstreamable as-is
+    ./patches/0001-bootmenu-improvements.patch
+    ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
+    ./patches/0001-splash-improvements.patch
+    ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
+
+    # Tow-Boot specific patches, not upstreamable as-is
     ./patches/0001-pdcurses.patch
     ./patches/0001-tow-boot-menu.patch
+    ./patches/0001-Tow-Boot-Provide-opinionated-boot-flow.patch
+    ./patches/0001-Tow-Boot-treewide-Identify-as-Tow-Boot.patch
+
+    # Intrusive non-upstreamable workarounds
     ./patches/0001-HACK-video-sync-dirty.patch
+
+    # Intrusive opinionated patches
     ./patches/0001-Tow-Boot-sunxi-ignore-mmc_auto-force-SD-then-eMMC.patch
   ] ++ patches;
 
