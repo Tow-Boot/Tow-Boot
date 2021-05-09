@@ -84,6 +84,7 @@ stdenv.mkDerivation ({
     ./patches/0001-pdcurses.patch
     ./patches/0001-tow-boot-menu.patch
     ./patches/0001-HACK-video-sync-dirty.patch
+    ./patches/0001-Tow-Boot-sunxi-ignore-mmc_auto-force-SD-then-eMMC.patch
   ] ++ patches;
 
   postPatch = ''

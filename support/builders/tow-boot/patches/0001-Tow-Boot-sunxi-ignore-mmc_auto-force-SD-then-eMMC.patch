@@ -1,0 +1,35 @@
+From 42f472382c4c24e3a7dbfd13674d8223f15c6c00 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 8 May 2021 23:54:46 -0400
+Subject: [PATCH] [Tow-Boot] sunxi: ignore mmc_auto, force SD, then eMMC
+
+This is an opinionated change that aims to make the boot order stable,
+disregarding the original boot source. The initial boot firmware shoul
+act the same, wherever it is installed.
+
+Additionally, this makes the automatic boot menu builder work better,
+since the two boot sources are present in the boot targets.
+
+This probably goes against the opinions and design decisions of
+mainline U-Boot. And I respect their decision. It makes sense when you
+consider the initial boot firmware to be part of a "product" OS image.
+---
+ include/configs/sunxi-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 7b602dd9ea..b606f5471c 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -323,7 +323,7 @@ extern int soft_i2c_gpio_scl;
+ 		"fi\0"
+ 
+ #define BOOTENV_DEV_NAME_MMC_AUTO(devtypeu, devtypel, instance) \
+-	"mmc_auto "
++	"mmc0 mmc1 " /* SD, then eMMC */
+ 
+ #define BOOT_TARGET_DEVICES_MMC(func) func(MMC_AUTO, mmc_auto, na)
+ #else
+-- 
+2.29.2
+
