@@ -18,7 +18,7 @@ rockchipRK399 {
     in
   ''
     substituteInPlace include/tow-boot_env.h \
-      --replace 'setup_leds=\0' 'setup_leds=${setup_leds}\0'
+      --replace 'setup_leds=echo\0' 'setup_leds=${setup_leds}\0'
   '';
   patches = [
     ./0001-rk3399-light-pinebook-power-and-standby-leds-during-.patch
