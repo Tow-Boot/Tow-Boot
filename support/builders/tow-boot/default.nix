@@ -79,6 +79,7 @@ stdenv.mkDerivation ({
     ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
     ./patches/0001-splash-improvements.patch
     ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
+    ./patches/0001-cmd-Add-pause-command.patch
     ./patches/0001-cmd-env-Add-indirect-to-indirectly-set-values.patch
     ./patches/0001-lib-export-vsscanf.patch
     ./patches/0001-pdcurses.patch
