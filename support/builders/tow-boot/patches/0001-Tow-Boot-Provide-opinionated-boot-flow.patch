@@ -40,7 +40,7 @@ new file mode 100644
 index 0000000000..03e0d4e927
 --- /dev/null
 +++ b/include/tow-boot_env.h
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,53 @@
 +#ifndef _TOW_BOOT_ENV_H
 +#define _TOW_BOOT_ENV_H
 +
@@ -74,8 +74,7 @@ index 0000000000..03e0d4e927
 +	/*   # Skip fel as it has no value for end-users */ \
 +	"    if test \"$target\" != fel; then" \
 +	"        env indirect target_name target_name_${target} \"(${target})\";" \
-+	         /* TODO: replace `sleep 5` with `pause` once written*/ \
-+	"        tb_menu add \"Boot from ${target_name}\" '' \"run bootcmd_${target}; echo ${target_name} Boot failed.; sleep 5; $menucmd\" ;" \
++	"        tb_menu add \"Boot from ${target_name}\" '' \"run bootcmd_${target}; echo ${target_name} Boot failed.; pause; $menucmd\" ;" \
 +	"    fi;" \
 +	"done;" \
 +	\
