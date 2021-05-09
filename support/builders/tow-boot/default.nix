@@ -119,7 +119,12 @@ stdenv.mkDerivation ({
   ] ++ makeFlags
   ;
 
-  extraConfig = ''
+  extraConfig =
+    let
+      reset = "\\e[0m";
+      bright = "\\e[1m";
+    in
+  ''
     # Identity
     # --------
 
@@ -138,18 +143,17 @@ stdenv.mkDerivation ({
     # before the message is shown.
     # Conversely, CTRL+C can cancel the default boot, showing the menu as
     # expected In reality, this gives us MUCH MORE slop in the time window
-    # than 1 second.
-    CONFIG_BOOTDELAY=1
+    # than 2 second.
+    CONFIG_BOOTDELAY=2
 
-    # This would be escape, but the USB drivers don't really play well and
-    # escape doesn't work from the keyboard.
+    # 27 is ESCAPE
     CONFIG_AUTOBOOT_MENUKEY=27
 
     # So we'll fake that using CTRL+C is what we want...
     # It's only a side-effect.
-    CONFIG_AUTOBOOT_PROMPT="Press CTRL+C for the boot menu."
+    CONFIG_AUTOBOOT_PROMPT="${reset}Please press [${bright}ESCAPE${reset}] or [${bright}CTRL+C${reset}] to enter the boot menu."
 
-    # And this ends up causing the menu to be used on CTRL+C (or escape)
+    # And this ends up causing the menu to be used on ESCAPE (or CTRL+C)
     CONFIG_AUTOBOOT_USE_MENUKEY=y
 
     # Additional commands
