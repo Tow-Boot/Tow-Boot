@@ -83,6 +83,7 @@ stdenv.mkDerivation ({
     ./patches/0001-lib-export-vsscanf.patch
     ./patches/0001-pdcurses.patch
     ./patches/0001-tow-boot-menu.patch
+    ./patches/0001-HACK-video-sync-dirty.patch
   ] ++ patches;
 
   postPatch = ''
