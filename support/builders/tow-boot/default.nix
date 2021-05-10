@@ -53,6 +53,9 @@ let
   # Represents released versions.
   towBootIdentifier = "001";
 
+  # Identify as "pre-release", as we are still working on this.
+  additionalIdentifier = "-pre";
+
   # To produce the bitmap image:
   #     convert input.png -depth 8 -colors 256 -compress none output.bmp
   # This tiny build produces the `.gz` file that will actually be used.
@@ -65,7 +68,7 @@ in
 stdenv.mkDerivation ({
   pname = "tow-boot-${defconfig}";
 
-  version = "${uBootVersion}-${towBootIdentifier}";
+  version = "${uBootVersion}${additionalIdentifier}-${towBootIdentifier}";
 
   src = fetchurl {
     url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
