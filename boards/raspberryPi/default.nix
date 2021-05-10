@@ -1,10 +1,7 @@
 { systems
 , runCommandNoCC
-, dosfstools
 , gptfdisk
-, libfaketime
-, mtools
-, util-linux
+, imageBuilder
 , vboot_reference
 , writeText
 , xxd
@@ -48,88 +45,73 @@ let
     avoid_warnings=1
   '';
 
-  disk-image = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {
-    partitionSize = 32/*MiB*/ * 1024 * 1024 / 512; # in Sectors
-    padding = 16/*MiB*/ * 1024 * 1024 / 512; # in Sectors
-    partitionOffset = 2048; # in Sectors
+  baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
+    name = "disk-image";
+    diskID = "01234567";
 
-    # "Linux reserved" partition type
-    partType = "8DA63339-0007-60C0-C436-083AC8230908";
+    partitions = [
+      firmwarePartition
+    ] ++ extraPartitions;
 
-    # An arbitrary partition UUID for reproducible builds.
-    partUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
+    postBuild = ''
+      (
+      echo "Making hybrid MBR"
+      PS4=" $ "
+      PATH="${xxd}/bin/:${vboot_reference}/bin/:${gptfdisk}/bin/:$PATH"
+      set -x
+      sgdisk --hybrid=1:EE $img
+      # Change the partition type to 0x0c; gptfdisk will default to 0x83 here.
+      echo '000001c2: 0c' | xxd -r - $img
+      sgdisk --print-mbr $img
+      cgpt show -v $img
+      )
+    '';
+  };
 
-    nativeBuildInputs = [
-      dosfstools
-      gptfdisk
-      libfaketime
-      mtools
-      util-linux
-      vboot_reference
-      xxd
-    ];
-  } ''
-    echo ":: Building firmware partition"
-    mkdir firmware-filesystem
-    (cd firmware-filesystem
+  inherit (imageBuilder.firmwarePartition { firmwareFile = null; partitionOffset = 0; partitionSize = 0; })
+    partitionUUID
+    partitionType
+  ;
+
+  # The build, since it includes misc. files from the Raspberry Pi Foundation
+  # can get quite bigger, compared to other boards.
+  firmwareMaxSize = imageBuilder.size.MiB 32;
+
+  firmwarePartition = imageBuilder.fileSystem.makeFAT32 {
+    size = firmwareMaxSize;
+    partitionID = "0000000000000000";
+    name = "TOW-BOOT-FIRM";
+    offset = imageBuilder.size.MiB 1;
+    inherit partitionUUID partitionType;
+    populateCommands = ''
       cp -v ${config} config.txt
       cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
       cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
       cp -v ${raspberrypi-armstubs}/armstub8-gic.bin armstub8-gic.bin
-      cp -v ${raspberrypifw}/share/raspberrypi/boot/bcm2711-rpi-4-b.dtb bcm2711-rpi-4-b.dtb
-    )
-    (cd ${raspberrypifw}/share/raspberrypi/boot
-      cp -v bootcode.bin fixup*.dat start*.elf $NIX_BUILD_TOP/firmware-filesystem/
-    )
+      (
+        target="$PWD"
+        cd ${raspberrypifw}/share/raspberrypi/boot
+        cp -v bcm2711-rpi-4-b.dtb "$target/"
+        cp -v bootcode.bin fixup*.dat start*.elf "$target/"
+      )
+    '';
+  };
 
-    echo $partitionSize
-    fallocate -l $((partitionSize * 512)) firmware-partition.img
-    faketime "1970-01-01 00:00:00" \
-      mkfs.vfat \
-        -i "0x3e239f8b" \
-        -n "TOW-BOOT-FIRM" \
-        firmware-partition.img
-
-    (cd firmware-filesystem
-      mcopy -psvm -i $NIX_BUILD_TOP/firmware-partition.img ./* ::
-    )
-    fsck.vfat -vn firmware-partition.img
-
-    echo ":: Building disk image"
-
-    (PS4=" $ "; set -x
-      fallocate -l $((partitionSize*512 + partitionOffset*512 + 32*512 + padding*512)) $out
-      cgpt create $out
-      cgpt add -b $partitionOffset -s $partitionSize -l "Firmware (Tow-Boot)" -t $partType -u $partUUID $out
-      cgpt boot -p $out
-      sgdisk --hybrid=1:EE $out
-      # Change the partition type to 0x0c; gptfdisk will default to 0x83 here.
-      echo '000001c2: 0c' | xxd -r - $out
-      sgdisk --print-mbr $out
-      cgpt show -v $out
-    )
-
-    echo ":: Flashing partition"
-    (PS4=" $ "; set -x
-      dd bs=512 if=firmware-partition.img of=$out seek=$partitionOffset
-    )
-  '';
+  baseImage = baseImage' [];
 in
 {
   #
   # Raspberry Pi
   # -------------
   #
-  raspberryPi-aarch64 = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {
-  } ''
+  raspberryPi-aarch64 = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {} ''
     mkdir -p $out
     (cd $out
       cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
       cp -v ${raspberryPi-3}/.config .config.tow-boot-rpi3.bin
       cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
       cp -v ${raspberryPi-4}/.config .config.tow-boot-rpi4.bin
-      cp -v ${disk-image} disk-image.img
+      cp -v ${baseImage}/*.img $out/disk-image.img
     )
   '';
-
 }
