@@ -1,7 +1,7 @@
 builtins.trace ":: Tow-Boot build infrastructure" (
 
 # This is a "clean" Nixpkgs. No overlays have been applied yet.
-{ pkgs ? import ./nixpkgs.nix {} }:
+{ pkgs ? import ./nixpkgs.nix {}, silent ? false }:
 
 # Break the cycle
 let pkgs' = pkgs; in
@@ -17,7 +17,8 @@ in
 # user-friendly.
 outputs // {
   # Strategic use of `pkgs` to force evaluation before any tracing happens.
-  ___aaallIsBeingBuilt = builtins.trace (pkgs.lib.removePrefix "trace: " ''
+  ___aaallIsBeingBuilt = if silent then null else (
+  builtins.trace (pkgs.lib.removePrefix "trace: " ''
     trace: +--------------------------------------------------+
     trace: | Notice: ${pkgs.lib.strings.fixedWidthString 3 " " (toString outputsCount)} outputs will be built.               |
     trace: |                                                  |
@@ -25,6 +26,6 @@ outputs // {
     trace: |                                                  |
     trace: |   $ nix-build -A vendor-board                    |
     trace: +--------------------------------------------------+
-  '') null;
+  '') null);
 }
 )
