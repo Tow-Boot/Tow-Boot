@@ -51,10 +51,10 @@ let
 
   # For now, monotonically increasing number.
   # Represents released versions.
-  towBootIdentifier = "001";
+  towBootIdentifier = "002${additionalIdentifier}";
 
   # Identify as "pre-release", as we are still working on this.
-  additionalIdentifier = "";
+  additionalIdentifier = "-pre";
 
   # To produce the bitmap image:
   #     convert input.png -depth 8 -colors 256 -compress none output.bmp
@@ -68,7 +68,7 @@ in
 stdenv.mkDerivation ({
   pname = "tow-boot-${defconfig}";
 
-  version = "${uBootVersion}${additionalIdentifier}-${towBootIdentifier}";
+  version = "${uBootVersion}-${towBootIdentifier}";
 
   src = fetchurl {
     url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
