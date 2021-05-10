@@ -40,7 +40,7 @@ new file mode 100644
 index 0000000000..03e0d4e927
 --- /dev/null
 +++ b/include/tow-boot_env.h
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,54 @@
 +#ifndef _TOW_BOOT_ENV_H
 +#define _TOW_BOOT_ENV_H
 +
@@ -70,6 +70,7 @@ index 0000000000..03e0d4e927
 +	\
 +	"towboot_menu=" \
 +	/* Builds the boot options in the same order distro_bootcmd uses. */ \
++	"tb_menu new;" \
 +	"for target in ${boot_targets}; do" \
 +	/*   # Skip fel as it has no value for end-users */ \
 +	"    if test \"$target\" != fel; then" \
