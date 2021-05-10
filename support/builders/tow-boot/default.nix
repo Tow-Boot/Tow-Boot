@@ -54,7 +54,7 @@ let
   towBootIdentifier = "001";
 
   # Identify as "pre-release", as we are still working on this.
-  additionalIdentifier = "-pre";
+  additionalIdentifier = "";
 
   # To produce the bitmap image:
   #     convert input.png -depth 8 -colors 256 -compress none output.bmp
