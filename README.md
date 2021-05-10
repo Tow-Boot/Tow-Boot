@@ -21,7 +21,7 @@ Install firmware, boot distro. No other steps.
 On boards with dedicated storage for the firmware, the *Tow-Boot* build should
 be independent from, and not care about the installed system media.
 
-Update are handled out-of band (through a firmware update option in the
+Update should be handled out-of-band (through a firmware update option in the
 firmware, or from distro-independent systems like *fwupd*). The firmware is not
 "owned" by the currently running distro. The firmware is not updated or changed
 through package upgrades.
@@ -36,7 +36,7 @@ in the menu interface are saved to the firmware storage.
 
 ### Boot modes
 
-Support generic mainline-based ARM distros as a first class citizen. Whether
+Support for generic mainline-based ARM distros as a first class citizen. Whether
 they boot using UEFI (preferred), or extlinux-compatible boot.
 
 See [`README.distro`](https://source.denx.de/u-boot/u-boot/-/blob/master/doc/README.distro)
@@ -61,6 +61,15 @@ Boot order is unsurprising: on shared storage, the storage from which the
 currently running *Tow-Boot* is running is prioritized by default.
 
 Bootable targets are listed in the menu driven interface.
+
+Documentation
+-------------
+
+Until a website is produced with the documentation, please read the
+documentation found under the `doc/` directory.
+
+There may be additional `.md` files elsewhere in the tree, relevant to the
+files close-by.
 
 
 Questions
@@ -96,3 +105,6 @@ packaging infrastructure.
 
 U-Boot derived code is licensed the same as U-Boot, which is GPL-2.0+. All
 patches are owned by their authors under the same license.
+
+At the risk of repetition **the produced binaries are GPL-2.0+**, since
+*U-Boot* itself is.
