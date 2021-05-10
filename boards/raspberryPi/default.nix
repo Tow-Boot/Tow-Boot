@@ -125,7 +125,9 @@ in
     mkdir -p $out
     (cd $out
       cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
+      cp -v ${raspberryPi-3}/.config .config.tow-boot-rpi3.bin
       cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
+      cp -v ${raspberryPi-4}/.config .config.tow-boot-rpi4.bin
       cp -v ${disk-image} disk-image.img
     )
   '';
