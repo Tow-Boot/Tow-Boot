@@ -22,6 +22,7 @@ in
     patches = [
       ./0001-sandbox-Force-window-size.patch
     ];
+    internal = true;
   };
 
   # Virtualization targets
@@ -30,12 +31,14 @@ in
     defconfig = "qemu_arm_defconfig";
     meta.platforms = ["armv7l-linux"];
     filesToInstall = ["u-boot.bin"];
+    internal = true;
   };
 
   uBoot-qemuArm64 = aarch64.buildTowBoot {
     defconfig = "qemu_arm64_defconfig";
     meta.platforms = ["aarch64-linux"];
     filesToInstall = ["u-boot.bin"];
+    internal = true;
   };
 
   uBoot-qemuX86 = i686.buildTowBoot {
@@ -43,6 +46,7 @@ in
     meta.platforms = ["i686-linux"];
     filesToInstall = ["u-boot.rom"];
     withPoweroff = false;
+    internal = true;
   };
 
   uBoot-qemuX86_64 = x86_64.buildTowBoot {
@@ -57,6 +61,7 @@ in
     #     error: SSE register return with SSE disabled
     withTTF = false;
     withPoweroff = false;
+    internal = true;
   };
 
   # EFI payloads
@@ -66,6 +71,7 @@ in
     meta.platforms = ["i686-linux"];
     filesToInstall = ["u-boot-payload.efi"];
     withPoweroff = false;
+    internal = true;
   };
 
   uBoot-efiX86_64 = x86_64.buildTowBoot {
@@ -73,5 +79,6 @@ in
     meta.platforms = ["x86_64-linux"];
     filesToInstall = ["u-boot-payload.efi"];
     withPoweroff = false;
+    internal = true;
   };
 }
