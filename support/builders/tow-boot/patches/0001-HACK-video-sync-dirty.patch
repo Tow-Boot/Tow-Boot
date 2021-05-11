@@ -1,7 +1,7 @@
-From 55de0c383fc499447f68b08775d2e10650296bb3 Mon Sep 17 00:00:00 2001
+From 33c5deaa7f62d0038ba1a66edc05083d33f53f01 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sat, 8 May 2021 20:20:39 -0400
-Subject: [PATCH 1/2] [HACK] video: Add video_sync_dirty
+Subject: [PATCH 1/3] video: Add video_sync_dirty
 
 This is used to work around the slow redraw of a full video console
 display.
@@ -91,10 +91,10 @@ index 827733305e..402e3d90a3 100644
 2.29.2
 
 
-From bfca76dc55321ceace0dccf59bbba806e4cdbbab Mon Sep 17 00:00:00 2001
+From 19e7db1a7855d819378b3056c01ef407c330db61 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sat, 8 May 2021 20:35:53 -0400
-Subject: [PATCH 2/2] [HACK] input: sync video on user input request
+Subject: [PATCH 2/3] input: sync video on user input request
 
 This "finishes" trailing, or hanging, video updates that might not have
 been synced yet. See the previous sibling commit.
@@ -175,6 +175,41 @@ index 2c6680337d..6895939f26 100644
  	/* Just get input to do this for us if we can */
  	if (priv->input.dev)
  		return input_getc(&priv->input);
+-- 
+2.29.2
+
+
+From f3684b7d1fd1f2148843f3802201c3a60bd7fb60 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 10 May 2021 21:20:51 -0400
+Subject: [PATCH 3/3] vidconsole-uclass: Force a sync on newlines
+
+---
+ drivers/video/vidconsole-uclass.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/vidconsole-uclass.c b/drivers/video/vidconsole-uclass.c
+index 81b65f5aae..ff02d2d587 100644
+--- a/drivers/video/vidconsole-uclass.c
++++ b/drivers/video/vidconsole-uclass.c
+@@ -114,7 +114,7 @@ static void vidconsole_newline(struct udevice *dev)
+ 	}
+ 	priv->last_ch = 0;
+ 
+-	ret = video_sync(dev->parent, false);
++	ret = video_sync(dev->parent, true);
+ 	if (ret) {
+ #ifdef DEBUG
+ 		console_puts_select_stderr(true, "[vc err: video_sync]");
+@@ -354,7 +354,7 @@ static void vidconsole_escape_char(struct udevice *dev, char ch)
+ 			int ret;
+ 
+ 			video_clear(dev->parent);
+-			ret = video_sync(dev->parent, false);
++			ret = video_sync(dev->parent, true);
+ 			if (ret) {
+ #ifdef DEBUG
+ 				console_puts_select_stderr(true, "[vc err: video_sync]");
 -- 
 2.29.2
 
