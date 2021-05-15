@@ -1,4 +1,4 @@
-From 676f0f7de55b59ca4ef253c0c96d0e033772b539 Mon Sep 17 00:00:00 2001
+From 7371baf82beda647bf893522d6369ed9940e3ee3 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Mon, 26 Apr 2021 08:12:30 -0400
 Subject: [PATCH 1/2] lib/PDCursesMod: Add most pf PDCursesMod outright
@@ -31174,7 +31174,7 @@ index 0000000000..60c7a09238
 2.29.2
 
 
-From cd8e962b4bf9d28df7a06792942aa4118daac2a2 Mon Sep 17 00:00:00 2001
+From 5017865438fd58f2735a0fb492a9fdbc9cc37056 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Mon, 26 Apr 2021 10:20:20 -0400
 Subject: [PATCH 2/2] lib/PDCursesMod: Fix build for U-Boot
@@ -31189,7 +31189,7 @@ Subject: [PATCH 2/2] lib/PDCursesMod: Fix build for U-Boot
  lib/PDCursesMod/ansi/pdcdisp.c                |  33 ++-
  lib/PDCursesMod/ansi/pdcgetsc.c               |   8 +-
  lib/PDCursesMod/ansi/pdckbd.c                 |  24 +-
- lib/PDCursesMod/ansi/pdcscrn.c                | 226 +++++++++++++++++-
+ lib/PDCursesMod/ansi/pdcscrn.c                | 231 +++++++++++++++++-
  lib/PDCursesMod/ansi/pdcsetsc.c               |   6 +-
  lib/PDCursesMod/ansi/pdcutil.c                |  14 +-
  lib/PDCursesMod/common/pdccolor.c             |   2 +-
@@ -31255,7 +31255,7 @@ Subject: [PATCH 2/2] lib/PDCursesMod: Fix build for U-Boot
  lib/PDCursesMod/pdcurses/touch.c              |  20 +-
  lib/PDCursesMod/pdcurses/util.c               |  26 +-
  lib/PDCursesMod/pdcurses/window.c             |  34 +--
- 75 files changed, 1035 insertions(+), 547 deletions(-)
+ 75 files changed, 1040 insertions(+), 547 deletions(-)
  create mode 100644 lib/PDCursesMod/Kconfig
  create mode 100644 lib/PDCursesMod/Makefile
  rename lib/PDCursesMod/{ => include/PDCurses}/curses.h (99%)
@@ -31566,7 +31566,7 @@ index bc6b3ff1d1..dac989422b 100644
  
  bool PDC_check_key( void)
 diff --git a/lib/PDCursesMod/ansi/pdcscrn.c b/lib/PDCursesMod/ansi/pdcscrn.c
-index 9afccf814d..9fbe51ce75 100644
+index 9afccf814d..1727b57c6c 100644
 --- a/lib/PDCursesMod/ansi/pdcscrn.c
 +++ b/lib/PDCursesMod/ansi/pdcscrn.c
 @@ -1,4 +1,8 @@
@@ -31600,7 +31600,7 @@ index 9afccf814d..9fbe51ce75 100644
  #ifdef USING_COMBINING_CHARACTER_SCHEME
  int PDC_expand_combined_characters( const cchar_t c, cchar_t *added);
  #endif
-@@ -26,6 +38,198 @@ const int STDIN = 0;
+@@ -26,6 +38,203 @@ const int STDIN = 0;
  chtype PDC_capabilities = 0;
  static mmask_t _stored_trap_mbe;
  
@@ -31770,7 +31770,7 @@ index 9afccf814d..9fbe51ce75 100644
 +
 +	// No data queried
 +	if (srows == -1 && vrows == -1) {
-+		return;
++		goto out;
 +	}
 +
 +#if CONFIG_PDCURSES_PREFER_VIDCONSOLE
@@ -31778,18 +31778,23 @@ index 9afccf814d..9fbe51ce75 100644
 +		rows = vrows;
 +		cols = vcols;
 +	}
-+	else {
++	else if (srows > 0 && scols > 0) {
 +		rows = srows;
 +		cols = scols;
 +	}
 +#else
 +	// Take the smaller value, only if not -1
-+	if (srows > 0 && vrows > srows) { rows = srows; }
-+	else                            { rows = vrows; }
-+	if (scols > 0 && vcols > scols) { cols = scols; }
-+	else                            { cols = vcols; }
++	if (vrows > 0) {
++		if (srows > 0 && vrows > srows) { rows = srows; }
++		else                            { rows = vrows; }
++	}
++	if (vcols > 0) {
++		if (scols > 0 && vcols > scols) { cols = scols; }
++		else                            { cols = vcols; }
++	}
 +#endif
 +
++out:
 +	PDC_cols = cols;
 +	PDC_rows = rows;
 +}
@@ -31799,7 +31804,7 @@ index 9afccf814d..9fbe51ce75 100644
  /* COLOR_PAIR to attribute encoding table. */
  
  void PDC_reset_prog_mode( void)
-@@ -136,20 +340,22 @@ int PDC_scr_open(void)
+@@ -136,20 +345,22 @@ int PDC_scr_open(void)
      struct sigaction sa;
  #endif
  
@@ -31824,7 +31829,7 @@ index 9afccf814d..9fbe51ce75 100644
          return( -1);
      }
      sigwinchHandler( 0);
-@@ -157,16 +363,20 @@ int PDC_scr_open(void)
+@@ -157,16 +368,20 @@ int PDC_scr_open(void)
      sa.sa_handler = sigintHandler;
      if (sigaction(SIGINT, &sa, NULL) == -1)
      {
@@ -31846,7 +31851,7 @@ index 9afccf814d..9fbe51ce75 100644
      }
  #endif
      SP->mouse_wait = PDC_CLICK_PERIOD;
-@@ -194,16 +404,16 @@ int PDC_scr_open(void)
+@@ -194,16 +409,16 @@ int PDC_scr_open(void)
      if (SP->lines < 2 || SP->lines > MAX_LINES
         || SP->cols < 2 || SP->cols > MAX_COLUMNS)
      {
