@@ -84,6 +84,7 @@ stdenv.mkDerivation ({
     # Misc patches, not upstreamable as-is
     ./patches/0001-bootmenu-improvements.patch
     ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
+    ./patches/0001-autoboot-Prevent-C-from-affecting-menucmd.patch
     ./patches/0001-splash-improvements.patch
     ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
 
