@@ -51,7 +51,7 @@ index 0000000000..03e0d4e927
 +#endif
 +
 +#ifdef CONFIG_CMD_USB
-+#define TOW_BOOT_MAYBE_USB "tb_menu add 'Rescan USB' 'Powers off the device' \"usb reset; $menucmd\";"
++#define TOW_BOOT_MAYBE_USB "tb_menu add 'Rescan USB' 'Look for new USB devices' \"usb reset; $menucmd\";"
 +#else
 +#define TOW_BOOT_MAYBE_USB
 +#endif
