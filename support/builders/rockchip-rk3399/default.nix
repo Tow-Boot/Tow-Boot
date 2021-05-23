@@ -85,10 +85,7 @@ let
     ] ++ patches;
   } // removeAttrs args [ "postPatch" "postInstall" "extraConfig" "patches" ]);
 in
-runCommandNoCC firmware.name { } ''
-  mkdir -p "$out"
-  cp -rvt $out/ ${firmware}/.config
-  cp -rvt $out/ ${firmware}/*
+firmware.mkOutput ''
   cp -rv ${baseImage}/*.img $out/disk-image.img
   cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
 ''
