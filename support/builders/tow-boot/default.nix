@@ -255,6 +255,10 @@ let
       maintainers = with maintainers; [ samueldr ];
     } // meta;
 
+    passthru = {
+      inherit patchset;
+    };
+
   } // removeAttrs args [
     "extraConfig"
     "makeFlags"
@@ -262,5 +266,16 @@ let
     "nativeBuildInputs"
     "patches"
   ]);
+
+  patchset = runCommandNoCC "patches-for-${tow-boot.name}" { } ''
+    (PS4=" $ "; set -x
+    mkdir -p $out
+    cd $out
+    ${lib.concatMapStringsSep "\n" (p: "cp ${p} ./${baseNameOf (toString p)}") tow-boot.patches}
+    cat <<EOF > series
+    ${lib.concatMapStringsSep "\n" (p: "${baseNameOf (toString p)}") tow-boot.patches}
+    EOF
+    )
+  '';
 in
   tow-boot
