@@ -107,10 +107,14 @@ in
   raspberryPi-aarch64 = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {} ''
     mkdir -p $out
     (cd $out
+      cp -rv ${raspberryPi-3.patchset} tow-boot-rpi3-patches
       cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
       cp -v ${raspberryPi-3}/.config .config.tow-boot-rpi3.bin
+
+      cp -rv ${raspberryPi-4.patchset} tow-boot-rpi4-patches
       cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
       cp -v ${raspberryPi-4}/.config .config.tow-boot-rpi4.bin
+
       cp -v ${baseImage}/*.img $out/disk-image.img
     )
   '';
