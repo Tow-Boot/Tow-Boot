@@ -1,7 +1,7 @@
 { buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
 
 # For Rockchip RK3399 based hardware
-{ defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", ... } @ args:
+{ defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], ... } @ args:
 
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
@@ -79,7 +79,11 @@ let
       CONFIG_SYS_SPI_U_BOOT_OFFS=0x80000 # 512K
       CONFIG_SPL_DM_SEQ_ALIAS=y
     '' + extraConfig;
-  } // removeAttrs args [ "postPatch" "postInstall" "extraConfig" ]);
+
+    patches = [
+      ./0001-HACK-efi_runtime-pretend-we-can-t-reset.patch
+    ] ++ patches;
+  } // removeAttrs args [ "postPatch" "postInstall" "extraConfig" "patches" ]);
 in
 runCommandNoCC firmware.name { } ''
   mkdir -p "$out"
