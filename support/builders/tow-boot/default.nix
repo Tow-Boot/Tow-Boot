@@ -256,7 +256,7 @@ let
     } // meta;
 
     passthru = {
-      inherit patchset;
+      inherit mkOutput patchset;
     };
 
   } // removeAttrs args [
@@ -266,6 +266,16 @@ let
     "nativeBuildInputs"
     "patches"
   ]);
+
+  mkOutput = commands: runCommandNoCC tow-boot.name { } ''
+    (PS4=" $ "; set -x
+    mkdir -p "$out"
+    cp -rv ${tow-boot.patchset} $out/patches
+    cp -rvt $out/ ${tow-boot}/.config
+    cp -rvt $out/ ${tow-boot}/*
+    ${commands}
+    )
+  '';
 
   patchset = runCommandNoCC "patches-for-${tow-boot.name}" { } ''
     (PS4=" $ "; set -x
