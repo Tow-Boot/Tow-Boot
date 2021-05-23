@@ -113,9 +113,6 @@ let
     meta.platforms = ["aarch64-linux"];
   };
 in
-runCommandNoCC firmware.name {} ''
-  mkdir -p "$out"
-  cp -rvt $out/ ${firmware}/.config
-  cp -rvt $out/ ${firmware}/*
+firmware.mkOutput ''
   cp -rv ${baseImage}/*.img $out/disk-image.img
 ''
