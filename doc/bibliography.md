@@ -24,7 +24,19 @@ contains support for early boot firmware (U-Boot) for diverse SBCs.
  - [Slides](https://archive.fosdem.org/2019/schedule/event/one_image_to_rule_them_all/attachments/slides/3342/export/events/attachments/one_image_to_rule_them_all/slides/3342/simage.pdf)
 
 
-UEFI
-----
+* * *
+
+In-depth
+--------
+
+These are more in-depth, but can still present a useful overview.
+
+### UEFI
 
  * https://uefi.org/specifications
+
+
+### ARM
+
+ - [Privilege and Exception levels](https://developer.arm.com/documentation/102412/0100/Privilege-and-Exception-levels)
+ - [(TF-A) Firmware Design](https://github.com/ARM-software/arm-trusted-firmware/blob/master/docs/design/firmware-design.rst)
