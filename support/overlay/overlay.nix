@@ -63,6 +63,8 @@ in
 
     gxlimg = callPackage ./gxlimg { };
 
+    meson64-tools = callPackage ./meson64-tools { };
+
     mkScript = file: final.runCommandNoCC "out.scr" {
       nativeBuildInputs = [
         final.buildPackages.ubootTools
