@@ -83,7 +83,7 @@ in
     };
 
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
-      gxlimg = final.Tow-Boot.gxlimg;
+      inherit (final.Tow-Boot) gxlimg;
     };
 
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
