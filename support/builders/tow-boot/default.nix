@@ -36,6 +36,7 @@
   , filesToInstall ? []
   , defconfig
   , patches ? []
+  , postPatch ? ""
   , nativeBuildInputs ? []
   , meta ? {}
 
@@ -104,7 +105,7 @@ let
     postPatch = ''
       patchShebangs tools
       patchShebangs arch/arm/mach-rockchip
-    '';
+    '' + postPatch;
 
     nativeBuildInputs = [
       bc
@@ -265,6 +266,7 @@ let
     "meta"
     "nativeBuildInputs"
     "patches"
+    "postPatch"
   ]);
 
   mkOutput = commands: runCommandNoCC tow-boot.name { } ''
