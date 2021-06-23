@@ -41,9 +41,12 @@
   , meta ? {}
   , passthru ? {}
 
-  # "noenv" for now.
+  # Either "spi" or "noenv" for now.
   # The variant for environment storage.
   , variant ? null
+
+  , SPISize ? null
+
   # The platform-specific builder needs to copy binary files
   # to the `binaries` folder, using `Tow-Boot.$variant.bin` for the name.
   , installPhase ? null
@@ -55,8 +58,8 @@
   , ...
 } @ args:
 
-if variant != "noenv" then
-  builtins.throw ''A Tow-Boot build requires `variant` to be "noenv".''
+if variant != "spi" && variant != "noenv" then
+  builtins.throw ''A Tow-Boot build requires `variant` to be either "spi" or "noenv".''
 else
 
 if installPhase == null then
@@ -85,6 +88,12 @@ let
     cp ${../../../assets/splash.bmp} $out/logo.bmp
     (cd $out; gzip -9 -k logo.bmp)
   '';
+
+  # Not actually configurable. This is a constant in Tow-Boot.
+  # Changing this will require handling the migration to a larger size.
+  envSizeInKiB = 128;
+  envSize = envSizeInKiB * 1024;
+  envSPIOffset = SPISize - envSize;
 
   tow-boot = stdenv.mkDerivation ({
     pname = "tow-boot-${defconfig}-${variant}";
@@ -217,6 +226,7 @@ let
       # Environment
       # -----------
       
+      CONFIG_ENV_SIZE=0x${lib.toHexString envSize}
       ${
       if variant == "noenv" then ''
         # CONFIG_TPL_ENV_SUPPORT is not set
@@ -235,6 +245,28 @@ let
         # CONFIG_ENV_IS_IN_REMOTE is not set
         # CONFIG_ENV_IS_IN_SPI_FLASH is not set
         # CONFIG_ENV_IS_IN_UBI is not set
+      ''
+      else if variant == "spi" then ''
+        # CONFIG_TPL_ENV_SUPPORT is not set
+        # CONFIG_SPL_ENV_SUPPORT is not set
+        # CONFIG_ENV_IS_NOWHERE is not set
+        # CONFIG_ENV_IS_IN_EEPROM is not set
+        # CONFIG_ENV_IS_IN_FAT is not set
+        # CONFIG_ENV_IS_IN_EXT4 is not set
+        # CONFIG_ENV_IS_IN_FLASH is not set
+        # CONFIG_ENV_IS_IN_MMC is not set
+        # CONFIG_ENV_IS_IN_NAND is not set
+        # CONFIG_ENV_IS_IN_NVRAM is not set
+        # CONFIG_ENV_IS_IN_ONENAND is not set
+        # CONFIG_ENV_IS_IN_REMOTE is not set
+        CONFIG_ENV_IS_IN_SPI_FLASH=y
+        # CONFIG_ENV_IS_IN_UBI is not set
+        CONFIG_ENV_SECT_SIZE=0x2000
+
+        # Not the actual address
+        CONFIG_ENV_ADDR=0x0
+        # The actual address
+        CONFIG_ENV_OFFSET=0x${lib.toHexString envSPIOffset}
       ''
       else
         (builtins.throw "variant is invalid")
