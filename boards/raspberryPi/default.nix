@@ -15,8 +15,11 @@ let
   ;
 
   build = args: aarch64.buildTowBoot ({
+    variant = "noenv";
     meta.platforms = ["aarch64-linux"];
-    filesToInstall = ["u-boot.bin"];
+    installPhase = ''
+      cp -v u-boot.bin $out/binaries/Tow-Boot.$variant.bin
+    '';
     patches = [
       ./0001-configs-rpi-allow-for-bigger-kernels.patch
     ];
@@ -31,10 +34,10 @@ let
 
   config = writeText "config.txt" ''
     [pi3]
-    kernel=tow-boot-rpi3.bin
+    kernel=Tow-Boot.noenv.rpi3.bin
 
     [pi4]
-    kernel=tow-boot-rpi4.bin
+    kernel=Tow-Boot.noenv.rpi4.bin
     enable_gic=1
     armstub=armstub8-gic.bin
     disable_overscan=1
@@ -85,8 +88,8 @@ let
     inherit partitionUUID partitionType;
     populateCommands = ''
       cp -v ${config} config.txt
-      cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
-      cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
+      cp -v ${raspberryPi-3}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi3.bin
+      cp -v ${raspberryPi-4}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi4.bin
       cp -v ${raspberrypi-armstubs}/armstub8-gic.bin armstub8-gic.bin
       (
         target="$PWD"
@@ -105,17 +108,19 @@ in
   # -------------
   #
   raspberryPi-aarch64 = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {} ''
-    mkdir -p $out
+    mkdir -p $out/binaries
+    mkdir -p $out/config
+
     (cd $out
       cp -rv ${raspberryPi-3.patchset} tow-boot-rpi3-patches
-      cp -v ${raspberryPi-3}/u-boot.bin tow-boot-rpi3.bin
-      cp -v ${raspberryPi-3}/.config .config.tow-boot-rpi3.bin
+      cp -v ${raspberryPi-3}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
+      cp -v ${raspberryPi-3}/config/noenv.config config/noenv.rpi3.config
 
       cp -rv ${raspberryPi-4.patchset} tow-boot-rpi4-patches
-      cp -v ${raspberryPi-4}/u-boot.bin tow-boot-rpi4.bin
-      cp -v ${raspberryPi-4}/.config .config.tow-boot-rpi4.bin
+      cp -v ${raspberryPi-4}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
+      cp -v ${raspberryPi-4}/config/noenv.config config/noenv.rpi4.config
 
-      cp -v ${baseImage}/*.img $out/disk-image.img
+      cp -v ${baseImage}/*.img $out/shared.disk-image.img
     )
   '';
 }
