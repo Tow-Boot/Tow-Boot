@@ -12,7 +12,7 @@ let
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize; # in bytes
-    firmwareFile = "${firmware}/u-boot-sunxi-with-spl.bin";
+    firmwareFile = "${firmware}/binaries/Tow-Boot.noenv.bin";
   };
 
   baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
@@ -29,19 +29,29 @@ let
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
       inherit defconfig;
-      firmware = "${firmware}/u-boot-sunxi-with-spl.bin";
+      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
     })
   ];
 
-  firmware = buildTowBoot ({
+  firmware' = variant: buildTowBoot ({
     withPoweroff = false; # At least on H3
     meta.platforms = ["armv7l-linux"];
-    filesToInstall = ["u-boot-sunxi-with-spl.bin"];
+    installPhase = ''
+      cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
+    '';
+    inherit variant;
   } // args);
+
+  firmware = firmware' "noenv";
+  firmwareSPI = firmware' "spi";
 in
 firmware.mkOutput ''
-  cp -rv ${baseImage}/*.img $out/disk-image.img
+  cp --no-preserve=mode -rvt $out/ ${firmware}/*
   ${lib.optionalString withSPI ''
-  cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
+    cp --no-preserve=mode -rvt $out/ ${firmwareSPI}/*
+  ''}
+  cp -rv ${baseImage}/*.img $out/shared.disk-image.img
+  ${lib.optionalString withSPI ''
+  cp -rv ${spiInstallerImage}/*.img $out/spi.installer.img
   ''}
 ''
