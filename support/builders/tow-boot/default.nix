@@ -39,6 +39,7 @@
   , postPatch ? ""
   , nativeBuildInputs ? []
   , meta ? {}
+  , passthru ? {}
 
   # The following options should only be disabled when it breaks a build.
   , withLogo ? true
@@ -269,8 +270,11 @@ let
       maintainers = with maintainers; [ samueldr ];
     } // meta;
 
-    passthru = {
-      inherit mkOutput patchset;
+    passthru = passthru // {
+      inherit
+        mkOutput
+        patchset
+      ;
     };
 
   } // removeAttrs args [
@@ -280,6 +284,7 @@ let
     "nativeBuildInputs"
     "patches"
     "postPatch"
+    "passthru"
   ]);
 
   mkOutput = commands: runCommandNoCC tow-boot.name { } ''
