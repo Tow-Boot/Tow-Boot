@@ -41,12 +41,24 @@
   , meta ? {}
   , passthru ? {}
 
+  # The platform-specific builder needs to copy binary files
+  # to the `binaries` folder, using `Tow-Boot.bin` for the name.
+  , installPhase ? null
+
   # The following options should only be disabled when it breaks a build.
   , withLogo ? true
   , withTTF ? false # Too many issues for the time being...
   , withPoweroff ? true
   , ...
 } @ args:
+
+if installPhase == null then
+  builtins.throw "A Tow-Boot build requires `installPhase` to be implemented."
+else
+
+if filesToInstall != [] then
+  builtins.throw "filesToInstall shouldn't be used anymore for Tow-Boot."
+else
 
 let
   uBootVersion = "2021.04";
@@ -252,10 +264,10 @@ let
     installPhase = ''
       runHook preInstall
       mkdir -p $out
-      cp .config $out
-      ${lib.optionalString (builtins.length filesToInstall > 0) ''
-      cp ${lib.concatStringsSep " " filesToInstall} $out
-      ''}
+      mkdir -p $out/config
+      cp .config $out/config/.config
+      mkdir -p $out/binaries
+      ${installPhase}
       runHook postInstall
     '';
 
@@ -284,6 +296,7 @@ let
     "nativeBuildInputs"
     "patches"
     "postPatch"
+    "installPhase"
     "passthru"
   ]);
 
@@ -291,8 +304,6 @@ let
     (PS4=" $ "; set -x
     mkdir -p "$out"
     cp -rv ${tow-boot.patchset} $out/patches
-    cp -rvt $out/ ${tow-boot}/.config
-    cp -rvt $out/ ${tow-boot}/*
     ${commands}
     )
   '';
