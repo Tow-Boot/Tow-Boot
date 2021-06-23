@@ -41,8 +41,11 @@
   , meta ? {}
   , passthru ? {}
 
+  # "noenv" for now.
+  # The variant for environment storage.
+  , variant ? null
   # The platform-specific builder needs to copy binary files
-  # to the `binaries` folder, using `Tow-Boot.bin` for the name.
+  # to the `binaries` folder, using `Tow-Boot.$variant.bin` for the name.
   , installPhase ? null
 
   # The following options should only be disabled when it breaks a build.
@@ -51,6 +54,10 @@
   , withPoweroff ? true
   , ...
 } @ args:
+
+if variant != "noenv" then
+  builtins.throw ''A Tow-Boot build requires `variant` to be "noenv".''
+else
 
 if installPhase == null then
   builtins.throw "A Tow-Boot build requires `installPhase` to be implemented."
@@ -80,7 +87,8 @@ let
   '';
 
   tow-boot = stdenv.mkDerivation ({
-    pname = "tow-boot-${defconfig}";
+    pname = "tow-boot-${defconfig}-${variant}";
+    inherit variant;
 
     version = "${uBootVersion}-${towBootIdentifier}";
 
@@ -170,7 +178,7 @@ let
       # Identity
       # --------
 
-      CONFIG_IDENT_STRING="${towBootIdentifier}"
+      CONFIG_IDENT_STRING="${towBootIdentifier} [variant: ${variant}]"
 
       # Behaviour
       # ---------
@@ -205,6 +213,32 @@ let
       ${lib.optionalString withPoweroff ''
       CONFIG_CMD_POWEROFF=y
       ''}
+
+      # Environment
+      # -----------
+      
+      ${
+      if variant == "noenv" then ''
+        # CONFIG_TPL_ENV_SUPPORT is not set
+        # CONFIG_SPL_ENV_SUPPORT is not set
+        CONFIG_ENV_IS_NOWHERE=y
+        CONFIG_TPL_ENV_IS_NOWHERE=y
+        CONFIG_SPL_ENV_IS_NOWHERE=y
+        # CONFIG_ENV_IS_IN_EEPROM is not set
+        # CONFIG_ENV_IS_IN_FAT is not set
+        # CONFIG_ENV_IS_IN_EXT4 is not set
+        # CONFIG_ENV_IS_IN_FLASH is not set
+        # CONFIG_ENV_IS_IN_MMC is not set
+        # CONFIG_ENV_IS_IN_NAND is not set
+        # CONFIG_ENV_IS_IN_NVRAM is not set
+        # CONFIG_ENV_IS_IN_ONENAND is not set
+        # CONFIG_ENV_IS_IN_REMOTE is not set
+        # CONFIG_ENV_IS_IN_SPI_FLASH is not set
+        # CONFIG_ENV_IS_IN_UBI is not set
+      ''
+      else
+        (builtins.throw "variant is invalid")
+      }
 
       # Looks
       # -----
@@ -265,7 +299,7 @@ let
       runHook preInstall
       mkdir -p $out
       mkdir -p $out/config
-      cp .config $out/config/.config
+      cp .config $out/config/$variant.config
       mkdir -p $out/binaries
       ${installPhase}
       runHook postInstall
@@ -286,6 +320,7 @@ let
       inherit
         mkOutput
         patchset
+        variant
       ;
     };
 
