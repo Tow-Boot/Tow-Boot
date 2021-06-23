@@ -24,6 +24,7 @@ in
     defconfig = "libretech-ac_defconfig";
     FIPDIR = "${amlogicFirmware}/lafrite";
     withSPI = true;
+    SPISize = 128 /* Mbits */ * 1024 * 1024 / 8; # equiv to 16 MiB
   };
   libreComputer-rocRk3399Pc = rocRk3399Pc {
     defconfig = "roc-pc-rk3399_defconfig";
