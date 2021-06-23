@@ -12,6 +12,7 @@ let
 in
 rockchipRK399 {
   defconfig = "pinebook-pro-rk3399_defconfig";
+  SPISize = 16 * 1024 * 1024; # 16 MiB
   postPatch =
     let
       setup_leds = "led green:power on; led red:standby on";
