@@ -16,6 +16,7 @@ let
       substituteInPlace include/tow-boot_env.h \
         --replace 'setup_leds=echo\0' 'setup_leds=${setup_leds}\0'
     '';
+    SPISize = 128 /* Mbits */ * 1024 * 1024 / 8; # equiv to 16 MiB
   };
 in
 {
