@@ -30,8 +30,14 @@ let
     withTTF = false;
   } // args);
 
-  raspberryPi-3 = build { defconfig = "rpi_3_defconfig"; };
-  raspberryPi-4 = build { defconfig = "rpi_4_defconfig"; };
+  raspberryPi-3 = build {
+    boardIdentifier = "raspberryPi-3";
+    defconfig = "rpi_3_defconfig";
+  };
+  raspberryPi-4 = build {
+    boardIdentifier = "raspberryPi-4";
+    defconfig = "rpi_4_defconfig";
+  };
 
   config = writeText "config.txt" ''
     [pi3]
