@@ -1,7 +1,7 @@
 { lib, buildTowBoot, imageBuilder, runCommandNoCC, spiInstallerPartitionBuilder }:
 
 # For armv7 Allwinner boards
-{ defconfig, withSPI ? false, ... } @ args:
+{ withSPI ? false, ... } @ args:
 
 let
   sectorSize = 512;
@@ -28,8 +28,7 @@ let
   baseImage = baseImage' [];
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
-      inherit defconfig;
-      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
+      firmware = firmwareSPI;
     })
   ];
 
