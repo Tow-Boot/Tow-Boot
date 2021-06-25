@@ -34,6 +34,7 @@
   , makeFlags ? []
 
   , filesToInstall ? []
+  , boardIdentifier
   , defconfig
   , patches ? []
   , postPatch ? ""
@@ -149,6 +150,9 @@ let
         )
       done
       )
+
+      substituteInPlace include/tow-boot_env.h \
+        --replace "@boardIdentifier@" "${boardIdentifier}"
     '' + postPatch;
 
     nativeBuildInputs = [
