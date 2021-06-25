@@ -222,6 +222,7 @@ let
       # Additional commands
       CONFIG_CMD_BDI=y
       CONFIG_CMD_CLS=y
+      CONFIG_CMD_SETEXPR=y
 
       ${lib.optionalString withPoweroff ''
       CONFIG_CMD_POWEROFF=y
