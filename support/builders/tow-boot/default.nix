@@ -357,6 +357,7 @@ let
         mkOutput
         patchset
         variant
+        SPISize
       ;
     };
 
