@@ -13,6 +13,7 @@ in
   # Sandbox
 
   uBoot-sandbox = buildTowBoot {
+    boardIdentifier = "uBoot-sandbox";
     defconfig = "sandbox_defconfig";
     buildInputs = with nixpkgs; [
       SDL2
@@ -36,6 +37,7 @@ in
   # Virtualization targets
 
   uBoot-qemuArm = armv7l.buildTowBoot {
+    boardIdentifier = "uBoot-qemuArm";
     defconfig = "qemu_arm_defconfig";
     meta.platforms = ["armv7l-linux"];
     internal = true;
@@ -46,6 +48,7 @@ in
   };
 
   uBoot-qemuArm64 = aarch64.buildTowBoot {
+    boardIdentifier = "uBoot-qemuArm64";
     defconfig = "qemu_arm64_defconfig";
     meta.platforms = ["aarch64-linux"];
     internal = true;
@@ -56,6 +59,7 @@ in
   };
 
   uBoot-qemuX86 = i686.buildTowBoot {
+    boardIdentifier = "uBoot-qemuX86";
     defconfig = "qemu-x86_defconfig";
     meta.platforms = ["i686-linux"];
     withPoweroff = false;
@@ -67,6 +71,7 @@ in
   };
 
   uBoot-qemuX86_64 = x86_64.buildTowBoot {
+    boardIdentifier = "uBoot-qemuX86_64";
     defconfig = "qemu-x86_64_defconfig";
     meta.platforms = ["x86_64-linux"];
 
@@ -90,6 +95,7 @@ in
   # EFI payloads
 
   uBoot-efiX86 = i686.buildTowBoot {
+    boardIdentifier = "uBoot-efiX86";
     defconfig = "efi-x86_payload32_defconfig";
     meta.platforms = ["i686-linux"];
     withPoweroff = false;
@@ -101,6 +107,7 @@ in
   };
 
   uBoot-efiX86_64 = x86_64.buildTowBoot {
+    boardIdentifier = "uBoot-efiX86_64";
     defconfig = "efi-x86_payload64_defconfig";
     meta.platforms = ["x86_64-linux"];
     withPoweroff = false;
