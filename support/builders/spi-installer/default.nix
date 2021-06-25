@@ -1,42 +1,64 @@
-{ writeText, imageBuilder, mkScript }:
+{ lib, writeText, imageBuilder, mkScript }:
 
-{ defconfig
+{ firmware # Firmware derivation
 , flashOffset ? 0
-, firmware # Path to the firmware
 }:
 
 let
-  flashscript = writeText "${defconfig}-flash.cmd" ''
+  inherit (firmware)
+    boardIdentifier
+  ;
+
+  flashscript = writeText "${boardIdentifier}-flash.cmd" ''
     echo
     echo
     echo Firmware installer
     echo
     echo
 
-    echo "devtype = $devtype"
-    echo "devnum = $devnum"
-    part list $devtype $devnum -bootable bootpart
-    echo "bootpart = $bootpart"
-    echo ""
-    echo ":: Starting flash operation"
-    echo ""
-    if load $devtype $devnum:$bootpart $kernel_addr_r firmware.spiflash.bin; then
-      sf probe
-      sf erase ${toString flashOffset} +$filesize
-      sf write $kernel_addr_r ${toString flashOffset} $filesize
-      echo "Flashing seems to have been successful!"
-
-      if pause 'Press any key to reboot...'; then
+    if test $board_identifier != "${boardIdentifier}"; then
+      echo ""
+      echo " ********* "
+      echo " * ERROR * "
+      echo " ********* "
+      echo ""
+      echo "This is the installer for: [${boardIdentifier}]"
+      echo "The board detected is:     "[$board_identifier]
+      echo ""
+      if pause 'Press any key to go back to the menu...'; then
         echo -n
       else
-        echo "Resetting in 5 seconds"
-        sleep 5
+        echo ""
+        echo "* * * Returning to the menu in 10 seconds"
+        echo ""
+        sleep 10
       fi
-      reset
+    else
+      echo "devtype = $devtype"
+      echo "devnum = $devnum"
+      part list $devtype $devnum -bootable bootpart
+      echo "bootpart = $bootpart"
+      echo ""
+      echo ":: Starting flash operation"
+      echo ""
+      if load $devtype $devnum:$bootpart $kernel_addr_r firmware.spiflash.bin; then
+        sf probe
+        sf erase ${toString flashOffset} +$filesize
+        sf write $kernel_addr_r ${toString flashOffset} $filesize
+        echo "Flashing seems to have been successful!"
+
+        if pause 'Press any key to reboot...'; then
+          echo -n
+        else
+          echo "Resetting in 5 seconds"
+          sleep 5
+        fi
+        reset
+      fi
     fi
   '';
 
-  bootcmd = writeText "${defconfig}-boot.cmd" ''
+  bootcmd = writeText "${boardIdentifier}-boot.cmd" ''
     echo
     echo "Tow-Boot SPI installer script"
     echo
@@ -87,7 +109,7 @@ let
     populateCommands = ''
       cp -v ${mkScript bootcmd} ./boot.scr
       cp -v ${mkScript flashscript} ./flash.scr
-      cp -v ${firmware} ./firmware.spiflash.bin
+      cp -v ${firmwareFile} ./Tow-Boot.spi.bin
     '';
   };
 in
