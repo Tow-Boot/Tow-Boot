@@ -7,9 +7,29 @@
 let
   inherit (firmware)
     boardIdentifier
+    SPISize
   ;
+  firmwareFile = "${firmware}/binaries/Tow-Boot.spi.bin";
 
-  flashscript = writeText "${boardIdentifier}-flash.cmd" ''
+  flashscript = let
+    error = messages: ''
+      echo ""
+      echo " ********* "
+      echo " * ERROR * "
+      echo " ********* "
+      echo ""
+      ${messages}
+      echo ""
+      if pause 'Press any key to go back to the menu...'; then
+        echo -n
+      else
+        echo ""
+        echo "* * * Returning to the menu in 60 seconds"
+        echo ""
+        sleep 60
+      fi
+    '';
+  in writeText "${boardIdentifier}-flash.cmd" ''
     echo
     echo
     echo Firmware installer
@@ -17,22 +37,10 @@ let
     echo
 
     if test $board_identifier != "${boardIdentifier}"; then
-      echo ""
-      echo " ********* "
-      echo " * ERROR * "
-      echo " ********* "
-      echo ""
+      ${error ''
       echo "This is the installer for: [${boardIdentifier}]"
       echo "The board detected is:     "[$board_identifier]
-      echo ""
-      if pause 'Press any key to go back to the menu...'; then
-        echo -n
-      else
-        echo ""
-        echo "* * * Returning to the menu in 10 seconds"
-        echo ""
-        sleep 10
-      fi
+      ''}
     else
       echo "devtype = $devtype"
       echo "devnum = $devnum"
@@ -41,19 +49,59 @@ let
       echo ""
       echo ":: Starting flash operation"
       echo ""
-      if load $devtype $devnum:$bootpart $kernel_addr_r firmware.spiflash.bin; then
-        sf probe
-        sf erase ${toString flashOffset} +$filesize
-        sf write $kernel_addr_r ${toString flashOffset} $filesize
-        echo "Flashing seems to have been successful!"
 
-        if pause 'Press any key to reboot...'; then
-          echo -n
+      echo "-> Initializing SPI Flash subsystem..."
+      if sf probe; then
+
+        echo ""
+        echo "-> Reading Flash content..."
+        if sf read $ramdisk_addr_r 0 0x${lib.toHexString SPISize}; then
+
+          echo ""
+          echo "-> Reading new firmware from storage..."
+          if load $devtype $devnum:$bootpart $kernel_addr_r Tow-Boot.spi.bin; then
+
+            echo ""
+            echo "-> Writing new firmware to SPI Flash..."
+
+            if sf update $kernel_addr_r ${toString flashOffset} $filesize; then
+              echo ""
+              echo "✅ Flashing seems to have been successful!"
+              echo ""
+              if pause 'Press any key to reboot...'; then
+                echo -n
+              else
+                echo "Resetting in 5 seconds"
+                sleep 5
+              fi
+              reset
+
+            else
+              ${error ''
+              echo "❌ Error flashing new firmware to SPI Flash."
+              echo "   Rebooting now may fail."
+              ''}
+            fi
+
+          else
+            ${error ''
+            echo "⚠️ Error reading new firmware from storage."
+            echo "  Rebooting should be safe, nothing was done."
+            ''}
+          fi
+
         else
-          echo "Resetting in 5 seconds"
-          sleep 5
+          ${error ''
+          echo "⚠️ Error reading current firmware."
+          echo "  Rebooting should be safe, nothing was done."
+          ''}
         fi
-        reset
+
+      else
+        ${error ''
+        echo "⚠️ Running `sf probe` failed unexpectedly."
+        echo "  Rebooting should be safe, nothing was done."
+        ''}
       fi
     fi
   '';
