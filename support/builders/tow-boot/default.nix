@@ -34,6 +34,7 @@
   , makeFlags ? []
 
   , filesToInstall ? []
+  , boardIdentifier
   , defconfig
   , patches ? []
   , postPatch ? ""
@@ -149,6 +150,9 @@ let
         )
       done
       )
+
+      substituteInPlace include/tow-boot_env.h \
+        --replace "@boardIdentifier@" "${boardIdentifier}"
     '' + postPatch;
 
     nativeBuildInputs = [
@@ -218,6 +222,7 @@ let
       # Additional commands
       CONFIG_CMD_BDI=y
       CONFIG_CMD_CLS=y
+      CONFIG_CMD_SETEXPR=y
 
       ${lib.optionalString withPoweroff ''
       CONFIG_CMD_POWEROFF=y
@@ -353,6 +358,7 @@ let
         mkOutput
         patchset
         variant
+        SPISize
       ;
     };
 

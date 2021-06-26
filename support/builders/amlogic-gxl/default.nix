@@ -1,7 +1,7 @@
 { lib, buildTowBoot, gxlimg, imageBuilder, runCommandNoCC, spiInstallerPartitionBuilder }:
 
 # Recognizable by the use of `aml_encrypt_gxl`
-{ defconfig, FIPDIR, postPatch ? "", postInstall ? "", withSPI ? false, ... } @ args:
+{ FIPDIR, postPatch ? "", postInstall ? "", withSPI ? false, ... } @ args:
 
 let
   partitionOffset = 1;
@@ -31,8 +31,7 @@ let
   baseImage = baseImage' [];
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
-      inherit defconfig;
-      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
+      firmware = firmwareSPI;
     })
   ];
 

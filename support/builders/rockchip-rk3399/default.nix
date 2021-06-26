@@ -1,7 +1,7 @@
 { lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
 
 # For Rockchip RK3399 based hardware
-{ defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], withSPI ? true, ... } @ args:
+{ postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], withSPI ? true, ... } @ args:
 
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
@@ -29,8 +29,7 @@ let
   baseImage = baseImage' [];
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
-      inherit defconfig;
-      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
+      firmware = firmwareSPI;
     })
   ];
 
@@ -40,7 +39,6 @@ let
     # Does not actually turn off tested boards...
     withPoweroff = false;
 
-    inherit defconfig;
     inherit
       sectorSize
       partitionOffset

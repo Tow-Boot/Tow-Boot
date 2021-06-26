@@ -3,6 +3,9 @@
 let
   # Re-used for two boards.
   rocRk3399Pc = { defconfig }: rockchipRK399 {
+    # Switching between board with and without mezzanine is permitted.
+    # It is the same board, with a different accessory.
+    boardIdentifier = "libreComputer-rocRk3399Pc";
     inherit defconfig;
     patches = [
       ./0001-rk3399-roc-pc-Configure-SPI-flash-boot-offset.patch
@@ -21,6 +24,7 @@ let
 in
 {
   libreComputer-amlS805xAc = amlogicGXL {
+    boardIdentifier = "libreComputer-amlS805xAc";
     defconfig = "libretech-ac_defconfig";
     FIPDIR = "${amlogicFirmware}/lafrite";
     withSPI = true;

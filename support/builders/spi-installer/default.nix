@@ -1,48 +1,161 @@
-{ writeText, imageBuilder, mkScript }:
+{ lib, writeText, imageBuilder, mkScript }:
 
-{ defconfig
-, flashOffset ? 0
-, firmware # Path to the firmware
+{ firmware # Firmware derivation
 }:
 
 let
-  flashscript = writeText "${defconfig}-flash.cmd" ''
+  inherit (firmware)
+    boardIdentifier
+    SPISize
+  ;
+  firmwareFile = "${firmware}/binaries/Tow-Boot.spi.bin";
+
+  flashscript = let
+    error = messages: ''
+      echo ""
+      echo " ********* "
+      echo " * ERROR * "
+      echo " ********* "
+      echo ""
+      ${messages}
+      echo ""
+      if pause 'Press any key to go back to the menu...'; then
+        echo -n
+      else
+        echo ""
+        echo "* * * Returning to the menu in 60 seconds"
+        echo ""
+        sleep 60
+      fi
+    '';
+  in writeText "${boardIdentifier}-flash.cmd" ''
     echo
     echo
     echo Firmware installer
     echo
     echo
 
-    echo "devtype = $devtype"
-    echo "devnum = $devnum"
-    part list $devtype $devnum -bootable bootpart
-    echo "bootpart = $bootpart"
-    echo ""
-    echo ":: Starting flash operation"
-    echo ""
-    if load $devtype $devnum:$bootpart $kernel_addr_r firmware.spiflash.bin; then
-      sf probe
-      sf erase ${toString flashOffset} +$filesize
-      sf write $kernel_addr_r ${toString flashOffset} $filesize
-      echo "Flashing seems to have been successful!"
+    if test $board_identifier != "${boardIdentifier}"; then
+      ${error ''
+      echo "This is the installer for: [${boardIdentifier}]"
+      echo "The board detected is:     "[$board_identifier]
+      ''}
+    else
+      # Some variables we will be using
+      # (Useless use of setexpr, but eh)
+      setexpr new_firmware_addr_r $kernel_addr_r + 0
+      setexpr old_firmware_addr_r $ramdisk_addr_r + 0
+      setexpr new_firmware_addr_r_tail $new_firmware_addr_r + 0x2000
 
-      if pause 'Press any key to reboot...'; then
-        echo -n
+      echo "devtype = $devtype"
+      echo "devnum = $devnum"
+      part list $devtype $devnum -bootable bootpart
+      echo "bootpart = $bootpart"
+      echo ""
+      echo ":: Starting flash operation"
+      echo ""
+
+      echo "-> Initializing SPI Flash subsystem..."
+      if sf probe; then
+
+        echo ""
+        echo "-> Reading Flash content..."
+        if sf read $old_firmware_addr_r 0 0x${lib.toHexString SPISize}; then
+
+          echo ""
+          echo "-> Reading new firmware from storage..."
+          if load $devtype $devnum:$bootpart $new_firmware_addr_r Tow-Boot.spi.bin; then
+            setexpr new_firmware_size $filesize + 0
+            setexpr new_firmware_size_tail $filesize - 0x2000
+
+            echo ""
+            echo "-> Hardening against failures..."
+            echo "   We are deliberately breaking the initial part of the SPI Flash contents."
+            # Safe only if the Boot ROM can read from alternate sources!!
+
+            # Erasing the first 8KiB of the SPI Flash
+            # With all tested devices, the Boot ROM will not use the SPI Flash.
+            # This helps ensure a failure in the following steps does not brick the device.
+            if sf erase 0x0 0x2000; then
+              echo ""
+              echo "   A stray reboot should be safe now."
+
+              echo ""
+              echo "-> Writing new firmware tail to SPI Flash..."
+              if sf update $new_firmware_addr_r_tail 0x2000 $new_firmware_size_tail; then
+
+                echo ""
+                echo "-> Writing new firmware head to SPI Flash..."
+                if sf update $new_firmware_addr_r 0x0 0x2000; then
+
+                  echo ""
+                  echo "✅ Flashing seems to have been successful!"
+                  echo ""
+                  if pause 'Press any key to reboot...'; then
+                    echo -n
+                  else
+                    echo "Resetting in 5 seconds"
+                    sleep 5
+                  fi
+                  reset
+
+                # sf update head
+                else
+                  ${error ''
+                  echo "❌ Error flashing new firmware head to SPI Flash."
+                  echo "   Rebooting now may fail."
+                  ''}
+                fi
+
+              # sf update tail
+              else
+                ${error ''
+                echo "⚠️ Error flashing new firmware tail to SPI Flash."
+                echo "  Rebooting now should be safe as the SPI was removed from the boot chain."
+                ''}
+              fi
+
+            # sf erase 0x2000
+            else
+              ${error ''
+              echo "❌ Failed to harden against failures."
+              echo "   If is unknown whether rebooting is safe or not right now."
+              ''}
+            fi
+
+          # load Tow-Boot.spi.bin
+          else
+            ${error ''
+            echo "⚠️ Error reading new firmware from storage."
+            echo "  Rebooting should be safe, nothing was done."
+            ''}
+          fi
+
+        # sf read
+        else
+          ${error ''
+          echo "⚠️ Error reading current firmware."
+          echo "  Rebooting should be safe, nothing was done."
+          ''}
+        fi
+
+      # sf probe
       else
-        echo "Resetting in 5 seconds"
-        sleep 5
+        ${error ''
+        echo "⚠️ Running `sf probe` failed unexpectedly."
+        echo "  Rebooting should be safe, nothing was done."
+        ''}
       fi
-      reset
     fi
   '';
 
-  bootcmd = writeText "${defconfig}-boot.cmd" ''
+  bootcmd = writeText "${boardIdentifier}-boot.cmd" ''
     echo
     echo "Tow-Boot SPI installer script"
     echo
 
     # Commands used by either menu systems, or manually.
-    setenv spi_erase 'sf probe; echo "Currently erasing..."; sf erase ${toString flashOffset} +1000000; echo "Done!"; sleep 5'
+    setenv spi_erase 'sf probe; echo "Currently erasing..."; sf erase 0 0x${lib.toHexString SPISize}; echo "Done!"; sleep 5'
     setenv spi_flash 'setenv script flash.scr; run boot_a_script'
 
     setenv bootmenu_0 'Flash firmware to SPI=run spi_flash'
@@ -87,7 +200,7 @@ let
     populateCommands = ''
       cp -v ${mkScript bootcmd} ./boot.scr
       cp -v ${mkScript flashscript} ./flash.scr
-      cp -v ${firmware} ./firmware.spiflash.bin
+      cp -v ${firmwareFile} ./Tow-Boot.spi.bin
     '';
   };
 in

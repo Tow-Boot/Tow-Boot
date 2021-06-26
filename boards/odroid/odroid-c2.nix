@@ -50,6 +50,7 @@ let
   };
 
   firmware = buildTowBoot {
+    boardIdentifier = "odroid-C2";
     # Amlogic S905 / GXBB
     # This uses a bespoke build because while it's GXBB, the binaries from the
     # vendor are not as expected.
