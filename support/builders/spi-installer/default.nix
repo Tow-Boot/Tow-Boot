@@ -155,7 +155,7 @@ let
     echo
 
     # Commands used by either menu systems, or manually.
-    setenv spi_erase 'sf probe; echo "Currently erasing..."; sf erase 0 +1000000; echo "Done!"; sleep 5'
+    setenv spi_erase 'sf probe; echo "Currently erasing..."; sf erase 0 0x${lib.toHexString SPISize}; echo "Done!"; sleep 5'
     setenv spi_flash 'setenv script flash.scr; run boot_a_script'
 
     setenv bootmenu_0 'Flash firmware to SPI=run spi_flash'
