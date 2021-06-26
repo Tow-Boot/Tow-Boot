@@ -1,7 +1,7 @@
-{ buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
+{ lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
 
 # For Rockchip RK3399 based hardware
-{ defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], ... } @ args:
+{ defconfig, postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], withSPI ? true, ... } @ args:
 
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
@@ -14,7 +14,7 @@ let
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
-    firmwareFile = "${firmware}/firmware.shared.img";
+    firmwareFile = "${firmware}/binaries/Tow-Boot.noenv.bin";
   };
 
   baseImage' = extraPartitions: imageBuilder.diskImage.makeGPT {
@@ -30,11 +30,13 @@ let
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
       inherit defconfig;
-      firmware = "${firmware}/firmware.spiflash.bin";
+      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
     })
   ];
 
-  firmware = buildTowBoot ({
+  firmware' = variant: buildTowBoot ({
+    inherit variant;
+
     # Does not actually turn off tested boards...
     withPoweroff = false;
 
@@ -52,20 +54,24 @@ let
       patchShebangs arch/arm/mach-rockchip/
     '' + postPatch;
 
-    postInstall = ''
-      echo ":: Preparing image for SPI flash..."
-      (PS4=" $ "; set -x
-      tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
-      # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
-      cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/firmware.spiflash.bin
-      )
+    installPhase = ''
+      ${lib.optionalString (variant == "spi") ''
+        echo ":: Preparing image for SPI flash..."
+        (PS4=" $ "; set -x
+        tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
+        # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
+        cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/binaries/Tow-Boot.$variant.bin
+        )
+      ''}
 
-      echo ":: Preparing single file firmware image for shared storage..."
-      (PS4=" $ "; set -x
-      dd if=idbloader.img of=firmware.shared.img conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
-      dd if=u-boot.itb    of=firmware.shared.img conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
-      cp -v firmware.shared.img $out/
-      )
+      ${lib.optionalString (variant != "spi") ''
+        echo ":: Preparing single file firmware image for shared storage..."
+        (PS4=" $ "; set -x
+        dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
+        dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
+        cp -v Tow-Boot.$variant.bin $out/binaries/
+        )
+      ''}
     '' + postInstall;
 
     extraConfig = ''
@@ -84,8 +90,17 @@ let
       ./0001-HACK-efi_runtime-pretend-we-can-t-reset.patch
     ] ++ patches;
   } // removeAttrs args [ "postPatch" "postInstall" "extraConfig" "patches" ]);
+
+  firmware = firmware' "noenv";
+  firmwareSPI = firmware' "spi";
 in
 firmware.mkOutput ''
-  cp -rv ${baseImage}/*.img $out/disk-image.img
-  cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
+  cp --no-preserve=mode -rvt $out/ ${firmware}/*
+  ${lib.optionalString withSPI ''
+    cp --no-preserve=mode -rvt $out/ ${firmwareSPI}/*
+  ''}
+  cp -rv ${baseImage}/*.img $out/shared.disk-image.img
+  ${lib.optionalString withSPI ''
+  cp -rv ${spiInstallerImage}/*.img $out/spi.installer.img
+  ''}
 ''

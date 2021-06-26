@@ -39,6 +39,17 @@
   , postPatch ? ""
   , nativeBuildInputs ? []
   , meta ? {}
+  , passthru ? {}
+
+  # Either "spi" or "noenv" for now.
+  # The variant for environment storage.
+  , variant ? null
+
+  , SPISize ? null
+
+  # The platform-specific builder needs to copy binary files
+  # to the `binaries` folder, using `Tow-Boot.$variant.bin` for the name.
+  , installPhase ? null
 
   # The following options should only be disabled when it breaks a build.
   , withLogo ? true
@@ -46,6 +57,18 @@
   , withPoweroff ? true
   , ...
 } @ args:
+
+if variant != "spi" && variant != "noenv" then
+  builtins.throw ''A Tow-Boot build requires `variant` to be either "spi" or "noenv".''
+else
+
+if installPhase == null then
+  builtins.throw "A Tow-Boot build requires `installPhase` to be implemented."
+else
+
+if filesToInstall != [] then
+  builtins.throw "filesToInstall shouldn't be used anymore for Tow-Boot."
+else
 
 let
   uBootVersion = "2021.04";
@@ -66,8 +89,15 @@ let
     (cd $out; gzip -9 -k logo.bmp)
   '';
 
+  # Not actually configurable. This is a constant in Tow-Boot.
+  # Changing this will require handling the migration to a larger size.
+  envSizeInKiB = 128;
+  envSize = envSizeInKiB * 1024;
+  envSPIOffset = SPISize - envSize;
+
   tow-boot = stdenv.mkDerivation ({
-    pname = "tow-boot-${defconfig}";
+    pname = "tow-boot-${defconfig}-${variant}";
+    inherit variant;
 
     version = "${uBootVersion}-${towBootIdentifier}";
 
@@ -157,7 +187,7 @@ let
       # Identity
       # --------
 
-      CONFIG_IDENT_STRING="${towBootIdentifier}"
+      CONFIG_IDENT_STRING="${towBootIdentifier} [variant: ${variant}]"
 
       # Behaviour
       # ---------
@@ -192,6 +222,55 @@ let
       ${lib.optionalString withPoweroff ''
       CONFIG_CMD_POWEROFF=y
       ''}
+
+      # Environment
+      # -----------
+      
+      CONFIG_ENV_SIZE=0x${lib.toHexString envSize}
+      ${
+      if variant == "noenv" then ''
+        # CONFIG_TPL_ENV_SUPPORT is not set
+        # CONFIG_SPL_ENV_SUPPORT is not set
+        CONFIG_ENV_IS_NOWHERE=y
+        CONFIG_TPL_ENV_IS_NOWHERE=y
+        CONFIG_SPL_ENV_IS_NOWHERE=y
+        # CONFIG_ENV_IS_IN_EEPROM is not set
+        # CONFIG_ENV_IS_IN_FAT is not set
+        # CONFIG_ENV_IS_IN_EXT4 is not set
+        # CONFIG_ENV_IS_IN_FLASH is not set
+        # CONFIG_ENV_IS_IN_MMC is not set
+        # CONFIG_ENV_IS_IN_NAND is not set
+        # CONFIG_ENV_IS_IN_NVRAM is not set
+        # CONFIG_ENV_IS_IN_ONENAND is not set
+        # CONFIG_ENV_IS_IN_REMOTE is not set
+        # CONFIG_ENV_IS_IN_SPI_FLASH is not set
+        # CONFIG_ENV_IS_IN_UBI is not set
+      ''
+      else if variant == "spi" then ''
+        # CONFIG_TPL_ENV_SUPPORT is not set
+        # CONFIG_SPL_ENV_SUPPORT is not set
+        # CONFIG_ENV_IS_NOWHERE is not set
+        # CONFIG_ENV_IS_IN_EEPROM is not set
+        # CONFIG_ENV_IS_IN_FAT is not set
+        # CONFIG_ENV_IS_IN_EXT4 is not set
+        # CONFIG_ENV_IS_IN_FLASH is not set
+        # CONFIG_ENV_IS_IN_MMC is not set
+        # CONFIG_ENV_IS_IN_NAND is not set
+        # CONFIG_ENV_IS_IN_NVRAM is not set
+        # CONFIG_ENV_IS_IN_ONENAND is not set
+        # CONFIG_ENV_IS_IN_REMOTE is not set
+        CONFIG_ENV_IS_IN_SPI_FLASH=y
+        # CONFIG_ENV_IS_IN_UBI is not set
+        CONFIG_ENV_SECT_SIZE=0x2000
+
+        # Not the actual address
+        CONFIG_ENV_ADDR=0x0
+        # The actual address
+        CONFIG_ENV_OFFSET=0x${lib.toHexString envSPIOffset}
+      ''
+      else
+        (builtins.throw "variant is invalid")
+      }
 
       # Looks
       # -----
@@ -251,15 +330,14 @@ let
     installPhase = ''
       runHook preInstall
       mkdir -p $out
-      cp .config $out
-      ${lib.optionalString (builtins.length filesToInstall > 0) ''
-      cp ${lib.concatStringsSep " " filesToInstall} $out
-      ''}
+      mkdir -p $out/config
+      cp .config $out/config/$variant.config
+      mkdir -p $out/binaries
+      ${installPhase}
       runHook postInstall
     '';
 
-    # make[2]: *** No rule to make target 'lib/efi_loader/helloworld.efi', needed by '__build'.  Stop.
-    enableParallelBuilding = false;
+    enableParallelBuilding = true;
 
     dontStrip = true;
 
@@ -270,8 +348,12 @@ let
       maintainers = with maintainers; [ samueldr ];
     } // meta;
 
-    passthru = {
-      inherit mkOutput patchset;
+    passthru = passthru // {
+      inherit
+        mkOutput
+        patchset
+        variant
+      ;
     };
 
   } // removeAttrs args [
@@ -281,14 +363,14 @@ let
     "nativeBuildInputs"
     "patches"
     "postPatch"
+    "installPhase"
+    "passthru"
   ]);
 
   mkOutput = commands: runCommandNoCC tow-boot.name { } ''
     (PS4=" $ "; set -x
     mkdir -p "$out"
     cp -rv ${tow-boot.patchset} $out/patches
-    cp -rvt $out/ ${tow-boot}/.config
-    cp -rvt $out/ ${tow-boot}/*
     ${commands}
     )
   '';

@@ -12,7 +12,7 @@ let
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize; # in bytes
-    firmwareFile = "${firmware}/u-boot.bin";
+    firmwareFile = "${firmware}/binaries/Tow-Boot.noenv.bin";
   };
 
   baseImage' = extraPartitions: imageBuilder.diskImage.makeMBR {
@@ -32,12 +32,13 @@ let
   spiInstallerImage = baseImage' [
     (spiInstallerPartitionBuilder {
       inherit defconfig;
-      firmware = "${firmware}/u-boot.bin";
+      firmware = "${firmwareSPI}/binaries/Tow-Boot.spi.bin";
     })
   ];
 
-  firmware = buildTowBoot ({
+  firmware' = variant: buildTowBoot ({
     meta.platforms = ["aarch64-linux"];
+    inherit variant;
 
     nativeBuildInputs = [
       gxlimg
@@ -78,22 +79,33 @@ let
         --bl31 ./bl31.img.enc \
         --bl33 ./u-boot.bin.enc \
         ./gxl-boot.bin
-      mv -v gxl-boot.bin u-boot.bin
+      mv -v gxl-boot.bin Tow-Boot.bin
       )
 
       echo ":: Making USB boot files"
       (PS4=" $ "; set -x
-      dd if=u-boot.bin of=u-boot.bin.usb.bl2 bs=49152 count=1
-      dd if=u-boot.bin of=u-boot.bin.usb.tpl skip=49152 bs=1
+      dd if=Tow-Boot.bin of=Tow-Boot.bin.usb.bl2 bs=49152 count=1
+      dd if=Tow-Boot.bin of=Tow-Boot.bin.usb.tpl skip=49152 bs=1
       )
     '';
 
-    filesToInstall = [ "u-boot.bin" "u-boot.bin.usb.bl2" "u-boot.bin.usb.tpl" ];
+    installPhase = ''
+      cp -v Tow-Boot.bin         $out/binaries/Tow-Boot.$variant.bin
+      cp -v Tow-Boot.bin.usb.bl2 $out/binaries/Tow-Boot.$variant.usb.bl2
+      cp -v Tow-Boot.bin.usb.tpl $out/binaries/Tow-Boot.$variant.usb.tpl
+    '';
   } // args);
+
+  firmware = firmware' "noenv";
+  firmwareSPI = firmware' "spi";
 in
 firmware.mkOutput ''
-  cp -rv ${baseImage}/*.img $out/disk-image.img
+  cp --no-preserve=mode -rvt $out/ ${firmware}/*
   ${lib.optionalString withSPI ''
-  cp -rv ${spiInstallerImage}/*.img $out/spi-installer.img
+    cp --no-preserve=mode -rvt $out/ ${firmwareSPI}/*
+  ''}
+  cp -rv ${baseImage}/*.img $out/shared.disk-image.img
+  ${lib.optionalString withSPI ''
+  cp -rv ${spiInstallerImage}/*.img $out/spi.installer.img
   ''}
 ''

@@ -26,7 +26,7 @@ let
     inherit sectorSize;
     partitionOffset = partitionOffset; # in sectors
     partitionSize = firmwareMaxSize; # in bytes
-    firmwareFile = "${firmware}/u-boot-combined.bin";
+    firmwareFile = "${firmware}/binaries/Tow-Boot.noenv.bin";
   };
 
   baseImage = baseImage' [];
@@ -44,7 +44,7 @@ let
 
     postBuild = ''
       (PS4=" $ "; set -x
-      dd if=${firmware}/bl1.bin.hardkernel of=$img conv=fsync,notrunc bs=1 count=442
+      dd if=${firmware}/binaries/bl1.bin.hardkernel of=$img conv=fsync,notrunc bs=1 count=442
       )
     '';
   };
@@ -54,6 +54,9 @@ let
     # This uses a bespoke build because while it's GXBB, the binaries from the
     # vendor are not as expected.
     defconfig = "odroid-c2_defconfig";
+
+    # No SPI
+    variant = "noenv";
 
     nativeBuildInputs = [
       armTrustedFirmwareTools
@@ -102,14 +105,15 @@ let
 
       # Create the .img file to flash from sector 0x01 (bs=512 seek=1)
       # It contains the remainder of bl1.bin.hardkernel and u-boot
-      dd if=bl1.bin.hardkernel of=u-boot-combined.bin conv=notrunc bs=512 skip=1 seek=0
-      dd if=u-boot.bin         of=u-boot-combined.bin conv=notrunc bs=512 seek=96
+      dd if=bl1.bin.hardkernel of=Tow-Boot.$variant.bin conv=notrunc bs=512 skip=1 seek=0
+      dd if=u-boot.bin         of=Tow-Boot.$variant.bin conv=notrunc bs=512 seek=96
     '';
 
-    filesToInstall = [
-      "u-boot-combined.bin"
-      "bl1.bin.hardkernel"
-    ];
+    installPhase = ''
+      cp -v Tow-Boot.$variant.bin $out/binaries/
+      cp -v bl1.bin.hardkernel $out/binaries
+    '';
+
     meta.platforms = ["aarch64-linux"];
   };
 in
