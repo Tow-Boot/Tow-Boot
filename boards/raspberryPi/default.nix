@@ -22,6 +22,7 @@ let
     '';
     patches = [
       ./0001-configs-rpi-allow-for-bigger-kernels.patch
+      ./0001-Tow-Boot-rpi-Increase-malloc-pool-up-to-64MiB-env.patch
     ];
     # The necessary implementation is not provided by U-Boot.
     withPoweroff = false;
