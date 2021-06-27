@@ -65,7 +65,7 @@ the map for the *Platform-specific span* looks like the following:
 LBA : 0x00  \\  0x22  //  0x40         // 0x4000           \\ 0x5840         0x6040
        |----//---|----\\---|-----------\\--|---------------//--|--------------|
        | [ GPT ] | (empty) | idbloader //  | firmware.itb  \\  |  (reserved)  |
-	   |    \\   |    //   | ============ Firmware partition ================ |
+       |    \\   |    //   | ============ Firmware partition ================ |
 ```
 
 The partition is 12MiB. Though most of what is found before `0x4000` is mostly
