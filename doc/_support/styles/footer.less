@@ -1,0 +1,18 @@
+body > footer {
+	#fill-width();
+	& > * {
+		#container();
+	}
+
+	color: #theme.footer[foreground];
+	background: #theme.footer[background];
+	padding-bottom: @gutter;
+	padding-top: @gutter;
+	margin-top: @gutter*2;
+	text-align: right;
+
+	h1, a {
+		color: inherit;
+	}
+	
+}
