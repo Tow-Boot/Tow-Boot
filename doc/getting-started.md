@@ -1,7 +1,7 @@
-Initial Setup
-=============
+Getting Started
+===============
 
-There are two main general ways to install *Tow-Boot. Installing to a dedicated
+There are two main general ways to install *Tow-Boot*. Installing to a dedicated
 initial boot firmware storage media, if your board supports it, or installing
 on shared storage.
 
@@ -13,8 +13,9 @@ the shared storage strategy, but this is discouraged. The benefits of writing
 the firmware to dedicated storage far outweighs the drawbacks compared to using
 the shared storage strategy.
 
-In all cases, read the *Installing an Operating System* section from this
-manual after.
+In all cases, once the firmware has been installed, continue to the
+[*Installing an Operating System*](installing-an-operating-system.md) section
+from this manual.
 
 
 Dedicated Storage
