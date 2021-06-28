@@ -57,3 +57,26 @@ Finally, the main fourth reason is for board enablement. Generally speaking
 those changes are provided by or on behalf of the vendor, and it is not our job
 to provide those upstream. We try to avoid board enablement that have not
 already been sent to upstream.
+
+
+Why use this instead of my distro's *U-Boot* build?
+---------------------------------------------------
+
+In this project's opinion, the distribution shouldn't be managing the firmware
+used to boot the system.
+
+Confusingly enough, *U-Boot* is **both** a firmware (think "BIOS") and a
+bootloader (think "grub").
+
+The firmware should be a basic constant on the system, with well-defined
+semantics allowing either a bootloader or an operating system to start.
+
+Should all the distributions *have to* build and manage all the BIOS for all
+your boring `x86_64` machines too?
+
+
+Why the *Tow-Boot* name?
+------------------------
+
+Because of the pun on towboats, and the upstream pun on
+[U-Boat](https://en.wikipedia.org/wiki/U-boat).
