@@ -1,0 +1,80 @@
+body > header {
+	#fill-width();
+	& > * {
+		#container();
+	}
+
+	color: #theme.navbar[foreground];
+	background: #theme.navbar[background];
+	padding-top: @gutter;
+	padding-bottom: @gutter;
+
+	h1, a {
+		color: inherit;
+		margin: 0;
+	}
+	h1 {
+		margin-bottom: @gutter/2;
+		#screen-sm-min({
+			margin-bottom: 0;
+		});
+	}
+
+	h1 > a {
+		display: block;
+		text-decoration: none;
+		border: 0;
+
+		margin-top: -@gutter;
+		#screen-sm-min({
+			margin-bottom: -@gutter;
+		});
+
+		@_width: 260 * 0.6 * @unit;
+		@_height: 50 * 0.6 * @unit + 2*@gutter;
+
+		#text-replacement(
+			@pseudo: before,
+			@width: @_width,
+			@height: @_height,
+		);
+		&::before {
+			#svg.tow-boot-horizontal();
+		}
+	}
+
+	& > * {
+		display: flex;
+
+		flex-direction: column;
+		#screen-sm-min({
+			flex-direction: row;
+		});
+	}
+
+	nav {
+		width: 100%;
+		display: flex;
+		align-items: end;
+
+		flex-direction: column;
+		#screen-sm-min({
+			flex-direction: row;
+		});
+	}
+
+	nav > ul {
+		display: flex;
+		justify-content: flex-end;
+		width: 100%;
+
+		flex-direction: column;
+		#screen-sm-min({
+			flex-direction: row;
+		});
+
+		li:not(:last-child) {
+			margin-right: @gutter;
+		}
+	}
+}
