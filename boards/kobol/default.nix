@@ -2,6 +2,7 @@
 
 {
   kobol-helios64 = rockchipRK399 {
+    boardIdentifier = "kobol-helios64";
     defconfig = "helios64-rk3399_defconfig";
     postPatch =
       let
@@ -18,5 +19,7 @@
       ./0001-helios64-Add-board.patch
       ./0001-helios64-support-SPI-flash-boot.patch
     ];
+    withSPI = true;
+    SPISize = 128 /* Mbits */ * 1024 * 1024 / 8; # equiv to 16 MiB
   };
 }
