@@ -1,4 +1,4 @@
-From c2138478c69e7960a7bee0e851dd4c9179032557 Mon Sep 17 00:00:00 2001
+From c49d2acba17ce3d8e05cd2e206ccadb2c42a86b1 Mon Sep 17 00:00:00 2001
 From: Aditya Prayoga <aditya@kobol.io>
 Date: Tue, 15 Sep 2020 18:41:54 +0700
 Subject: [PATCH] helios64: Add board
@@ -32,10 +32,10 @@ Signed-off-by: Aditya Prayoga <aditya@kobol.io>
  create mode 100644 include/configs/helios64.h
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index c6710826a0..c3e78e52ad 100644
+index fc16a57e60..c77083af6e 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -124,6 +124,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -125,6 +125,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-ficus.dtb \
  	rk3399-firefly.dtb \
  	rk3399-gru-bob.dtb \
@@ -2027,14 +2027,14 @@ index 0000000000..61f6f3b380
 +#endif
 diff --git a/configs/helios64-rk3399_defconfig b/configs/helios64-rk3399_defconfig
 new file mode 100644
-index 0000000000..dbda1c7e1c
+index 0000000000..d26727eda7
 --- /dev/null
 +++ b/configs/helios64-rk3399_defconfig
 @@ -0,0 +1,145 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SYS_TEXT_BASE=0x00200000
-+CONFIG_SPL_GPIO_SUPPORT=y
++CONFIG_SPL_GPIO=y
 +CONFIG_ENV_OFFSET=0x3F8000
 +CONFIG_ROCKCHIP_RK3399=y
 +CONFIG_ROCKCHIP_ADVANCED_RECOVERY=y
@@ -2230,5 +2230,5 @@ index 0000000000..6fca9a6be0
 +
 +#endif
 -- 
-2.29.2
+2.32.0
 
