@@ -72,7 +72,7 @@ if filesToInstall != [] then
 else
 
 let
-  uBootVersion = "2021.04";
+  uBootVersion = "2021.10-rc5";
 
   # For now, monotonically increasing number.
   # Represents released versions.
@@ -104,7 +104,7 @@ let
 
     src = fetchurl {
       url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
-      sha256 = "06p1vymf0dl6jc2xy5w7p42mpgppa46lmpm2ishmgsycnldqnhqd";
+      sha256 = "03ffgpcai5vjnyvmxj6wy45vy4idzsb84j42zzyvywqqnzlmvinl";
     };
 
     patches = [
