@@ -1,7 +1,13 @@
 { lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
 
 # For Rockchip RK3399 based hardware
-{ postPatch ? "", postInstall ? "", extraConfig ? "", patches ? [], withSPI ? true, ... } @ args:
+{ postPatch ? ""
+, postInstall ? ""
+, extraConfig ? ""
+, patches ? []
+, withSPI ? true
+, BL31 ? "${TF-A}/bl31.elf"
+, ... } @ args:
 
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
@@ -46,7 +52,8 @@ let
     ;
 
     meta.platforms = ["aarch64-linux"];
-    BL31 = "${TF-A}/bl31.elf";
+
+    inherit BL31;
 
     postPatch = ''
       patchShebangs arch/arm/mach-rockchip/
