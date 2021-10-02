@@ -71,6 +71,8 @@ in
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
 
+    rkbin = callPackage ./rkbin { };
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
       TF-A = aarch64.armTrustedFirmwareAllwinner;
