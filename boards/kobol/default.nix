@@ -1,4 +1,4 @@
-{ Tow-Boot, rockchipRK399, fetchpatch }:
+{ Tow-Boot, rockchipRK399, fetchpatch, rkbin }:
 
 {
   kobol-helios64 = rockchipRK399 {
@@ -19,7 +19,9 @@
       ./0001-helios64-Add-board.patch
       ./0001-helios64-support-SPI-flash-boot.patch
     ];
-    withSPI = true;
+    withSPI = false; # For now, due to withProprietaryDDR use
     SPISize = 128 /* Mbits */ * 1024 * 1024 / 8; # equiv to 16 MiB
+    withProprietaryDDR = true;
+    DDR_BLOB        = "${rkbin}/share/rkbin/rk33/rk3399_ddr_933MHz_v1.24.bin";
   };
 }
