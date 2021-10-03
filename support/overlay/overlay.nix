@@ -82,6 +82,7 @@ in
 
     rockchipRK399 = aarch64.callPackage ../builders/rockchip-rk3399 {
       TF-A = aarch64.armTrustedFirmwareRK3399;
+      rkbin = final.Tow-Boot.rkbin;
     };
 
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {

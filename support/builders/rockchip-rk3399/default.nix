@@ -1,4 +1,12 @@
-{ lib, buildTowBoot, TF-A, imageBuilder, runCommandNoCC, writeText, spiInstallerPartitionBuilder }:
+{ lib
+, buildTowBoot
+, TF-A
+, imageBuilder
+, runCommandNoCC
+, writeText
+, spiInstallerPartitionBuilder
+, rkbin
+}:
 
 # For Rockchip RK3399 based hardware
 { postPatch ? ""
@@ -6,9 +14,14 @@
 , extraConfig ? ""
 , patches ? []
 , withSPI ? true
+, withProprietaryDDR ? false
+, DDR_BLOB ? null
 , BL31 ? "${TF-A}/bl31.elf"
 , ... } @ args:
 
+if withProprietaryDDR && DDR_BLOB == null then
+  throw "DDR_BLOB must be provided when building for r3399 withProprietaryDDR."
+else
 let
   # Currently 1.1MiB... Let's keep A LOT of room on hand.
   firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
@@ -54,6 +67,7 @@ let
     meta.platforms = ["aarch64-linux"];
 
     inherit BL31;
+    inherit DDR_BLOB;
 
     postPatch = ''
       patchShebangs arch/arm/mach-rockchip/
@@ -63,17 +77,29 @@ let
       ${lib.optionalString (variant == "spi") ''
         echo ":: Preparing image for SPI flash..."
         (PS4=" $ "; set -x
-        tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
-        # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
-        cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/binaries/Tow-Boot.$variant.bin
+        ${if withProprietaryDDR then ''
+          echo "ERROR: SPI support for proprietary DDR not supported yet."
+          exit 1
+        '' else ''
+          tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
+          # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
+          cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/binaries/Tow-Boot.$variant.bin
+        ''}
         )
       ''}
 
       ${lib.optionalString (variant != "spi") ''
         echo ":: Preparing single file firmware image for shared storage..."
         (PS4=" $ "; set -x
-        dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
-        dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
+
+        ${if withProprietaryDDR then ''
+          tools/mkimage -n rk3399 -T rksd -d $DDR_BLOB Tow-Boot.$variant.bin
+          cat spl/u-boot-spl.bin >> Tow-Boot.$variant.bin
+          dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
+        '' else ''
+          dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
+          dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
+        ''}
         cp -v Tow-Boot.$variant.bin $out/binaries/
         )
       ''}
