@@ -134,6 +134,7 @@ let
     ] ++ patches;
 
     postPatch = ''
+      patchShebangs scripts
       patchShebangs tools
       patchShebangs arch/arm/mach-rockchip
 
