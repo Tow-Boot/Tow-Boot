@@ -1,7 +1,7 @@
 { lib, buildTowBoot, meson64-tools, imageBuilder, runCommandNoCC, spiInstallerPartitionBuilder }:
 
 let self =
-{ FIPDIR, withSPI ? false,  ...} @ args':
+{ FIPDIR, withSPI ? false, extraConfig ? "", ...} @ args':
 
 let
   args = removeAttrs args' (builtins.attrNames (builtins.functionArgs self));
@@ -78,6 +78,11 @@ let
     installPhase = ''
       cp -v Tow-Boot.bin $out/binaries/Tow-Boot.$variant.bin
     '';
+
+    extraConfig = ''
+      CONFIG_USE_PREBOOT=y
+    '' + extraConfig;
+
   } // args);
 
   firmware = firmware' "noenv";
