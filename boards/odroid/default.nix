@@ -5,9 +5,7 @@
     boardIdentifier = "odroid-N2";
     defconfig = "odroid-n2_defconfig";
     FIPDIR = "${amlogicFirmware}/odroid-n2";
-    # Access to the SPI flash itself works fine, but the SPI installer menu
-    # doesn't work, shows visual artifacts, and somehow gets stuck in that state.
-    withSPI = false;
+    withSPI = true;
     SPISize = 8 * 1024 * 1024;
     patches = [
       # ODROID N2 SPI support
