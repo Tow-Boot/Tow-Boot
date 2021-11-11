@@ -45,12 +45,14 @@ let
     ];
 
     postBuild = ''
+      echo " :: Merging with proprietary components..."
+      (PS4=" $ "; set -x
       meson64-pkg --type bl30 --output bl30.pkg $FIPDIR/bl30.bin $FIPDIR/bl301.bin
       meson64-pkg --type bl2 --output bl2.pkg $FIPDIR/bl2.bin $FIPDIR/acs.bin
       meson64-bl30sig --input bl30.pkg --output bl30.30sig
       meson64-bl3sig  --input bl30.30sig --output bl30.3sig
       meson64-bl3sig  --input $FIPDIR/bl31.img --output bl31.3sig
-      meson64-bl3sig  --input Tow-Boot.bin --output bl33.3sig
+      meson64-bl3sig  --input u-boot.bin --output bl33.3sig
       meson64-bl2sig  --input bl2.pkg --output bl2.2sig
       args=(
         --bl2 bl2.2sig
@@ -69,8 +71,8 @@ let
       test -e $FIPDIR/aml_ddr.fw && args+=(--ddrfw8 $FIPDIR/aml_ddr.fw)
       test -e $FIPDIR/lpddr3_1d.fw && args+=(--ddrfw9 $FIPDIR/lpddr3_1d.fw)
 
-      meson64-bootmk --output Tow-Boot2.bin "''${args[@]}"
-      mv Tow-Boot2.bin Tow-Boot.bin
+      meson64-bootmk --output Tow-Boot.bin "''${args[@]}"
+      )
     '';
 
     installPhase = ''
