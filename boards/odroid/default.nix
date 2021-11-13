@@ -11,6 +11,11 @@
       # ODROID N2 SPI support
       ./0001-Enable-the-SPI-on-the-ODROID-N2-by-default.patch
     ];
+    extraConfig = ''
+      CONFIG_USE_PREBOOT=y
+      CONFIG_PREBOOT="usb start ; usb info"
+    '';
+
   };
   odroid-C2 = Tow-Boot.systems.aarch64.callPackage ./odroid-c2.nix { };
 }
