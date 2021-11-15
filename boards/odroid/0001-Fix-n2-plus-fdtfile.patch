@@ -1,0 +1,27 @@
+diff --git a/board/amlogic/odroid-n2/odroid-n2.c b/board/amlogic/odroid-n2/odroid-n2.c
+index 88a60f34fe8c70a8b78c1e54eaa92a66a0dcc8df..acfd107fc544ac0ca8855e65d28dde5183b41090 100644
+--- a/board/amlogic/odroid-n2/odroid-n2.c
++++ b/board/amlogic/odroid-n2/odroid-n2.c
+@@ -48,7 +48,7 @@ static struct meson_odroid_boards {
+ 	/* OdroidN2 rev 2019,2,7 */
+ 	{ MESON_SOC_ID_G12B, 330 * 4, 350 * 4, "n2" },
+ 	/* OdroidN2plus rev 2019,11,20 */
+-	{ MESON_SOC_ID_G12B, 410 * 4, 430 * 4, "n2_plus" },
++	{ MESON_SOC_ID_G12B, 410 * 4, 430 * 4, "n2-plus" },
+ 	/* OdroidC4 rev 2020,01,29 */
+ 	{ MESON_SOC_ID_SM1,   80 * 4, 100 * 4, "c4" },
+ 	/* OdroidHC4 rev 2019,12,10 */
+diff --git a/configs/odroid-n2_defconfig b/configs/odroid-n2_defconfig
+index bac44b61abb86aa27f4595880d556a3df27a227e..1f718a3154ef0736fbb0c280cecb3abbace3d08a 100644
+--- a/configs/odroid-n2_defconfig
++++ b/configs/odroid-n2_defconfig
+@@ -9,7 +9,7 @@ CONFIG_DEFAULT_DEVICE_TREE="meson-g12b-odroid-n2"
+ CONFIG_MESON_G12A=y
+ CONFIG_DEBUG_UART_BASE=0xff803000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+-CONFIG_IDENT_STRING=" odroid-n2/n2_plus"
++CONFIG_IDENT_STRING=" odroid-n2/n2-plus"
+ CONFIG_DEFAULT_DEVICE_TREE="meson-g12b-odroid-n2"
+ CONFIG_DEBUG_UART=y
+ CONFIG_OF_BOARD_SETUP=y
+ # CONFIG_DISPLAY_CPUINFO is not set
