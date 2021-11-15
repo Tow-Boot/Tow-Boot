@@ -63,6 +63,8 @@ in
 
     gxlimg = callPackage ./gxlimg { };
 
+    meson64-tools = callPackage ./meson64-tools { };
+
     mkScript = file: final.runCommandNoCC "out.scr" {
       nativeBuildInputs = [
         final.buildPackages.ubootTools
@@ -83,7 +85,11 @@ in
     };
 
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
-      gxlimg = final.Tow-Boot.gxlimg;
+      inherit (final.Tow-Boot) gxlimg;
+    };
+
+    amlogicG12 = aarch64.callPackage ../builders/amlogic-g12 {
+      inherit (final.Tow-Boot) meson64-tools;
     };
 
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
