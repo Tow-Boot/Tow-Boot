@@ -1,0 +1,25 @@
+From 259ca24e9cc9a8502a9390292b84be6229a26490 Mon Sep 17 00:00:00 2001
+From: Daniel Wagenknecht <dwagenk@mailbox.org>
+Date: Sun, 12 Dec 2021 01:36:34 +0100
+Subject: [PATCH] pine H64 B: enable SPI, disable eMMC
+
+---
+ configs/pine_h64-model-b_defconfig  | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/configs/pine_h64-model-b_defconfig b/configs/pine_h64-model-b_defconfig
+index 4645ceaa54..8130d027d0 100644
+--- a/configs/pine_h64-model-b_defconfig
++++ b/configs/pine_h64-model-b_defconfig
+@@ -19,3 +19,8 @@ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
+ CONFIG_USB_DWC3=y
+ # CONFIG_USB_DWC3_GADGET is not set
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_SPI_SUNXI=y
++CONFIG_SPI_FLASH_WINBOND=y
+-- 
+2.33.1
+

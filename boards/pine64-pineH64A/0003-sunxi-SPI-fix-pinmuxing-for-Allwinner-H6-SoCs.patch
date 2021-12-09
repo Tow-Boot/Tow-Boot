@@ -1,0 +1,37 @@
+From 433e02fc464327463f585263c657d27b2ac3228b Mon Sep 17 00:00:00 2001
+From: Daniel Wagenknecht <dwagenk@mailbox.org>
+Date: Sat, 11 Dec 2021 01:46:56 +0100
+Subject: [PATCH 3/4] sunxi: SPI: fix pinmuxing for Allwinner H6 SoCs
+
+The driver for SPI0 on Allwinner H6 SoCs did not use the correct define
+SUN50I_GPC_SPI0 for the pin function, but one for a different Allwinner
+SoC series.
+
+Fix the conditionals to use the correct define for H6 SoCs. This matches
+the conditional logic in the SPL spi driver.
+
+Tested by probing the spi-flash on a pine64_h64-model-b board with
+adapted device-tree (disable mmc2, enable spi0).
+
+Signed-off-by: Daniel Wagenknecht <dwagenk@mailbox.org>
+---
+ drivers/spi/spi-sunxi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/spi/spi-sunxi.c b/drivers/spi/spi-sunxi.c
+index 4ca5d3a93a..9e11f0dc1b 100644
+--- a/drivers/spi/spi-sunxi.c
++++ b/drivers/spi/spi-sunxi.c
+@@ -249,7 +249,8 @@ static int sun4i_spi_parse_pins(struct udevice *dev)
+ 			if (pin < 0)
+ 				break;
+ 
+-			if (IS_ENABLED(CONFIG_MACH_SUN50I))
++			if (IS_ENABLED(CONFIG_MACH_SUN50I) ||
++			    IS_ENABLED(CONFIG_MACH_SUN50I_H6))
+ 				sunxi_gpio_set_cfgpin(pin, SUN50I_GPC_SPI0);
+ 			else
+ 				sunxi_gpio_set_cfgpin(pin, SUNXI_GPC_SPI0);
+-- 
+2.33.1
+
