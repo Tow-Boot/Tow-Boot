@@ -10,8 +10,6 @@
     patches = [
       # ODROID N2 SPI support
       ./0001-Enable-the-SPI-on-the-ODROID-N2-by-default.patch
-      # fix DTB file location on N2+. to be removed once we upgrade to U-Boot 2021.10
-      ./0001-Fix-n2-plus-fdtfile.patch
     ];
     extraConfig = ''
       CONFIG_USE_PREBOOT=y
