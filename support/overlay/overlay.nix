@@ -73,6 +73,8 @@ in
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
 
+    rkbin = callPackage ./rkbin { };
+
     # Common builders
     allwinnerA64 = aarch64.callPackage ../builders/allwinner-a64 {
       TF-A = aarch64.armTrustedFirmwareAllwinner;
@@ -82,6 +84,7 @@ in
 
     rockchipRK399 = aarch64.callPackage ../builders/rockchip-rk3399 {
       TF-A = aarch64.armTrustedFirmwareRK3399;
+      rkbin = final.Tow-Boot.rkbin;
     };
 
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {

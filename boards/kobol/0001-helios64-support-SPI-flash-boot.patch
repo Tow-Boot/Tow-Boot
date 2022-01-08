@@ -1,0 +1,37 @@
+From b1b6c305903154c5eca3c9ef55ac4366469a69a0 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Wed, 10 Mar 2021 20:58:54 -0500
+Subject: [PATCH] helios64: support SPI flash boot
+
+SPI uboot images can be built with
+
+  tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
+  cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb >spiflash.bin
+
+and written to spi flash with uboot sf commands, any hardware flasher
+available, rkdeveloptool, or possibly other methods.
+---
+ configs/helios64-rk3399_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/configs/helios64-rk3399_defconfig b/configs/helios64-rk3399_defconfig
+index dbda1c7e1ce..896fce54d09 100644
+--- a/configs/helios64-rk3399_defconfig
++++ b/configs/helios64-rk3399_defconfig
+@@ -143,3 +143,13 @@ CONFIG_USB_ETHER_RTL8152=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
+ CONFIG_HEXDUMP=y
++ 
++# SPI boot Support
++CONFIG_MTD=y
++CONFIG_DM_MTD=y
++CONFIG_SPI_FLASH_SFDP_SUPPORT=y
++CONFIG_SPL_DM_SPI=y
++CONFIG_SPL_SPI_FLASH_TINY=n
++CONFIG_SPL_SPI_FLASH_SFDP_SUPPORT=y
++CONFIG_SYS_SPI_U_BOOT_OFFS=0x80000
++CONFIG_SPL_DM_SEQ_ALIAS=y
+-- 
+2.28.0
+
