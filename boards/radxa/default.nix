@@ -2,7 +2,7 @@
 
 {
   radxa-RockPi4C = rockchipRK399 {
-    boardIdentifier = "radxa-rockPi4C";
+    boardIdentifier = "radxa-RockPi4C";
     defconfig = "rock-pi-4c-rk3399_defconfig";
     SPISize = 4 * 1024 * 1024; # 4 MiB
     patches = [
