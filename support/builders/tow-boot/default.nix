@@ -69,10 +69,10 @@ let
 
   # For now, monotonically increasing number.
   # Represents released versions.
-  towBootIdentifier = "003${additionalIdentifier}";
+  towBootIdentifier = "004${additionalIdentifier}";
 
   # Identify as "pre-release", as we are still working on this.
-  additionalIdentifier = "";
+  additionalIdentifier = "-pre";
 
   # To produce the bitmap image:
   #     convert input.png -depth 8 -colors 256 -compress none output.bmp
