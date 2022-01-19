@@ -12,19 +12,12 @@
 { stdenv
 , lib
 , fetchurl
-, fetchpatch
-, fetchFromGitHub
 , bc
 , bison
 , dtc
 , flex
 , openssl
 , swig
-, meson-tools
-, armTrustedFirmwareAllwinner
-, armTrustedFirmwareRK3328
-, armTrustedFirmwareRK3399
-, armTrustedFirmwareS905
 , buildPackages
 , runCommandNoCC
 }:
