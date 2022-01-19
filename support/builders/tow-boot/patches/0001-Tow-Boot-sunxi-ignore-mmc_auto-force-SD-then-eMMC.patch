@@ -1,10 +1,10 @@
-From 42f472382c4c24e3a7dbfd13674d8223f15c6c00 Mon Sep 17 00:00:00 2001
+From 7dc889cf8c074a64d115daf34c4108fbc751a4c9 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sat, 8 May 2021 23:54:46 -0400
-Subject: [PATCH] [Tow-Boot] sunxi: ignore mmc_auto, force SD, then eMMC
+Subject: [PATCH 1/2] [Tow-Boot] sunxi: ignore mmc_auto, force SD, then eMMC
 
 This is an opinionated change that aims to make the boot order stable,
-disregarding the original boot source. The initial boot firmware shoul
+disregarding the original boot source. The initial boot firmware should
 act the same, wherever it is installed.
 
 Additionally, this makes the automatic boot menu builder work better,
@@ -18,7 +18,7 @@ consider the initial boot firmware to be part of a "product" OS image.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
-index 7b602dd9ea..b606f5471c 100644
+index 958b850da4..971172a492 100644
 --- a/include/configs/sunxi-common.h
 +++ b/include/configs/sunxi-common.h
 @@ -323,7 +323,7 @@ extern int soft_i2c_gpio_scl;
@@ -31,5 +31,60 @@ index 7b602dd9ea..b606f5471c 100644
  #define BOOT_TARGET_DEVICES_MMC(func) func(MMC_AUTO, mmc_auto, na)
  #else
 -- 
-2.29.2
+2.33.0
+
+
+From 9e2ac3b149572a2187501d11f3988a9b31e872dc Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 17 Oct 2021 23:42:40 -0400
+Subject: [PATCH 2/2] Revert "sunxi: Select environment MMC based on boot
+ device"
+
+This reverts commit 1011ebc72bda061cc9d34c1d6ff4506291a88657.
+---
+ board/sunxi/board.c | 14 --------------
+ env/Kconfig         |  3 ++-
+ 2 files changed, 2 insertions(+), 15 deletions(-)
+
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index 1a46100e40..67acc01d83 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -636,20 +636,6 @@ int board_mmc_init(struct bd_info *bis)
+ 
+ 	return 0;
+ }
+-
+-#if CONFIG_MMC_SUNXI_SLOT_EXTRA != -1
+-int mmc_get_env_dev(void)
+-{
+-	switch (sunxi_get_boot_device()) {
+-	case BOOT_DEVICE_MMC1:
+-		return 0;
+-	case BOOT_DEVICE_MMC2:
+-		return 1;
+-	default:
+-		return CONFIG_SYS_MMC_ENV_DEV;
+-	}
+-}
+-#endif
+ #endif
+ 
+ #ifdef CONFIG_SPL_BUILD
+diff --git a/env/Kconfig b/env/Kconfig
+index c0dff1fd81..5b1ec2861f 100644
+--- a/env/Kconfig
++++ b/env/Kconfig
+@@ -446,7 +446,8 @@ config ENV_FAT_DEVICE_AND_PART
+ 	depends on ENV_IS_IN_FAT
+ 	default "0:1" if TI_COMMON_CMD_OPTIONS
+ 	default "0:auto" if ARCH_ZYNQ || ARCH_ZYNQMP || ARCH_VERSAL
+-	default ":auto" if ARCH_SUNXI
++	default "0:auto" if ARCH_SUNXI && MMC_SUNXI_SLOT_EXTRA = -1
++	default "1:auto" if ARCH_SUNXI && MMC_SUNXI_SLOT_EXTRA != -1
+ 	default "0" if ARCH_AT91
+ 	help
+ 	  Define this to a string to specify the partition of the device. It can
+-- 
+2.33.0
 

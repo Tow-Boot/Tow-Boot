@@ -72,7 +72,7 @@ if filesToInstall != [] then
 else
 
 let
-  uBootVersion = "2021.04";
+  uBootVersion = "2021.10";
 
   # For now, monotonically increasing number.
   # Represents released versions.
@@ -104,7 +104,7 @@ let
 
     src = fetchurl {
       url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
-      sha256 = "06p1vymf0dl6jc2xy5w7p42mpgppa46lmpm2ishmgsycnldqnhqd";
+      sha256 = "1m0bvwv8r62s4wk4w3cmvs888dhv9gnfa98dczr4drk2jbhj7ryd";
     };
 
     patches = [
@@ -115,7 +115,7 @@ let
 
       # Misc patches, not upstreamable as-is
       ./patches/0001-bootmenu-improvements.patch
-      ./patches/0001-Libretech-autoboot-correct-config-naming-only-allow-.patch
+      ./patches/0001-autoboot-show-menu-only-on-menu-key.patch
       ./patches/0001-autoboot-Prevent-C-from-affecting-menucmd.patch
       ./patches/0001-splash-improvements.patch
       ./patches/0001-drivers-video-Add-dependency-on-GZIP.patch
@@ -134,6 +134,7 @@ let
     ] ++ patches;
 
     postPatch = ''
+      patchShebangs scripts
       patchShebangs tools
       patchShebangs arch/arm/mach-rockchip
 

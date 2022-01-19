@@ -26,12 +26,7 @@ rockchipRK399 {
     ./0001-rk3399-light-pinebook-power-and-standby-leds-during-.patch
     ./0001-rk3399-pinebook-pro-Support-SPI-flash-boot.patch
     ./0001-rk3399-pinebook-pro-Disable-cdn_dp.patch
-    ./0001-arm64-dts-rockchip-add-fuel-gauge-to-Pinebook-Pro-dt.patch
     ./0005-PBP-Fix-Panel-reset.patch
-    (fetchpatch {
-      url = "https://patchwork.ozlabs.org/series/232334/mbox/";
-      sha256 = "0abmc82dccwmf8fjg7lyxx33r0dfc9h2hrx5d32sjl6mfj88hkj7";
-    })
     (fetchpatch {
       url = "https://patchwork.ozlabs.org/series/237654/mbox/";
       sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
