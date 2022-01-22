@@ -1,10 +1,10 @@
 { systems
 , runCommandNoCC
-, gptfdisk
 , imageBuilder
-, vboot_reference
 , writeText
 , xxd
+, gptfdisk
+, vboot_reference
 }:
 
 let
@@ -109,25 +109,20 @@ let
 
   baseImage = baseImage' [];
 in
-{
-  #
-  # Raspberry Pi
-  # -------------
-  #
-  raspberryPi-aarch64 = runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {} ''
-    mkdir -p $out/binaries
-    mkdir -p $out/config
 
-    (cd $out
-      cp -rv ${raspberryPi-3.patchset} tow-boot-rpi3-patches
-      cp -v ${raspberryPi-3}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
-      cp -v ${raspberryPi-3}/config/noenv.config config/noenv.rpi3.config
+runCommandNoCC "tow-boot-raspberryPi-aarch64-${raspberryPi-3.version}" {} ''
+  mkdir -p $out/binaries
+  mkdir -p $out/config
 
-      cp -rv ${raspberryPi-4.patchset} tow-boot-rpi4-patches
-      cp -v ${raspberryPi-4}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
-      cp -v ${raspberryPi-4}/config/noenv.config config/noenv.rpi4.config
+  (cd $out
+    cp -rv ${raspberryPi-3.patchset} tow-boot-rpi3-patches
+    cp -v ${raspberryPi-3}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
+    cp -v ${raspberryPi-3}/config/noenv.config config/noenv.rpi3.config
 
-      cp -v ${baseImage}/*.img $out/shared.disk-image.img
-    )
-  '';
-}
+    cp -rv ${raspberryPi-4.patchset} tow-boot-rpi4-patches
+    cp -v ${raspberryPi-4}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
+    cp -v ${raspberryPi-4}/config/noenv.config config/noenv.rpi4.config
+
+    cp -v ${baseImage}/*.img $out/shared.disk-image.img
+  )
+''
