@@ -85,11 +85,11 @@ in
     };
 
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
-      inherit (final.Tow-Boot) gxlimg;
+      inherit (final.buildPackages.Tow-Boot) gxlimg;
     };
 
     amlogicG12 = aarch64.callPackage ../builders/amlogic-g12 {
-      inherit (final.Tow-Boot) meson64-tools;
+      inherit (final.buildPackages.Tow-Boot) meson64-tools;
     };
 
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
