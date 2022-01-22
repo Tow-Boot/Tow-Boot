@@ -7,13 +7,13 @@ let
     mkOption
     types
   ;
-  cfg = config.hardware.socs;
 in
 {
   options = {
     TEMP = {
       legacyBuilder = mkOption {
         type = types.anything; # meh
+        default = null;
       };
       legacyBuilderArguments = mkOption {
         type = with types; attrsOf anything; # meh
@@ -36,8 +36,12 @@ in
           withSPI = config.hardware.SPISize != null;
         };
       };
-      build = {
-        default = config.TEMP.legacyBuilder config.TEMP.legacyBuilderArguments;
+      build = mkIf (config.TEMP.legacyBuilder != null) {
+        default = (
+          config.helpers.verbosely
+          (builtins.trace "Warning: Building with legacy builder...")
+          (lib.mkForce (config.TEMP.legacyBuilder config.TEMP.legacyBuilderArguments))
+        );
       };
     }
   ];
