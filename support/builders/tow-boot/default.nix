@@ -367,7 +367,9 @@ let
     "passthru"
   ]);
 
-  mkOutput = commands: runCommandNoCC tow-boot.name { } ''
+  mkOutput = commands: runCommandNoCC tow-boot.name {
+    inherit (tow-boot) version;
+  } ''
     (PS4=" $ "; set -x
     mkdir -p "$out"
     cp -rv ${tow-boot.patchset} $out/patches
