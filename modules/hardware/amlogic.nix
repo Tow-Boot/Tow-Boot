@@ -41,17 +41,19 @@ in
         "amlogic-s922x"
       ];
     }
-    {
+    (mkIf cfg.amlogic-s805x.enable {
+      system.system = "aarch64-linux";
       # XXX legacy builder support
-      TEMP = mkIf cfg.amlogic-s805x.enable {
+      TEMP = {
         legacyBuilder = pkgs.Tow-Boot.amlogicGXL;
       };
-    }
-    {
+    })
+    (mkIf cfg.amlogic-s922x.enable {
+      system.system = "aarch64-linux";
       # XXX legacy builder support
-      TEMP = mkIf cfg.amlogic-s922x.enable {
+      TEMP = {
         legacyBuilder = pkgs.Tow-Boot.amlogicG12;
       };
-    }
+    })
   ];
 }

@@ -41,23 +41,26 @@ in
         "allwinner-h5"
       ];
     }
-    {
+    (mkIf cfg.allwinner-a64.enable {
+      system.system = "aarch64-linux";
       # XXX legacy builder support
-      TEMP = mkIf cfg.allwinner-a64.enable {
+      TEMP = {
         legacyBuilder = pkgs.Tow-Boot.allwinnerA64;
       };
-    }
-    {
+    })
+    (mkIf cfg.allwinner-h3.enable {
+      system.system = "armv7l-linux";
       # XXX legacy builder support
-      TEMP = mkIf cfg.allwinner-h3.enable {
+      TEMP = {
         legacyBuilder = pkgs.Tow-Boot.allwinnerArmv7;
       };
-    }
-    {
+    })
+    (mkIf cfg.allwinner-h5.enable {
+      system.system = "aarch64-linux";
       # XXX legacy builder support
       TEMP = mkIf cfg.allwinner-h5.enable {
         legacyBuilder = pkgs.Tow-Boot.allwinnerA64;
       };
-    }
+    })
   ];
 }

@@ -27,11 +27,12 @@ in
         "rockchip-rk3399"
       ];
     }
-    {
+    (mkIf cfg.rockchip-rk3399.enable {
+      system.system = "aarch64-linux";
       # XXX legacy builder support
-      TEMP = mkIf cfg.rockchip-rk3399.enable {
+      TEMP = {
         legacyBuilder = pkgs.Tow-Boot.rockchipRK3399;
       };
-    }
+    })
   ];
 }

@@ -2,6 +2,8 @@
 
 let
   inherit (lib)
+    mkIf
+    mkMerge
     mkOption
     types
   ;
@@ -41,17 +43,23 @@ in
       };
       # Do not use generic SOCs unless used for specific requirements.
       socs = {
-        generic-aarch64 = mkOption {
+        generic-aarch64.enable = mkOption {
           type = types.bool;
+          default = false;
           internal = true;
         };
       };
     };
   };
-  config = {
-    hardware.socList = [
-      "generic-aarch64"
-    ];
-    hardware.socs."${cfg.soc}".enable = true;
-  };
+  config = mkMerge [
+    {
+      hardware.socList = [
+        "generic-aarch64"
+      ];
+      hardware.socs."${cfg.soc}".enable = true;
+    }
+    (mkIf config.hardware.socs.generic-aarch64.enable {
+      system.system = "aarch64-linux";
+    })
+  ];
 }
