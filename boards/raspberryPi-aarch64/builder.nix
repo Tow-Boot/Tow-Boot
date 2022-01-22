@@ -2,9 +2,7 @@
 , runCommandNoCC
 , imageBuilder
 , writeText
-, xxd
-, gptfdisk
-, vboot_reference
+, buildPackages
 }:
 
 let
@@ -12,6 +10,11 @@ let
   inherit (aarch64.nixpkgs)
     raspberrypi-armstubs
     raspberrypifw
+  ;
+  inherit (buildPackages)
+    xxd
+    gptfdisk
+    vboot_reference
   ;
 
   build = args: aarch64.buildTowBoot ({
