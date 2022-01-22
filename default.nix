@@ -14,6 +14,7 @@ import ./support/nix/eval-with-configuration.nix (args // {
         { lib, ... }:
         {
           # Special configs for imperative use only here
+          system.automaticCross = true;
         }
       )
     ];
