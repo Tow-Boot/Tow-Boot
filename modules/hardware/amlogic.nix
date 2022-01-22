@@ -48,6 +48,9 @@ in
         legacyBuilder = pkgs.Tow-Boot.amlogicGXL;
       };
     })
+    (mkIf cfg.amlogic-s905.enable {
+      system.system = "aarch64-linux";
+    })
     (mkIf cfg.amlogic-s922x.enable {
       system.system = "aarch64-linux";
       # XXX legacy builder support
