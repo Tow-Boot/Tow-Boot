@@ -15,6 +15,13 @@
 , amlogicFirmware
 , meson-tools
 , runCommandNoCC
+
+, boardIdentifier
+, defconfig
+, FIPDIR
+, SPISize ? null
+, withSPI ? false
+, patches ? []
 }:
 
 let
@@ -50,11 +57,10 @@ let
   };
 
   firmware = buildTowBoot {
-    boardIdentifier = "odroid-C2";
-    # Amlogic S905 / GXBB
-    # This uses a bespoke build because while it's GXBB, the binaries from the
-    # vendor are not as expected.
-    defconfig = "odroid-c2_defconfig";
+    inherit boardIdentifier;
+    inherit defconfig;
+    inherit patches;
+    inherit FIPDIR;
 
     # No SPI
     variant = "noenv";
@@ -64,7 +70,6 @@ let
       meson-tools
     ];
 
-    FIPDIR = "${amlogicFirmware}/odroid-c2";
     BL31 = "${armTrustedFirmwareS905}/bl31.bin";
 
     postBuild = ''
