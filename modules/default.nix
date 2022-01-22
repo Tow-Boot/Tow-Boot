@@ -12,6 +12,7 @@ in
     ./build.nix
     ./device.nix
     ./overlays.nix
+    ./system.nix
     ./temp.nix # legacy builder support during migration
   ];
 
