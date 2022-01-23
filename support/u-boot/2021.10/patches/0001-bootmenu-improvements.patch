@@ -1,0 +1,237 @@
+From 91a1f14e5009eb3926592d6ab17d011c285d02bf Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 7 Jul 2020 00:59:45 -0400
+Subject: [PATCH 1/4] bootmenu: Replace reverse for truetype console
+
+The truetype console doesn't support many ANSI escape sequences, among
+those the reverse sequence is *broken*. It reverses the text, but does
+not change the background color.
+
+This, instead, uses characters to show which option is currently active.
+---
+ cmd/bootmenu.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/cmd/bootmenu.c b/cmd/bootmenu.c
+index 409ef9a848..57bdf07f47 100644
+--- a/cmd/bootmenu.c
++++ b/cmd/bootmenu.c
+@@ -62,23 +62,24 @@ static char *bootmenu_getoption(unsigned short int n)
+ static void bootmenu_print_entry(void *data)
+ {
+ 	struct bootmenu_entry *entry = data;
+-	int reverse = (entry->menu->active == entry->num);
++	int active = (entry->menu->active == entry->num);
+ 
+ 	/*
+ 	 * Move cursor to line where the entry will be drown (entry->num)
+ 	 * First 3 lines contain bootmenu header + 1 empty line
+ 	 */
+ 	printf(ANSI_CURSOR_POSITION, entry->num + 4, 1);
++	puts(ANSI_CLEAR_LINE);
+ 
+-	puts("     ");
+-
+-	if (reverse)
+-		puts(ANSI_COLOR_REVERSE);
++	if (active)
++		puts("  => [");
++	else
++		puts("     ");
+ 
+ 	puts(entry->title);
+ 
+-	if (reverse)
+-		puts(ANSI_COLOR_RESET);
++	if (active)
++		puts("]");
+ }
+ 
+ static void bootmenu_autoboot_loop(struct bootmenu_data *menu,
+-- 
+2.29.2
+
+
+From a6d373ccd12023db56c6f9456b5249c3cf890524 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 7 Jul 2020 05:04:53 -0400
+Subject: [PATCH 2/4] vidconsole-uclass: Implement ANSI_CURSOR_COLUMN
+
+---
+ drivers/video/vidconsole-uclass.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/video/vidconsole-uclass.c b/drivers/video/vidconsole-uclass.c
+index 81b65f5aae..ad24295d58 100644
+--- a/drivers/video/vidconsole-uclass.c
++++ b/drivers/video/vidconsole-uclass.c
+@@ -310,6 +310,18 @@ static void vidconsole_escape_char(struct udevice *dev, char ch)
+ 		set_cursor_position(priv, row, col);
+ 		break;
+ 	}
++	case 'G': {
++		int row, col;
++		get_cursor_position(priv, &row, &col);
++		char *s = priv->escape_buf;
++		s++;    /* [ */
++		s = parsenum(s, &col);
++		col = col-1;
++		if (col < 0)
++			col = 0;
++		set_cursor_position(priv, row, col);
++		break;
++	}
+ 	case 'H':
+ 	case 'f': {
+ 		int row, col;
+-- 
+2.29.2
+
+
+From 21d3be5303a9b6192fe02b448189a4ebc58d1968 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 7 Jul 2020 22:17:36 -0400
+Subject: [PATCH 3/4] autoboot: Make all prompts configurable
+
+This is a multi-purpose commit. Though it is hard to split into distinct
+changes.
+
+1. Allows the non-keyed prompt to be configured
+
+This is self-explanatory. This allows better customization for the
+integrator. Though, more to the point, this reduces the confusion that
+comes from the option name and description. Now it is used for all
+auto-boot prompts, not only for the keyed prompt.
+
+2. Redraws using ANSI escapes
+
+This is required for (1), as we can't backspace over the arbitrary
+amount of characters to redraw the countdown.
+
+This is done through resetting the column to 1 and clearing the line for
+maximum compatibility. Tested against serial, default dm_video and the
+truetype console.
+---
+ common/Kconfig.boot |  4 ++--
+ common/autoboot.c   | 11 ++++++++---
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/common/Kconfig.boot b/common/Kconfig.boot
+index 9c335f4f8c..6611377086 100644
+--- a/common/Kconfig.boot
++++ b/common/Kconfig.boot
+@@ -783,8 +783,8 @@ config AUTOBOOT_KEYED
+ 
+ config AUTOBOOT_PROMPT
+ 	string "Autoboot stop prompt"
+-	depends on AUTOBOOT_KEYED
+-	default "Autoboot in %d seconds\\n"
++	default "Autoboot in %d seconds\\n" if AUTOBOOT_KEYED
++	default "Hit any key to stop autoboot: %2d \\n"
+ 	help
+ 	  This string is displayed before the boot delay selected by
+ 	  CONFIG_BOOTDELAY starts. If it is not defined	there is no
+diff --git a/common/autoboot.c b/common/autoboot.c
+index 0bb08e7a4c..3129447228 100644
+--- a/common/autoboot.c
++++ b/common/autoboot.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <common.h>
++#include <ansi.h>
+ #include <autoboot.h>
+ #include <bootretry.h>
+ #include <cli.h>
+@@ -260,14 +261,16 @@ static int abortboot_single_key(int bootdelay)
+ 	int abort = 0;
+ 	unsigned long ts;
+ 
+-	printf("Hit any key to stop autoboot: %2d ", bootdelay);
++	printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ 
+ 	/*
+ 	 * Check if key already pressed
+ 	 */
+ 	if (tstc()) {	/* we got a key press	*/
+ 		getchar();	/* consume input	*/
+-		puts("\b\b\b 0");
++		puts(ANSI_CLEAR_LINE);
++		printf(ANSI_CURSOR_COLUMN, 1);
++		printf(CONFIG_AUTOBOOT_PROMPT, 0);
+ 		abort = 1;	/* don't auto boot	*/
+ 	}
+ 
+@@ -289,7 +292,9 @@ static int abortboot_single_key(int bootdelay)
+ 			udelay(10000);
+ 		} while (!abort && get_timer(ts) < 1000);
+ 
+-		printf("\b\b\b%2d ", bootdelay);
++		puts(ANSI_CLEAR_LINE);
++		printf(ANSI_CURSOR_COLUMN, 1);
++		printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ 	}
+ 
+ 	putc('\n');
+-- 
+2.29.2
+
+
+From dda5457c739886176f82a3ad04aad1f6ed2f4da5 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 9 Jul 2020 02:50:29 -0400
+Subject: [PATCH 4/4] cli: Clear ctrl+c before running a command
+
+This fixes an issue where:
+
+With an environment like so:
+
+    bootmenu_0=Default U-Boot boot=run distro_bootcmd; $menucmd -1
+
+  * Running bootmenu
+  * Running the option
+  * Cancelling using CTRL-C
+
+Would show the menu as expected, but running *any* command
+post-cancellation would spuriously exit in unexplainable ways.
+---
+ common/cli.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/common/cli.c b/common/cli.c
+index 048eacb9ef..fcd7aa041e 100644
+--- a/common/cli.c
++++ b/common/cli.c
+@@ -46,6 +46,9 @@ int run_command(const char *cmd, int flag)
+ 
+ 	if (flag & CMD_FLAG_ENV)
+ 		hush_flags |= FLAG_CONT_ON_NEWLINE;
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	return parse_string_outer(cmd, hush_flags);
+ #endif
+ }
+@@ -66,6 +69,9 @@ int run_command_repeatable(const char *cmd, int flag)
+ 	 * parse_string_outer() returns 1 for failure, so clean up
+ 	 * its result.
+ 	 */
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	if (parse_string_outer(cmd,
+ 			       FLAG_PARSE_SEMICOLON | FLAG_EXIT_FROM_LOOP))
+ 		return -1;
+@@ -106,6 +112,9 @@ int run_command_list(const char *cmd, int len, int flag)
+ 		buff[len] = '\0';
+ 	}
+ #ifdef CONFIG_HUSH_PARSER
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	rcode = parse_string_outer(buff, FLAG_PARSE_SEMICOLON);
+ #else
+ 	/*
+-- 
+2.29.2
+
