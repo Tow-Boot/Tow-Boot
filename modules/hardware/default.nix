@@ -12,9 +12,9 @@ let
 in
 {
   imports = [
-    ./allwinner.nix
-    ./amlogic.nix
-    ./rockchip.nix
+    ./allwinner
+    ./amlogic
+    ./rockchip
   ];
 
   options = {
