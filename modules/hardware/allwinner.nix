@@ -8,6 +8,13 @@ let
     types
   ;
   cfg = config.hardware.socs;
+  allwinnerSOCs = [
+    "allwinner-a64"
+    "allwinner-h3"
+    "allwinner-h5"
+  ];
+  anyAllwinner = lib.any (soc: config.hardware.socs.${soc}.enable) allwinnerSOCs;
+  anyAllwinner64 = anyAllwinner && config.system.system == "aarch64-linux";
 in
 {
   options = {
@@ -35,32 +42,31 @@ in
 
   config = mkMerge [
     {
-      hardware.socList = [
-        "allwinner-a64"
-        "allwinner-h3"
-        "allwinner-h5"
-      ];
+      hardware.socList = allwinnerSOCs;
     }
+    (mkIf anyAllwinner {
+      Tow-Boot.builder.installPhase = ''
+        cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
+      '';
+    })
+    (mkIf (anyAllwinner64) {
+      Tow-Boot.builder.additionalArguments = {
+        BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareAllwinner}/bl31.bin";
+      };
+    })
     (mkIf cfg.allwinner-a64.enable {
       system.system = "aarch64-linux";
-      # XXX legacy builder support
-      TEMP = {
-        legacyBuilder = pkgs.Tow-Boot.allwinnerA64;
-      };
     })
     (mkIf cfg.allwinner-h3.enable {
       system.system = "armv7l-linux";
-      # XXX legacy builder support
-      TEMP = {
-        legacyBuilder = pkgs.Tow-Boot.allwinnerArmv7;
-      };
+      Tow-Boot.config = [
+        (helpers: with helpers; {
+          CMD_POWEROFF = no;
+        })
+      ];
     })
     (mkIf cfg.allwinner-h5.enable {
       system.system = "aarch64-linux";
-      # XXX legacy builder support
-      TEMP = mkIf cfg.allwinner-h5.enable {
-        legacyBuilder = pkgs.Tow-Boot.allwinnerA64;
-      };
     })
   ];
 }
