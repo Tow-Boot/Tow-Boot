@@ -249,7 +249,7 @@ in
               compressedLogo = pkgs.buildPackages.runCommandNoCC "uboot-logo" {} ''
                 mkdir -p $out
                 cp ${../../assets/splash.bmp} $out/logo.bmp
-                (cd $out; gzip -9 -k logo.bmp)
+                (cd $out; gzip -n -9 -k logo.bmp)
               '';
             in "LOGO_BMP=${compressedLogo}/logo.bmp")
           ])
