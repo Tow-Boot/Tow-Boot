@@ -73,8 +73,6 @@ in
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
 
-    allwinnerArmv7 = armv7l.callPackage ../builders/allwinner-armv7 { };
-
     rockchipRK3399 = aarch64.callPackage ../builders/rockchip-rk3399 {
       TF-A = aarch64.armTrustedFirmwareRK3399;
     };
