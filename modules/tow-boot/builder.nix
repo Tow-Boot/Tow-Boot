@@ -63,6 +63,13 @@ in
           Additional native build inputs.
         '';
       };
+      meta = mkOption {
+        type = with types; attrsOf anything;
+        default = {};
+        description = ''
+          Nixpkgs-compatible "meta" attributes.
+        '';
+      };
     };
   };
   config = {
@@ -247,6 +254,9 @@ in
             in "LOGO_BMP=${compressedLogo}/logo.bmp")
           ])
         ];
+        meta = {
+          platforms = [config.system.system];
+        };
       };
     };
   };
