@@ -26,20 +26,6 @@ in
         type = types.package;
       };
     };
-    Tow-Boot = {
-      defconfig = mkOption {
-        type = types.str;
-      };
-      # XXX review how we handle this kind of board-specific customization
-      setup_leds = mkOption {
-        type = with types; nullOr str;
-        default = null;
-      };
-      patches = mkOption {
-        type = with types; listOf (oneOf [path package]);
-        default = [];
-      };
-    };
   };
   config = {
     build = {

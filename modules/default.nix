@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./hardware
+    ./tow-boot
     ./build.nix
     ./device.nix
     ./helpers.nix
