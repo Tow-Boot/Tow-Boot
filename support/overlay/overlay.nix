@@ -73,10 +73,6 @@ in
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
 
-    rockchipRK3399 = aarch64.callPackage ../builders/rockchip-rk3399 {
-      TF-A = aarch64.armTrustedFirmwareRK3399;
-    };
-
     amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
       inherit (final.buildPackages.Tow-Boot) gxlimg;
     };
