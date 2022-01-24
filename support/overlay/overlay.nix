@@ -73,10 +73,6 @@ in
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
 
-    amlogicGXL = aarch64.callPackage ../builders/amlogic-gxl {
-      inherit (final.buildPackages.Tow-Boot) gxlimg;
-    };
-
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
 
     imageBuilder = (callPackage ../image-builder {
