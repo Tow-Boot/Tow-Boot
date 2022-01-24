@@ -14,19 +14,18 @@
 
   Tow-Boot = {
     defconfig = "odroid-n2_defconfig";
+    config = [
+      (helpers: with helpers; {
+        USE_PREBOOT = yes;
+        PREBOOT = freeform ''"usb start ; usb info"'';
+      })
+    ];
     patches = [
       # ODROID N2 SPI support
       ./0001-Enable-the-SPI-on-the-ODROID-N2-by-default.patch
     ];
-  };
-
-  TEMP = {
-    legacyBuilderArguments = {
+    builder.additionalArguments = {
       FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/odroid-n2";
-      extraConfig = ''
-        CONFIG_USE_PREBOOT=y
-        CONFIG_PREBOOT="usb start ; usb info"
-      '';
     };
   };
 }
