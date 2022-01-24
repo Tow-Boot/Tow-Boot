@@ -14,10 +14,7 @@
 
   Tow-Boot = {
     defconfig = "libretech-ac_defconfig";
-  };
-
-  TEMP = {
-    legacyBuilderArguments = {
+    builder.additionalArguments = {
       FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/lafrite";
     };
   };
