@@ -1,0 +1,45 @@
+From fdbde526d840f62f76ef6c744f54bc1ce92bdf24 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 23 May 2021 00:33:12 -0400
+Subject: [PATCH] [HACK] efi_runtime: pretend we can't reset
+
+This is a workaround authored mainly for the RK3399 family of hardware.
+
+They *generally* end up using the RK808 PMIC to handle poweroff duties,
+but there's no equivalent feature in U-Boot.
+
+So until U-Boot knows how to poweroff those board, pretend the UEFI
+services can't reset (and poweroff).
+
+Hopefully the operating system will fallback to *any other method* to
+reboot and poweroff. It is known that Linux will.
+---
+ lib/efi_loader/efi_runtime.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/lib/efi_loader/efi_runtime.c b/lib/efi_loader/efi_runtime.c
+index 93a695fc27..9a055bb48b 100644
+--- a/lib/efi_loader/efi_runtime.c
++++ b/lib/efi_loader/efi_runtime.c
+@@ -127,13 +127,12 @@ efi_status_t efi_init_runtime_supported(void)
+ 				EFI_RT_SUPPORTED_SET_VIRTUAL_ADDRESS_MAP |
+ 				EFI_RT_SUPPORTED_CONVERT_POINTER;
+ 
+-	/*
+-	 * This value must be synced with efi_runtime_detach_list
+-	 * as well as efi_runtime_services.
++	/* EFI_RT_SUPPORTED_RESET_SYSTEM neutered
++	 * While reset would work, poweroff wouldn't.
++	 * This makes the operating system fall back to the
++	 * default scheme for the target, rather than try UEFI
++	 * poweroff which will only hang the board.
+ 	 */
+-#ifdef CONFIG_EFI_HAVE_RUNTIME_RESET
+-	rt_table->runtime_services_supported |= EFI_RT_SUPPORTED_RESET_SYSTEM;
+-#endif
+ 
+ 	ret = efi_install_configuration_table(&efi_rt_properties_table_guid,
+ 					      rt_table);
+-- 
+2.29.2
+
