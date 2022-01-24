@@ -77,10 +77,6 @@ in
       inherit (final.buildPackages.Tow-Boot) gxlimg;
     };
 
-    amlogicG12 = aarch64.callPackage ../builders/amlogic-g12 {
-      inherit (final.buildPackages.Tow-Boot) meson64-tools;
-    };
-
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
 
     imageBuilder = (callPackage ../image-builder {
