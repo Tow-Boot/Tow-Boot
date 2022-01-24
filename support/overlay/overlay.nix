@@ -50,9 +50,6 @@ in
       x86_64  = applyOverlay  "x86_64-linux";
     };
 
-    # The basic Tow-Boot builder
-    buildTowBoot = callPackage ../builders/tow-boot { };
-
     inherit (callPackage ./arm-trusted-firmware { })
       armTrustedFirmwareAllwinner
       armTrustedFirmwareRK3399
