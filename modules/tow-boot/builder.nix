@@ -74,7 +74,7 @@ in
   };
   config = {
     Tow-Boot = {
-      firmwareBuild = pkgs.callPackage (
+      firmwareBuild = lib.mkDefault (pkgs.callPackage (
         { stdenv
         , buildPackages
         , src
@@ -231,7 +231,7 @@ in
         ;
         boardIdentifier = config.device.identifier;
         inherit towBootIdentifier;
-      };
+      });
 
       builder = {
         postPatch = mkIf (config.Tow-Boot.setup_leds != null) ''
