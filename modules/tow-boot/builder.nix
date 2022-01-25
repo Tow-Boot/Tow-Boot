@@ -56,6 +56,13 @@ in
           Additional make flags.
         '';
       };
+      buildInputs = mkOption {
+        type = with types; listOf package;
+        default = [];
+        description = ''
+          Additional build inputs.
+        '';
+      };
       nativeBuildInputs = mkOption {
         type = with types; listOf package;
         default = [];
@@ -87,6 +94,7 @@ in
         , additionalArguments
         , installPhase
         , makeFlags
+        , buildInputs
         , nativeBuildInputs
         , postPatch
         }:
@@ -145,6 +153,8 @@ in
               --transform "s,^,$archive/,"
             )
           '';
+
+          buildInputs = buildInputs;
 
           nativeBuildInputs = [
             buildPackages.bc
@@ -226,6 +236,7 @@ in
           additionalArguments
           installPhase
           makeFlags
+          buildInputs
           nativeBuildInputs
           postPatch
         ;
