@@ -71,31 +71,5 @@ in
     '';
 
     spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
-
-    imageBuilder = (callPackage ../image-builder {
-      # Some acrobatics needed because splicing doesn't seem to work here :/
-      make_ext4fs = final.buildPackages.callPackage ./make_ext4fs { };
-    }).overrideScope'(self: super: {
-      firmwarePartition =
-        { firmwareFile
-        , partitionOffset
-        , partitionSize
-        , sectorSize ? 512
-        }: {
-          name = "Firmware (Tow-Boot)";
-          partitionLabel = "Firmware (Tow-Boot)";
-          # In theory this shouldn't be static, every partition should have a
-          # unique identifier, but that's not really possible here.
-          partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
-          # https://github.com/ARM-software/ebbr/issues/84
-          # For now, we're "owning" this GUID.
-          partitionType = "67401509-72E7-4628-B1AF-EDD128E4316A";
-          offset = partitionOffset * sectorSize;
-          length = partitionSize;
-          filename = firmwareFile;
-          filesystemType = "EBBR-firmware";
-        }
-      ;
-    });
   });
 }
