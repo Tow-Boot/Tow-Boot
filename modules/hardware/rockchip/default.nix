@@ -14,6 +14,11 @@ let
     variant
   ;
   cfg = config.hardware.socs;
+
+  firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
+  partitionOffset = 64; # in sectors
+  secondOffset = 16384; # in sectors
+  sectorSize = 512;
 in
 {
   options = {
@@ -82,13 +87,20 @@ in
             sha256 = "sha256-gjHwZWIPUzWMUk2+7Mhd4XJuorBluVL9J9LaO9fUaKw=";
           })
         ];
+        firmwarePartition = {
+            offset = partitionOffset * 512; # 32KiB into the image, or 64 × 512 long sectors
+            length = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
+          }
+        ;
         builder = {
           additionalArguments = {
             BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareRK3399}/bl31.elf";
-            firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
-            partitionOffset = 64; # in sectors
-            secondOffset = 16384; # in sectors
-            sectorSize = 512;
+            inherit
+              firmwareMaxSize
+              partitionOffset
+              secondOffset
+              sectorSize
+            ;
           };
           installPhase = mkMerge [
             (mkIf (variant == "spi") ''
