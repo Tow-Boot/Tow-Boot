@@ -41,7 +41,12 @@ in
           # unique identifier, but that's not really possible here.
           diskID = "E0CA6E57-39B2-4482-9838-21E2785CD93D";
         };
-        partitioningScheme = "gpt";
+        mbr = {
+          # In theory this shouldn't be static, every partition should have a
+          # unique identifier, but that's not really possible here.
+          diskID = "01234567";
+        };
+        partitioningScheme = lib.mkDefault "gpt";
         partitions = mkBefore [
           config.Tow-Boot.firmwarePartition
         ];
@@ -53,9 +58,15 @@ in
         # In theory this shouldn't be static, every partition should have a
         # unique identifier, but that's not really possible here.
         partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
-        # https://github.com/ARM-software/ebbr/issues/84
-        # For now, we're "owning" this GUID.
-        partitionType = "67401509-72E7-4628-B1AF-EDD128E4316A";
+        partitionType =
+          if config.Tow-Boot.diskImage.partitioningScheme == "gpt"
+          # https://github.com/ARM-software/ebbr/issues/84
+          # For now, we're "owning" this GUID.
+          then "67401509-72E7-4628-B1AF-EDD128E4316A"
+          # https://arm-software.github.io/ebbr/#mbr-partitioning
+          # May be overriden by platforms.
+          else "F8"
+        ;
         raw = "${config.Tow-Boot.firmwareBuild}/binaries/Tow-Boot.noenv.bin";
       };
 
