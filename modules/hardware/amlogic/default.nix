@@ -21,6 +21,13 @@ let
   amlogicGXL = lib.any (soc: config.hardware.socs.${soc}.enable) [
     "amlogic-s805x"
   ];
+
+  # amlogic families using sector 0x01 for the startup sequence *ugh*.
+  amlogicMBR = lib.any (v: v) [
+    cfg.amlogic-s905.enable # Not defined under a family yet due to ODROID-C2 weirness.
+    amlogicG12
+    amlogicGXL
+  ];
 in
 {
   options = {
@@ -62,6 +69,18 @@ in
     })
     (mkIf cfg.amlogic-s922x.enable {
       system.system = "aarch64-linux";
+    })
+
+    (mkIf amlogicMBR {
+      Tow-Boot = {
+        diskImage = {
+          partitioningScheme = "mbr";
+        };
+        firmwarePartition = {
+          offset = 512; # 512 bytes into the image, or 1 × 512 long sectors
+          length = 4 * 1024 * 1024; # Expected max size
+        };
+      };
     })
     (mkIf amlogicG12 {
       Tow-Boot = {
