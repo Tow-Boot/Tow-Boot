@@ -77,5 +77,22 @@ in
         Helper to add a disk image evaluation.
       '';
     };
+
+    mkFilesystemImageEvalOption = lib.mkOption {
+      type = lib.types.unspecified;
+      internal = true;
+      default = args: lib.mkOption ({
+        type = lib.types.submodule ({
+          imports = import (../support/image-builder/filesystem-image/module-list.nix);
+          _module.args.pkgs = pkgs;
+        });
+        description = ''
+          A filesystem image configuration.
+        '';
+      } // args);
+      description = ''
+        Helper to add a filesystem image evaluation.
+      '';
+    };
   };
 }
