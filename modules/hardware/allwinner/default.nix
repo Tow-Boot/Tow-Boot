@@ -45,9 +45,20 @@ in
       hardware.socList = allwinnerSOCs;
     }
     (mkIf anyAllwinner {
-      Tow-Boot.builder.installPhase = ''
-        cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
-      '';
+      Tow-Boot = {
+        diskImage = {
+          # Reduce GPT size to fit the firmware.
+          gpt.partitionEntriesCount = 48;
+        };
+        firmwarePartition = {
+            offset = 16 * 512; # 8KiB into the image, or 16 × 512 long sectors
+            length = 4 * 1024 * 1024; # Expected max size
+          }
+        ;
+        builder.installPhase = ''
+          cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
+        '';
+      };
     })
     (mkIf (anyAllwinner64) {
       Tow-Boot.builder.additionalArguments = {
