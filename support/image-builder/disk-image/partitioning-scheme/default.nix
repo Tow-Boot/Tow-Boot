@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./gpt
+    ./mbr
   ];
 
   options = {
