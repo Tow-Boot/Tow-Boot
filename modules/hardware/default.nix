@@ -15,6 +15,7 @@ in
     ./allwinner
     ./amlogic
     ./rockchip
+    ./generic.nix
   ];
 
   options = {
