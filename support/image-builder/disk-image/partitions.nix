@@ -66,7 +66,10 @@ let
       };
 
       partitionType = mkOption {
-        type = helpers.types.uuid;
+        type = types.oneOf [
+          helpers.types.uuid
+          (types.strMatching "[0-9a-fA-F]{2}")
+        ];
         default = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
         defaultText = "Linux filesystem data (0FC63DAF-8483-4772-8E79-3D69D8477DE4)";
         description = ''
