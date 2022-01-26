@@ -60,5 +60,22 @@ in
         The `config` param directly takes a module (attrset or function).
       '';
     };
+
+    mkImageBuilderEvalOption = lib.mkOption {
+      type = lib.types.unspecified;
+      internal = true;
+      default = args: lib.mkOption ({
+        type = lib.types.submodule ({
+          imports = import (../support/image-builder/disk-image/module-list.nix);
+          _module.args.pkgs = pkgs;
+        });
+        description = ''
+          A disk image configuration.
+        '';
+      } // args);
+      description = ''
+        Helper to add a disk image evaluation.
+      '';
+    };
   };
 }
