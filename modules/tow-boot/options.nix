@@ -40,7 +40,7 @@ in
         '';
       };
 
-      firmwareBuild = mkOption {
+      outputs.firmware = mkOption {
         type = types.package;
         description = ''
           Output of the firmware build (e.g. U-Boot).

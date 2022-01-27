@@ -67,7 +67,7 @@ in
           # May be overriden by platforms.
           else "F8"
         ;
-        raw = "${config.Tow-Boot.firmwareBuild}/binaries/Tow-Boot.noenv.bin";
+        raw = "${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin";
       };
 
       outputs = {

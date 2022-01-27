@@ -81,7 +81,7 @@ in
   };
   config = {
     Tow-Boot = {
-      firmwareBuild = lib.mkDefault (pkgs.callPackage (
+      outputs.firmware = lib.mkDefault (pkgs.callPackage (
         { stdenv
         , buildPackages
         , src
