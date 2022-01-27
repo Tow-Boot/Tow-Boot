@@ -7,7 +7,7 @@
 # Nixpkgs, originally authored by 
 #
 # Origin: https://github.com/NixOS/nixpkgs/commit/884580982851dee0529f018a0bb351f192e6f1d7
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   device = {
@@ -80,6 +80,18 @@
         cp -v Tow-Boot.$variant.bin $out/binaries/
         cp -v bl1.bin.hardkernel $out/binaries
       '';
+    };
+    diskImage = {
+      partitioningScheme = "mbr";
+      additionalCommands = ''
+        (PS4=" $ "; set -x
+        dd if=${config.Tow-Boot.outputs.firmware}/binaries/bl1.bin.hardkernel of=$img conv=fsync,notrunc bs=1 count=442
+        )
+      '';
+    };
+    firmwarePartition = {
+      offset = 512; # 512 bytes into the image, or 1 × 512 long sectors
+      length = 4 * 1024 * 1024; # Expected max size
     };
   };
 }
