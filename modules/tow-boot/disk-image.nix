@@ -29,6 +29,15 @@ in
           Configuration for the firmware partition.
         '';
       };
+      writeBinaryToFirmwarePartition = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether the firmware binary is directly written to the partition.
+
+          When disabled, the platform **must** handle configuring the firmwarePartition accordingly.
+        '';
+      };
     };
   };
 
@@ -58,7 +67,7 @@ in
         # In theory this shouldn't be static, every partition should have a
         # unique identifier, but that's not really possible here.
         partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
-        partitionType =
+        partitionType = lib.mkDefault (
           if config.Tow-Boot.diskImage.partitioningScheme == "gpt"
           # https://github.com/ARM-software/ebbr/issues/84
           # For now, we're "owning" this GUID.
@@ -66,8 +75,8 @@ in
           # https://arm-software.github.io/ebbr/#mbr-partitioning
           # May be overriden by platforms.
           else "F8"
-        ;
-        raw = "${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin";
+        );
+        raw = lib.mkIf config.Tow-Boot.writeBinaryToFirmwarePartition "${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin";
       };
 
       outputs = {
