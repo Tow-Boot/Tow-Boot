@@ -1,0 +1,647 @@
+From 4afe3209f9c7857e66310285e2d9db1e96555c90 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 10 Dec 2021 23:32:43 -0500
+Subject: [PATCH 1/3] drivers: Introduce vibrator uclass
+
+---
+ drivers/Kconfig                    |  2 +
+ drivers/Makefile                   |  1 +
+ drivers/vibrator/Kconfig           | 21 +++++++
+ drivers/vibrator/Makefile          |  5 ++
+ drivers/vibrator/vibrator-uclass.c | 62 +++++++++++++++++++
+ include/dm/uclass-id.h             |  1 +
+ include/vibrator.h                 | 96 ++++++++++++++++++++++++++++++
+ 7 files changed, 188 insertions(+)
+ create mode 100644 drivers/vibrator/Kconfig
+ create mode 100644 drivers/vibrator/Makefile
+ create mode 100644 drivers/vibrator/vibrator-uclass.c
+ create mode 100644 include/vibrator.h
+
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+index 417d6f88c2..184e1bd84e 100644
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -132,6 +132,8 @@ source "drivers/usb/Kconfig"
+ 
+ source "drivers/ufs/Kconfig"
+ 
++source "drivers/vibrator/Kconfig"
++
+ source "drivers/video/Kconfig"
+ 
+ source "drivers/virtio/Kconfig"
+diff --git a/drivers/Makefile b/drivers/Makefile
+index fd218c9056..959ff847d0 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -24,6 +24,7 @@ obj-$(CONFIG_$(SPL_TPL_)RTC_SUPPORT) += rtc/
+ obj-$(CONFIG_$(SPL_TPL_)SERIAL_SUPPORT) += serial/
+ obj-$(CONFIG_$(SPL_TPL_)SPI_SUPPORT) += spi/
+ obj-$(CONFIG_$(SPL_TPL_)TIMER) += timer/
++obj-$(CONFIG_$(SPL_TPL_)VIBRATOR) += vibrator/
+ obj-$(CONFIG_$(SPL_TPL_)VIRTIO) += virtio/
+ obj-$(CONFIG_$(SPL_)DM_MAILBOX) += mailbox/
+ obj-$(CONFIG_$(SPL_)REMOTEPROC) += remoteproc/
+diff --git a/drivers/vibrator/Kconfig b/drivers/vibrator/Kconfig
+new file mode 100644
+index 0000000000..138e9fa922
+--- /dev/null
++++ b/drivers/vibrator/Kconfig
+@@ -0,0 +1,21 @@
++menu "Vibrator Feedback Support"
++
++config VIBRATOR
++	bool "Enable VIBRATOR support"
++	depends on DM
++	help
++	  Many boards have VIBRATORs which can be used to signal status or alerts.
++	  U-Boot provides a uclass API to implement this feature. VIBRATOR drivers
++	  can provide access to board-specific VIBRATORs. Use of the device tree
++	  for configuration is encouraged.
++
++config SPL_VIBRATOR
++	bool "Enable VIBRATOR support in SPL"
++	depends on SPL && SPL_DM
++	help
++	  The VIBRATOR subsystem adds a small amount of overhead to the image.
++	  If this is acceptable and you have a need to use VIBRATORs in SPL,
++	  enable this option. You will need to enable device tree in SPL
++	  for this to work.
++
++endmenu
+diff --git a/drivers/vibrator/Makefile b/drivers/vibrator/Makefile
+new file mode 100644
+index 0000000000..326838ff7a
+--- /dev/null
++++ b/drivers/vibrator/Makefile
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0+
++#
++# Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
++
++obj-y += vibrator-uclass.o
+diff --git a/drivers/vibrator/vibrator-uclass.c b/drivers/vibrator/vibrator-uclass.c
+new file mode 100644
+index 0000000000..af3af7717d
+--- /dev/null
++++ b/drivers/vibrator/vibrator-uclass.c
+@@ -0,0 +1,62 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
++ * Copyright (c) 2015 Google, Inc
++ * Largely derived from `drivers/led/led-uclass.c`
++ * Original written by Simon Glass <sjg@chromium.org>
++ */
++
++#define LOG_CATEGORY UCLASS_VIBRATOR
++
++#include <common.h>
++#include <dm.h>
++#include <errno.h>
++#include <vibrator.h>
++#include <dm/device-internal.h>
++#include <dm/root.h>
++#include <dm/uclass-internal.h>
++
++int vibrator_get_by_label(const char *label, struct udevice **devp)
++{
++	struct udevice *dev;
++	struct uclass *uc;
++	int ret;
++
++	ret = uclass_get(UCLASS_VIBRATOR, &uc);
++	if (ret)
++		return ret;
++	uclass_foreach_dev(dev, uc) {
++		struct vibrator_uc_plat *uc_plat = dev_get_uclass_plat(dev);
++
++		if (uc_plat->label && strcmp(label, uc_plat->label) == 0)
++			return uclass_get_device_tail(dev, 0, devp);
++	}
++
++	return -ENODEV;
++}
++
++int vibrator_set_state(struct udevice *dev, enum vibrator_state_t state)
++{
++	struct vibrator_ops *ops = vibrator_get_ops(dev);
++
++	if (!ops->set_state)
++		return -ENOSYS;
++
++	return ops->set_state(dev, state);
++}
++
++enum vibrator_state_t vibrator_get_state(struct udevice *dev)
++{
++	struct vibrator_ops *ops = vibrator_get_ops(dev);
++
++	if (!ops->get_state)
++		return -ENOSYS;
++
++	return ops->get_state(dev);
++}
++
++UCLASS_DRIVER(vibrator) = {
++	.id		= UCLASS_VIBRATOR,
++	.name		= "vibrator",
++	.per_device_plat_auto	= sizeof(struct vibrator_uc_plat),
++};
+diff --git a/include/dm/uclass-id.h b/include/dm/uclass-id.h
+index e7edd409f3..81e0f97a7a 100644
+--- a/include/dm/uclass-id.h
++++ b/include/dm/uclass-id.h
+@@ -122,6 +122,7 @@ enum uclass_id {
+ 	UCLASS_USB_DEV_GENERIC,	/* USB generic device */
+ 	UCLASS_USB_HUB,		/* USB hub */
+ 	UCLASS_USB_GADGET_GENERIC,	/* USB generic device */
++	UCLASS_VIBRATOR,	/* Vibration feedback devices (phone vibration) */
+ 	UCLASS_VIDEO,		/* Video or LCD device */
+ 	UCLASS_VIDEO_BRIDGE,	/* Video bridge, e.g. DisplayPort to LVDS */
+ 	UCLASS_VIDEO_CONSOLE,	/* Text console driver for video device */
+diff --git a/include/vibrator.h b/include/vibrator.h
+new file mode 100644
+index 0000000000..a92d636773
+--- /dev/null
++++ b/include/vibrator.h
+@@ -0,0 +1,96 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
++ * Copyright (c) 2015 Google, Inc
++ * Largely derived from `include/led.h`
++ * Original written by Simon Glass <sjg@chromium.org>
++ */
++
++#ifndef __VIBRATOR_H
++#define __VIBRATOR_H
++
++struct udevice;
++
++/**
++ * struct vibrator_uc_plat - Platform data the uclass stores about each device
++ *
++ * @label:	VIBRATOR label
++ */
++struct vibrator_uc_plat {
++	const char *label;
++};
++
++/**
++ * struct vibrator_uc_priv - Private data the uclass stores about each device
++ *
++ * @period_ms:	Flash period in milliseconds
++ */
++struct vibrator_uc_priv {
++	int period_ms;
++};
++
++enum vibrator_state_t {
++	VIBRATOR_STATE_OFF = 0,
++	VIBRATOR_STATE_ON = 1,
++	VIBRATOR_STATE_TOGGLE,
++
++	VIBRATOR_STATE_COUNT,
++};
++
++struct vibrator_ops {
++	/**
++	 * set_state() - set the state of an VIBRATOR
++	 *
++	 * @dev:	VIBRATOR device to change
++	 * @state:	VIBRATOR state to set
++	 * @return 0 if OK, -ve on error
++	 */
++	int (*set_state)(struct udevice *dev, enum vibrator_state_t state);
++
++	/**
++	 * vibrator_get_state() - get the state of an VIBRATOR
++	 *
++	 * @dev:	VIBRATOR device to change
++	 * @return VIBRATOR state vibrator_state_t, or -ve on error
++	 */
++	enum vibrator_state_t (*get_state)(struct udevice *dev);
++};
++
++#define vibrator_get_ops(dev)	((struct vibrator_ops *)(dev)->driver->ops)
++
++/**
++ * vibrator_get_by_label() - Find an VIBRATOR device by label
++ *
++ * @label:	VIBRATOR label to look up
++ * @devp:	Returns the associated device, if found
++ * @return 0 if found, -ENODEV if not found, other -ve on error
++ */
++int vibrator_get_by_label(const char *label, struct udevice **devp);
++
++/**
++ * vibrator_set_state() - set the state of an VIBRATOR
++ *
++ * @dev:	VIBRATOR device to change
++ * @state:	VIBRATOR state to set
++ * @return 0 if OK, -ve on error
++ */
++int vibrator_set_state(struct udevice *dev, enum vibrator_state_t state);
++
++/**
++ * vibrator_get_state() - get the state of an VIBRATOR
++ *
++ * @dev:	VIBRATOR device to change
++ * @return VIBRATOR state vibrator_state_t, or -ve on error
++ */
++enum vibrator_state_t vibrator_get_state(struct udevice *dev);
++
++/**
++ * vibrator_default_state() - set the default state for all the VIBRATOR
++ *
++ * This enables all vibrators which have default state.
++ * see Documentation/devicetree/bindings/vibrators/common.txt
++ *
++ */
++int vibrator_default_state(void);
++
++#endif
+-- 
+2.34.0
+
+
+From baccd6f6e60ffa0d59d3fb9f3be3dac5332c0d2f Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 10 Dec 2021 23:42:29 -0500
+Subject: [PATCH 2/3] vibrator: Add vibrator_gpio driver
+
+---
+ drivers/vibrator/Kconfig         |  16 ++++
+ drivers/vibrator/Makefile        |   1 +
+ drivers/vibrator/vibrator_gpio.c | 124 +++++++++++++++++++++++++++++++
+ 3 files changed, 141 insertions(+)
+ create mode 100644 drivers/vibrator/vibrator_gpio.c
+
+diff --git a/drivers/vibrator/Kconfig b/drivers/vibrator/Kconfig
+index 138e9fa922..48eea60e86 100644
+--- a/drivers/vibrator/Kconfig
++++ b/drivers/vibrator/Kconfig
+@@ -18,4 +18,20 @@ config SPL_VIBRATOR
+ 	  enable this option. You will need to enable device tree in SPL
+ 	  for this to work.
+ 
++config VIBRATOR_GPIO
++	bool "VIBRATOR support for GPIO-connected VIBRATORs"
++	depends on VIBRATOR && DM_GPIO
++	help
++	  Enable support for VIBRATORs which are connected to GPIO lines. These
++	  GPIOs may be on the SoC or some other device which provides GPIOs.
++	  The GPIO driver must used driver model. VIBRATORs are configured using
++	  the device tree.
++
++config SPL_VIBRATOR_GPIO
++	bool "VIBRATOR support for GPIO-connected VIBRATORs in SPL"
++        depends on SPL_VIBRATOR && DM_GPIO
++	help
++	  This option is an SPL-variant of the VIBRATOR_GPIO option.
++	  See the help of VIBRATOR_GPIO for details.
++
+ endmenu
+diff --git a/drivers/vibrator/Makefile b/drivers/vibrator/Makefile
+index 326838ff7a..cc5fc14fbf 100644
+--- a/drivers/vibrator/Makefile
++++ b/drivers/vibrator/Makefile
+@@ -3,3 +3,4 @@
+ # Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
+ 
+ obj-y += vibrator-uclass.o
++obj-$(CONFIG_$(SPL_)VIBRATOR_GPIO) += vibrator_gpio.o
+diff --git a/drivers/vibrator/vibrator_gpio.c b/drivers/vibrator/vibrator_gpio.c
+new file mode 100644
+index 0000000000..71611aaa7c
+--- /dev/null
++++ b/drivers/vibrator/vibrator_gpio.c
+@@ -0,0 +1,124 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
++ * Copyright (c) 2015 Google, Inc
++ * Largely derived from `drivers/led/led_gpio.c`
++ * Original written by Simon Glass <sjg@chromium.org>
++ */
++
++#include <common.h>
++#include <dm.h>
++#include <errno.h>
++#include <vibrator.h>
++#include <log.h>
++#include <malloc.h>
++#include <asm/gpio.h>
++#include <dm/lists.h>
++
++struct vibrator_gpio_priv {
++	struct gpio_desc gpio;
++};
++
++static int gpio_vibrator_set_state(struct udevice *dev, enum vibrator_state_t state)
++{
++	struct vibrator_gpio_priv *priv = dev_get_priv(dev);
++	int ret;
++
++	if (!dm_gpio_is_valid(&priv->gpio))
++		return -EREMOTEIO;
++	switch (state) {
++	case VIBRATOR_STATE_OFF:
++	case VIBRATOR_STATE_ON:
++		break;
++	case VIBRATOR_STATE_TOGGLE:
++		ret = dm_gpio_get_value(&priv->gpio);
++		if (ret < 0)
++			return ret;
++		state = !ret;
++		break;
++	default:
++		return -ENOSYS;
++	}
++
++	return dm_gpio_set_value(&priv->gpio, state);
++}
++
++static enum vibrator_state_t gpio_vibrator_get_state(struct udevice *dev)
++{
++	struct vibrator_gpio_priv *priv = dev_get_priv(dev);
++	int ret;
++
++	if (!dm_gpio_is_valid(&priv->gpio))
++		return -EREMOTEIO;
++	ret = dm_gpio_get_value(&priv->gpio);
++	if (ret < 0)
++		return ret;
++
++	return ret ? VIBRATOR_STATE_ON : VIBRATOR_STATE_OFF;
++}
++
++static int vibrator_gpio_probe(struct udevice *dev)
++{
++	struct vibrator_uc_plat *uc_plat = dev_get_uclass_plat(dev);
++	struct vibrator_gpio_priv *priv = dev_get_priv(dev);
++	int ret;
++
++	ret = gpio_request_by_name(dev, "enable-gpios", 0, &priv->gpio, GPIOD_IS_OUT);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int vibrator_gpio_remove(struct udevice *dev)
++{
++	/*
++	 * The GPIO driver may have already been removed. We will need to
++	 * address this more generally.
++	 */
++#ifndef CONFIG_SANDBOX
++	struct vibrator_gpio_priv *priv = dev_get_priv(dev);
++
++	if (dm_gpio_is_valid(&priv->gpio))
++		dm_gpio_free(dev, &priv->gpio);
++#endif
++
++	return 0;
++}
++
++static int vibrator_gpio_bind(struct udevice *dev)
++{
++	ofnode node;
++	int ret;
++	struct vibrator_uc_plat *uc_plat;
++	const char *label;
++
++	node = dev_ofnode(dev);
++	label = ofnode_get_name(node);
++
++	uc_plat = dev_get_uclass_plat(dev);
++	uc_plat->label = label;
++
++	return 0;
++}
++
++static const struct vibrator_ops gpio_vibrator_ops = {
++	.set_state	= gpio_vibrator_set_state,
++	.get_state	= gpio_vibrator_get_state,
++};
++
++static const struct udevice_id vibrator_gpio_ids[] = {
++	{ .compatible = "gpio-vibrator" },
++	{ }
++};
++
++U_BOOT_DRIVER(vibrator_gpio) = {
++	.name	= "gpio_vibrator",
++	.id	= UCLASS_VIBRATOR,
++	.of_match = vibrator_gpio_ids,
++	.ops	= &gpio_vibrator_ops,
++	.priv_auto	= sizeof(struct vibrator_gpio_priv),
++	.bind	= vibrator_gpio_bind,
++	.probe	= vibrator_gpio_probe,
++	.remove	= vibrator_gpio_remove,
++};
+-- 
+2.34.0
+
+
+From 277fecab88db637ff00b6eb204f921e684c235ad Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 11 Dec 2021 00:45:34 -0500
+Subject: [PATCH 3/3] cmd: Add vibrator command
+
+---
+ cmd/Kconfig    |  10 ++++
+ cmd/Makefile   |   1 +
+ cmd/vibrator.c | 145 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 156 insertions(+)
+ create mode 100644 cmd/vibrator.c
+
+diff --git a/cmd/Kconfig b/cmd/Kconfig
+index 3a857b3f6e..4be5931639 100644
+--- a/cmd/Kconfig
++++ b/cmd/Kconfig
+@@ -1360,6 +1360,16 @@ config CMD_PVBLOCK
+ 	help
+ 	  Xen para-virtualized block device support
+ 
++config CMD_VIBRATOR
++	bool "vibrator"
++	depends on VIBRATOR
++	default y if VIBRATOR
++	help
++	  Enable the 'vibrator' command which allows for control of vibrator
++	  motors available on the board. The vibrator motors can be listed with
++	  'vibrator list' and controlled with vibrator on/off/time. Any
++	  vibrator driver can be controlled with this command.
++
+ config CMD_VIRTIO
+ 	bool "virtio"
+ 	depends on VIRTIO
+diff --git a/cmd/Makefile b/cmd/Makefile
+index ed3669411e..8ef4d48589 100644
+--- a/cmd/Makefile
++++ b/cmd/Makefile
+@@ -163,6 +163,7 @@ obj-$(CONFIG_CMD_UBIFS) += ubifs.o
+ obj-$(CONFIG_CMD_UNIVERSE) += universe.o
+ obj-$(CONFIG_CMD_UNLZ4) += unlz4.o
+ obj-$(CONFIG_CMD_UNZIP) += unzip.o
++obj-$(CONFIG_CMD_VIBRATOR) += vibrator.o
+ obj-$(CONFIG_CMD_VIRTIO) += virtio.o
+ obj-$(CONFIG_CMD_WDT) += wdt.o
+ obj-$(CONFIG_CMD_LZMADEC) += lzmadec.o
+diff --git a/cmd/vibrator.c b/cmd/vibrator.c
+new file mode 100644
+index 0000000000..2970c4e83f
+--- /dev/null
++++ b/cmd/vibrator.c
+@@ -0,0 +1,145 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (c) 2021 Samuel Dionne-Riel <samuel@dionne-riel.com>
++ * Copyright (c) 2017 Google, Inc
++ * Largely derived from `cmd/led.c`
++ * Original written by Simon Glass <sjg@chromium.org>
++ */
++
++#include <common.h>
++#include <command.h>
++#include <dm.h>
++#include <vibrator.h>
++#include <dm/uclass-internal.h>
++
++static const char *const state_label[] = {
++	[VIBRATOR_STATE_OFF]	= "off",
++	[VIBRATOR_STATE_ON]	= "on",
++	[VIBRATOR_STATE_TOGGLE]	= "toggle",
++};
++
++enum vibrator_state_t get_vibrator_cmd(char *var)
++{
++	int i;
++
++	for (i = 0; i < VIBRATOR_STATE_COUNT; i++) {
++		if (!strncmp(var, state_label[i], strlen(var)))
++			return i;
++	}
++
++	return -1;
++}
++
++static int show_vibrator_state(struct udevice *dev)
++{
++	int ret;
++
++	ret = vibrator_get_state(dev);
++	if (ret >= VIBRATOR_STATE_COUNT)
++		ret = -EINVAL;
++	if (ret >= 0)
++		printf("%s\n", state_label[ret]);
++
++	return ret;
++}
++
++static int list_vibrators(void)
++{
++	struct udevice *dev;
++	int ret;
++
++	for (uclass_find_first_device(UCLASS_VIBRATOR, &dev);
++	     dev;
++	     uclass_find_next_device(&dev)) {
++		struct vibrator_uc_plat *plat = dev_get_uclass_plat(dev);
++
++		if (!plat->label)
++			continue;
++		printf("%-15s ", plat->label);
++		if (device_active(dev)) {
++			ret = show_vibrator_state(dev);
++			if (ret < 0)
++				printf("Error %d\n", ret);
++		} else {
++			printf("<inactive>\n");
++		}
++	}
++
++	return 0;
++}
++
++int timed_vibration(struct udevice *dev, int duration_ms)
++{
++	int ret;
++	ret = vibrator_set_state(dev, VIBRATOR_STATE_ON);
++	if (ret < 0) {
++		printf("Vibrator operation failed (err=%d)\n", ret);
++		return CMD_RET_FAILURE;
++	}
++
++	udelay(duration_ms * 1000);
++
++	ret = vibrator_set_state(dev, VIBRATOR_STATE_OFF);
++	if (ret < 0) {
++		printf("Vibrator operation failed (err=%d)\n", ret);
++		return CMD_RET_FAILURE;
++	}
++}
++
++int do_vibrator(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
++{
++	enum vibrator_state_t cmd;
++	const char *vibrator_label;
++	struct udevice *dev;
++	int ret;
++	int duration_ms = 0;
++
++	/* Validate arguments */
++	if (argc < 2)
++		return CMD_RET_USAGE;
++	vibrator_label = argv[1];
++	if (strncmp(vibrator_label, "list", 4) == 0)
++		return list_vibrators();
++
++	cmd = argc > 2 ? get_vibrator_cmd(argv[2]) : VIBRATOR_STATE_COUNT;
++	ret = vibrator_get_by_label(vibrator_label, &dev);
++	if (ret) {
++		printf("Vibrator '%s' not found (err=%d)\n", vibrator_label, ret);
++		return CMD_RET_FAILURE;
++	}
++
++	if (strncmp(argv[2], "timed", 5) == 0) {
++		if (argc < 4)
++			return CMD_RET_USAGE;
++		duration_ms = dectoul(argv[3], NULL);
++
++		return timed_vibration(dev, duration_ms);
++	}
++
++	switch (cmd) {
++	case VIBRATOR_STATE_OFF:
++	case VIBRATOR_STATE_ON:
++	case VIBRATOR_STATE_TOGGLE:
++		ret = vibrator_set_state(dev, cmd);
++		break;
++	case VIBRATOR_STATE_COUNT:
++		printf("Vibrator '%s': ", vibrator_label);
++		ret = show_vibrator_state(dev);
++		break;
++	}
++	if (ret < 0) {
++		printf("Vibrator '%s' operation failed (err=%d)\n", vibrator_label, ret);
++		return CMD_RET_FAILURE;
++	}
++
++	return 0;
++}
++
++U_BOOT_CMD(
++	vibrator, 4, 1, do_vibrator,
++	"manage VIBRATORs",
++	"<vibrator_label> on|off\tChange VIBRATOR state\n"
++	"vibrator <vibrator_label> timed <ms duration>\t\tVibrate for the given duration (will block)\n"
++	"vibrator <vibrator_label>\tGet VIBRATOR state\n"
++	"vibrator list\t\tShow a list of VIBRATORs"
++);
+-- 
+2.34.0
+
