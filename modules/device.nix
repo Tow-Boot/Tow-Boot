@@ -9,6 +9,14 @@ in
 {
   options = {
     device = {
+      inRelease = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether the device is part of the release archive or not.
+        '';
+        internal = true;
+      };
       manufacturer = mkOption {
         description = ''
           Name of the manufacturer of the board.
