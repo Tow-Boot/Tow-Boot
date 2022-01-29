@@ -5,6 +5,7 @@
     manufacturer = "U-Boot";
     name = "Sandbox";
     identifier = "uBoot-sandbox";
+    inRelease = false;
   };
 
   hardware = {
