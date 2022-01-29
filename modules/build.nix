@@ -32,12 +32,11 @@ in
       archive = pkgs.callPackage (
         { runCommandNoCC, Tow-Boot, name }:
           runCommandNoCC "${name}.tar.xz" {
-            inherit name;
+            dir = name;
           } ''
             PS4=" $ "
           
             (
-            dir=$name
             set -x
             cp --no-preserve=mode,owner -r ${Tow-Boot} $dir
             tar -vcJf $out $dir
