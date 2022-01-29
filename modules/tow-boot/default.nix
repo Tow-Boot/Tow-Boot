@@ -6,6 +6,7 @@
     ./identity.nix
     ./installer.nix
     ./options.nix
+    ./phone-ux.nix
     ./src.nix
   ];
 }
