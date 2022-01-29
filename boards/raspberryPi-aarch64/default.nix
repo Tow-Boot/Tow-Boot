@@ -59,7 +59,12 @@ in
       pkgs.callPackage (
         { runCommandNoCC }:
 
-        runCommandNoCC "tow-boot-${config.device.identifier}" { } ''
+        runCommandNoCC "tow-boot-${config.device.identifier}" {
+          inherit (raspberryPi-3.config.Tow-Boot.outputs.firmware)
+            version
+            source
+          ;
+        } ''
           (PS4=" $ "; set -x
           mkdir -p $out/{binaries,config}
           cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware.source}/* $out/
