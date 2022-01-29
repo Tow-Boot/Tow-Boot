@@ -1,0 +1,74 @@
+From 3fcc25dd0e2f2a87faee97d6b0db93ba68c43c50 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 12 Dec 2021 17:31:44 -0500
+Subject: [PATCH] rk3399: Light PPP red LED and vibrate ASAP during boot
+
+This is a hack, but it works for now.
+---
+ .../pinephone-pro-rk3399.c                    | 22 +++++++++++++++++++
+ configs/pinephone-pro-rk3399_defconfig        |  1 +
+ 2 files changed, 23 insertions(+)
+
+diff --git a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+index 8efeb6ea3d..c51d1657a2 100644
+--- a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
++++ b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+@@ -7,16 +7,22 @@
+ #include <common.h>
+ #include <dm.h>
+ #include <init.h>
++#include <spl_gpio.h>
+ #include <syscon.h>
+ #include <asm/io.h>
+ #include <asm/arch-rockchip/clock.h>
++#include <asm/arch-rockchip/gpio.h>
+ #include <asm/arch-rockchip/grf_rk3399.h>
+ #include <asm/arch-rockchip/hardware.h>
+ #include <asm/arch-rockchip/misc.h>
++#include <linux/delay.h>
+ 
+ #define GRF_IO_VSEL_BT565_SHIFT 0
+ #define PMUGRF_CON0_VSEL_SHIFT 8
+ 
++#define GPIO3_BASE	0xff788000
++#define GPIO4_BASE	0xff790000
++
+ #ifdef CONFIG_MISC_INIT_R
+ static void setup_iodomain(void)
+ {
+@@ -54,4 +60,20 @@ int misc_init_r(void)
+ 	return ret;
+ }
+ 
++void led_setup(void)
++{
++	struct rockchip_gpio_regs * const gpio3 = (void *)GPIO3_BASE;
++	struct rockchip_gpio_regs * const gpio4 = (void *)GPIO4_BASE;
++
++	// Light up the red LED
++	// <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
++	spl_gpio_output(gpio4, GPIO(BANK_D, 2), 1);
++
++	// Vibrate ASAP
++	// <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
++	spl_gpio_output(gpio3, GPIO(BANK_B, 1), 1);
++	mdelay(400); // 0.4s
++	spl_gpio_output(gpio3, GPIO(BANK_B, 1), 0);
++}
++
+ #endif
+diff --git a/configs/pinephone-pro-rk3399_defconfig b/configs/pinephone-pro-rk3399_defconfig
+index 2cf80f7d35..87d36cfc6e 100644
+--- a/configs/pinephone-pro-rk3399_defconfig
++++ b/configs/pinephone-pro-rk3399_defconfig
+@@ -2,6 +2,7 @@ CONFIG_ARM=y
+ CONFIG_SKIP_LOWLEVEL_INIT=y
+ CONFIG_ARCH_ROCKCHIP=y
+ CONFIG_SYS_TEXT_BASE=0x00200000
++CONFIG_SPL_GPIO=y
+ CONFIG_NR_DRAM_BANKS=1
+ CONFIG_ENV_SIZE=0x8000
+ CONFIG_ROCKCHIP_RK3399=y
+-- 
+2.34.0
+

@@ -1,0 +1,69 @@
+From 78e61f3170c8d5595a46fbc13da67e2759cebe38 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 18 Dec 2021 22:37:41 -0500
+Subject: [PATCH] [HACK] rockchip_sdhci: Work around broken mmc `set_ios_pos`
+
+It's unclear *how* it is broken, but this function sets clock speed, and
+it indeed seems to set itself in a bad state on at least two RK3399
+targets (Pinebook Pro and Pinephone Pro).
+
+(Change from ac804143cfd128d144403ef2434344988c3fde9f)
+
+This can be easily reproduced doing the following:
+
+    => mmc dev
+    mmc fail to send stop cmd
+    switch to partitions #0, OK
+    mmc0(part 0) is current device
+    => mmc info
+    Device: mmc@fe330000
+    Manufacturer ID: 88
+    OEM: 103
+    Name: SLD12
+    Bus Speed: 25000000
+    Mode: MMC High Speed (52MHz)
+    Rd Block Len: 512
+    MMC version 5.1
+    High Capacity: Yes
+    Capacity: 115.2 GiB
+    Bus Width: 8-bit
+    Erase Group Size: 512 KiB
+    HC WP Group Size: 4 MiB
+    User Capacity: 115.2 GiB WRREL
+    Boot Capacity: 4 MiB ENH
+    RPMB Capacity: 4 MiB ENH
+    => mmc dev
+    => mmc info
+
+The last two commands return nothing, no output to say they failed;
+using `&& echo success` shows they return failure status.
+
+Using a patch to add logging we can observe:
+
+    => mmc dev
+    Failure in init_mmc_device from mmc_init(mmc) (ret=-110).
+    => mmc info
+    Failure in init_mmc_device from mmc_init(mmc) (ret=-110).
+
+This somewhat "contrived" reproducer is not the only one. Using `mmc
+rescan` will b0rk eMMC. Using `ums 0 mmc 0` will too.
+---
+ drivers/mmc/rockchip_sdhci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/rockchip_sdhci.c b/drivers/mmc/rockchip_sdhci.c
+index 1ac00587d4..3cbd9e0a49 100644
+--- a/drivers/mmc/rockchip_sdhci.c
++++ b/drivers/mmc/rockchip_sdhci.c
+@@ -353,7 +353,7 @@ static int rockchip_sdhci_execute_tuning(struct mmc *mmc, u8 opcode)
+ }
+ 
+ static struct sdhci_ops rockchip_sdhci_ops = {
+-	.set_ios_post	= rockchip_sdhci_set_ios_post,
++	//.set_ios_post	= rockchip_sdhci_set_ios_post,
+ 	.platform_execute_tuning = &rockchip_sdhci_execute_tuning,
+ };
+ 
+-- 
+2.34.0
+

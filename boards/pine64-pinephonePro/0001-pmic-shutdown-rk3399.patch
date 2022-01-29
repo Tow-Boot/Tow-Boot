@@ -1,0 +1,142 @@
+From 5b2f612571cf75b48b20dc7e1f81ffc12cd434f3 Mon Sep 17 00:00:00 2001
+From: Joseph Chen <chenjh@rock-chips.com>
+Date: Thu, 19 Sep 2019 16:09:12 +0800
+Subject: [PATCH 1/2] dm: pmic: add pmic_shutdown() interface
+
+It is a common requirement to shutdown some PMIC. Provide some
+simple convenience functions to do this.
+
+Signed-off-by: Joseph Chen <chenjh@rock-chips.com>
+Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+---
+ drivers/power/pmic/pmic-uclass.c | 11 +++++++++++
+ include/power/pmic.h             |  9 +++++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/drivers/power/pmic/pmic-uclass.c b/drivers/power/pmic/pmic-uclass.c
+index 5dcf6d8079..be7089d972 100644
+--- a/drivers/power/pmic/pmic-uclass.c
++++ b/drivers/power/pmic/pmic-uclass.c
+@@ -194,6 +194,17 @@ static int pmic_pre_probe(struct udevice *dev)
+ 	return 0;
+ }
+ 
++
++int pmic_shutdown(struct udevice *dev)
++{
++	const struct dm_pmic_ops *ops = dev_get_driver_ops(dev);
++
++	if (!ops || !ops->shutdown)
++		return -ENOSYS;
++
++	return ops->shutdown(dev);
++}
++
+ UCLASS_DRIVER(pmic) = {
+ 	.id		= UCLASS_PMIC,
+ 	.name		= "pmic",
+diff --git a/include/power/pmic.h b/include/power/pmic.h
+index be9de6b4de..231195e5ea 100644
+--- a/include/power/pmic.h
++++ b/include/power/pmic.h
+@@ -164,6 +164,7 @@ struct dm_pmic_ops {
+ 	int (*read)(struct udevice *dev, uint reg, uint8_t *buffer, int len);
+ 	int (*write)(struct udevice *dev, uint reg, const uint8_t *buffer,
+ 		     int len);
++	int (*shutdown)(struct udevice *dev);
+ };
+ 
+ /**
+@@ -306,6 +307,14 @@ struct uc_pmic_priv {
+ 	uint trans_len;
+ };
+ 
++/**
++ * pmic_shutdown() - power off supplies of PMIC
++ *
++ * @dev:	PMIC device to update
++ * @return 0 on success or negative value of errno.
++ */
++int pmic_shutdown(struct udevice *dev);
++
+ #endif /* CONFIG_DM_PMIC */
+ 
+ #ifdef CONFIG_POWER
+-- 
+2.34.0
+
+
+From d500426ba7b8e9fbdd18982226171a753063fc8b Mon Sep 17 00:00:00 2001
+From: Joseph Chen <chenjh@rock-chips.com>
+Date: Thu, 19 Sep 2019 16:09:27 +0800
+Subject: [PATCH 2/2] power: pmic: rk8xx: add pmic_shutdown() implement
+
+add rk8xx_shutdown for pmic shutdown.
+It is used in applications such as UBOOT shutdown charging.
+
+Signed-off-by: Joseph Chen <chenjh@rock-chips.com>
+Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+---
+ drivers/power/pmic/rk8xx.c | 39 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+diff --git a/drivers/power/pmic/rk8xx.c b/drivers/power/pmic/rk8xx.c
+index 5f442fea68..f7450dd0c4 100644
+--- a/drivers/power/pmic/rk8xx.c
++++ b/drivers/power/pmic/rk8xx.c
+@@ -57,6 +57,44 @@ static int rk8xx_read(struct udevice *dev, uint reg, uint8_t *buff, int len)
+ 	return 0;
+ }
+ 
++static int rk8xx_shutdown(struct udevice *dev)
++{
++	struct rk8xx_priv *priv = dev_get_priv(dev);
++	u8 val, dev_off;
++	int ret = 0;
++
++	switch (priv->variant) {
++	case RK808_ID:
++		dev_off = BIT(3);
++		break;
++	case RK805_ID:
++	case RK816_ID:
++	case RK818_ID:
++		dev_off = BIT(0);
++		break;
++	default:
++		printf("Unknown PMIC: RK%x\n", priv->variant);
++		return -EINVAL;
++	}
++
++	ret = dm_i2c_read(dev, REG_DEVCTRL, &val, 1);
++	if (ret) {
++		printf("read error from device: %p register: %#x!",
++		       dev, REG_DEVCTRL);
++		return ret;
++	}
++
++	val |= dev_off;
++	ret = dm_i2c_write(dev, REG_DEVCTRL, &val, 1);
++	if (ret) {
++		printf("write error to device: %p register: %#x!",
++		       dev, REG_DEVCTRL);
++		return ret;
++	}
++
++	return 0;
++}
++
+ #if CONFIG_IS_ENABLED(PMIC_CHILDREN)
+ static int rk8xx_bind(struct udevice *dev)
+ {
+@@ -171,6 +209,7 @@ static struct dm_pmic_ops rk8xx_ops = {
+ 	.reg_count = rk8xx_reg_count,
+ 	.read = rk8xx_read,
+ 	.write = rk8xx_write,
++	.shutdown = rk8xx_shutdown,
+ };
+ 
+ static const struct udevice_id rk8xx_ids[] = {
+-- 
+2.34.0
+

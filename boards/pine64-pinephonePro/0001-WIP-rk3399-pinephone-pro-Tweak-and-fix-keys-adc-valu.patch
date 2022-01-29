@@ -1,0 +1,42 @@
+From 7f79d77e19857a124666a794de745ccca8b49f6a Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 17 Dec 2021 22:14:13 -0500
+Subject: [PATCH] [WIP] rk3399-pinephone-pro: Tweak and fix keys adc values as
+ observed
+
+1759 is a pretty much static value for Volume Up, safe for some rare
+stray 3000~ish values. This is a fix.
+
+For Volume Down, I *one time* saw 299120, and better err on the side of
+caution than missing a single key press. This is a tweak.
+
+Observed using:
+
+    => adc single saradc@ff100000 1
+---
+ arch/arm/dts/rk3399-pinephone-pro.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
+index 45837c0596..5820b63dfb 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro.dts
++++ b/arch/arm/dts/rk3399-pinephone-pro.dts
+@@ -38,13 +38,13 @@
+ 		button-up {
+ 			label = "Volume Up";
+ 			linux,code = <KEY_VOLUMEUP>;
+-			press-threshold-microvolt = <100000>;
++			press-threshold-microvolt = <  1000>;
+ 		};
+ 
+ 		button-down {
+ 			label = "Volume Down";
+ 			linux,code = <KEY_VOLUMEDOWN>;
+-			press-threshold-microvolt = <300000>;
++			press-threshold-microvolt = <290000>;
+ 		};
+ 	};
+ 
+-- 
+2.34.0
+

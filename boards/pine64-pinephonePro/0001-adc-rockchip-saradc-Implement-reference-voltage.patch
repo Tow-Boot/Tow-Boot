@@ -1,0 +1,56 @@
+From dd0622172fb7ea09e5f63ad23d811592d55089b5 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 17 Dec 2021 22:17:18 -0500
+Subject: [PATCH] adc: rockchip-saradc: Implement reference voltage
+
+This is based on the meson-saradc implementation.
+
+With this added, the `adc-keys` compatible driver can now use keys found
+on a `rockchip-saradc` ADC.
+---
+ drivers/adc/rockchip-saradc.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/drivers/adc/rockchip-saradc.c b/drivers/adc/rockchip-saradc.c
+index e464d33f22..8cdef62490 100644
+--- a/drivers/adc/rockchip-saradc.c
++++ b/drivers/adc/rockchip-saradc.c
+@@ -100,8 +100,11 @@ int rockchip_saradc_stop(struct udevice *dev)
+ 
+ int rockchip_saradc_probe(struct udevice *dev)
+ {
++	struct adc_uclass_plat *uc_pdata = dev_get_uclass_plat(dev);
+ 	struct rockchip_saradc_priv *priv = dev_get_priv(dev);
+ 	struct clk clk;
++	struct udevice *vref;
++	int vref_uv;
+ 	int ret;
+ 
+ 	ret = clk_get_by_index(dev, 0, &clk);
+@@ -114,6 +117,23 @@ int rockchip_saradc_probe(struct udevice *dev)
+ 
+ 	priv->active_channel = -1;
+ 
++	ret = device_get_supply_regulator(dev, "vref-supply", &vref);
++	if (ret) {
++		printf("can't get vref-supply: %d\n", ret);
++		return ret;
++	}
++
++	vref_uv = regulator_get_value(vref);
++	if (vref_uv < 0) {
++		printf("can't get vref-supply value: %d\n", vref_uv);
++		return vref_uv;
++	}
++
++	/* VDD supplied by common vref pin */
++	uc_pdata->vdd_supply = vref;
++	uc_pdata->vdd_microvolts = vref_uv;
++	uc_pdata->vss_microvolts = 0;
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.0
+
