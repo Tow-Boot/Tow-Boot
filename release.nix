@@ -6,44 +6,51 @@
 
 let
   inherit (pkgs.lib)
-    filterAttrs
-    isDerivation
-    mapAttrs
-    mapAttrsToList
     concatStringsSep
+    filter
   ;
 
-  # This is what we're using to get our outputs.
-  default = filterAttrs (k: v: isDerivation v)
-    (import ./default.nix { pkgs = pkgs; silent = true; })
+  evalFor = device: (
+    import ./support/nix/eval-with-configuration.nix {
+      inherit
+        pkgs
+        device
+      ;
+      #verbose = true;
+      configuration = {
+        # Special configs for imperative use only here
+        system.automaticCross = true;
+      };
+    }
+  );
+
+  # We're slightly cheating here
+  version =
+    let info = (import ./modules/tow-boot/identity.nix).Tow-Boot; in
+    "${info.releaseNumber}${info.releaseIdentifier}"
   ;
 
-  keepPackage = (k: v: !(v ? internal && v.internal));
-  releasedPackages = filterAttrs keepPackage default;
+  keepEval = (eval: eval.config.device.inRelease);
 
-  # We can use the sandbox to gather some information.
-  inherit (default) uBoot-sandbox;
+  all-devices =
+    builtins.filter
+    (d: builtins.pathExists (./. + "/boards/${d}/default.nix"))
+    (builtins.attrNames (builtins.readDir ./boards))
+  ;
 
-  # For example, the version.
-  inherit (uBoot-sandbox) version;
+  evals = builtins.map (device: evalFor device) all-devices;
+  releasedEvals = filter keepEval evals;
 in
+  pkgs.runCommandNoCC "Tow-Boot.release.${version}" {
+    inherit version;
+  } ''
+    mkdir -p $out
+    PS4=" $ "
 
-pkgs.runCommandNoCC "tow-boot-release-${version}" {
-  inherit version;
-} ''
-  mkdir -p $out
-  PS4=" $ "
-  
-  ${concatStringsSep "\n" (mapAttrsToList (attr: firmware: ''
-    (
-    echo
-    echo ":: Packing-up ${attr}"
-    dir=${attr}-${version}
-    set -x
-    cd $out/
-    cp --no-preserve=mode,owner -r ${firmware} $dir
-    tar -vcJf $dir.tar.xz $dir
-    rm -r $dir
-    )
-  '') releasedPackages)}
-''
+    ${concatStringsSep "\n" (builtins.map (eval: ''
+      (
+      echo " :: Packaging ${eval.config.device.identifier}"
+      cp -t $out/ ${eval.build.archive}
+      )
+    '') releasedEvals)}
+  ''
