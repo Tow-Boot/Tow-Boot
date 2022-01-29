@@ -4,6 +4,8 @@ let
   inherit (final) lib;
 in
 {
+  make_ext4fs = final.callPackage ./make_ext4fs { };
+
   Tow-Boot = lib.makeScope final.newScope (self:
 
   let
