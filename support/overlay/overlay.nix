@@ -69,7 +69,5 @@ in
     } ''
       mkimage -C none -A arm64 -T script -d ${file} $out
     '';
-
-    spiInstallerPartitionBuilder = callPackage ../builders/spi-installer { };
   });
 }
