@@ -9,6 +9,7 @@
 
   hardware = {
     soc = "rockchip-rk3399";
+    SPISize = 16 * 1024 * 1024; # 16 MiB
   };
 
   Tow-Boot = {
@@ -45,6 +46,9 @@
       # Sync DT with arbitrary DT from a linux checkout
       # This configures some necessary hardware nodes like LED, buttons and vibrator.
       ./0001-WIP-Mostly-sync-with-Linux-dts.patch
+
+      # SPI support
+      ./0001-WIP-pine64-pinephonePro-SPI-support.patch
 
       # Fix volume keys
       ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch
