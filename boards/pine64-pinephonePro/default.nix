@@ -36,19 +36,12 @@
         USB_GADGET_MANUFACTURER = freeform ''"Pine64"'';
       })
       (helpers: with helpers; {
-        CMD_POWEROFF = lib.mkForce no;
+        CMD_POWEROFF = lib.mkForce yes;
       })
     ];
     patches = [
       # Basic pinephone pro enablement
       ./0001-pinephone-pro-support.patch
-
-      # Sync DT with arbitrary DT from a linux checkout
-      # This configures some necessary hardware nodes like LED, buttons and vibrator.
-      ./0001-WIP-Mostly-sync-with-Linux-dts.patch
-
-      # SPI support
-      ./0001-WIP-pine64-pinephonePro-SPI-support.patch
 
       # Fix volume keys
       ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch

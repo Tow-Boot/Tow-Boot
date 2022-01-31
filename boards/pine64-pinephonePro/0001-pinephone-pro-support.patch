@@ -1,7 +1,7 @@
-From d1f4151f02153df16ec26e56f8be338cae72be13 Mon Sep 17 00:00:00 2001
+From 85f2f3471e0e5e6035bd088e0012d6d2da0f43ec Mon Sep 17 00:00:00 2001
 From: Martijn Braam <martijn@brixit.nl>
 Date: Sat, 12 Dec 2020 13:31:03 +0100
-Subject: [PATCH] rockchip: Add initial support for the PinePhone Pro
+Subject: [PATCH 1/6] rockchip: Add initial support for the PinePhone Pro
 
 This is a new device by PINE64 that's very similar to the Pinebook Pro
 that's already supported.
@@ -39,7 +39,7 @@ Signed-off-by: Martijn Braam <martijn@brixit.nl>
  create mode 100644 include/configs/pinephone-pro-rk3399.h
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index ed3d360bb1..3206370226 100644
+index fc16a57e60b..54f194c78bc 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
 @@ -137,6 +137,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
@@ -52,7 +52,7 @@ index ed3d360bb1..3206370226 100644
  	rk3399-roc-pc-mezzanine.dtb \
 diff --git a/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
 new file mode 100644
-index 0000000000..9d44db5978
+index 00000000000..9d44db59783
 --- /dev/null
 +++ b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
 @@ -0,0 +1,44 @@
@@ -102,7 +102,7 @@ index 0000000000..9d44db5978
 +};
 diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
 new file mode 100644
-index 0000000000..3fe1845ced
+index 00000000000..3fe1845ced5
 --- /dev/null
 +++ b/arch/arm/dts/rk3399-pinephone-pro.dts
 @@ -0,0 +1,520 @@
@@ -627,7 +627,7 @@ index 0000000000..3fe1845ced
 +	status = "okay";
 +};
 diff --git a/arch/arm/mach-rockchip/rk3399/Kconfig b/arch/arm/mach-rockchip/rk3399/Kconfig
-index 17628f9171..3ba603ca80 100644
+index 17628f91712..3ba603ca804 100644
 --- a/arch/arm/mach-rockchip/rk3399/Kconfig
 +++ b/arch/arm/mach-rockchip/rk3399/Kconfig
 @@ -28,6 +28,13 @@ config TARGET_PINEBOOK_PRO_RK3399
@@ -654,7 +654,7 @@ index 17628f9171..3ba603ca80 100644
  source "board/theobroma-systems/puma_rk3399/Kconfig"
 diff --git a/board/pine64/pinephone-pro-rk3399/Kconfig b/board/pine64/pinephone-pro-rk3399/Kconfig
 new file mode 100644
-index 0000000000..13d6465ae6
+index 00000000000..13d6465ae6e
 --- /dev/null
 +++ b/board/pine64/pinephone-pro-rk3399/Kconfig
 @@ -0,0 +1,15 @@
@@ -675,7 +675,7 @@ index 0000000000..13d6465ae6
 +endif
 diff --git a/board/pine64/pinephone-pro-rk3399/MAINTAINERS b/board/pine64/pinephone-pro-rk3399/MAINTAINERS
 new file mode 100644
-index 0000000000..9ca4fc4cbe
+index 00000000000..9ca4fc4cbef
 --- /dev/null
 +++ b/board/pine64/pinephone-pro-rk3399/MAINTAINERS
 @@ -0,0 +1,8 @@
@@ -689,14 +689,14 @@ index 0000000000..9ca4fc4cbe
 +F:	configs/pinephone-pro-rk3399_defconfig
 diff --git a/board/pine64/pinephone-pro-rk3399/Makefile b/board/pine64/pinephone-pro-rk3399/Makefile
 new file mode 100644
-index 0000000000..8d9203053e
+index 00000000000..8d9203053e5
 --- /dev/null
 +++ b/board/pine64/pinephone-pro-rk3399/Makefile
 @@ -0,0 +1 @@
 +obj-y	+= pinephone-pro-rk3399.o
 diff --git a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
 new file mode 100644
-index 0000000000..8efeb6ea3d
+index 00000000000..8efeb6ea3d0
 --- /dev/null
 +++ b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
 @@ -0,0 +1,57 @@
@@ -759,7 +759,7 @@ index 0000000000..8efeb6ea3d
 +#endif
 diff --git a/configs/pinephone-pro-rk3399_defconfig b/configs/pinephone-pro-rk3399_defconfig
 new file mode 100644
-index 0000000000..2cf80f7d35
+index 00000000000..2cf80f7d355
 --- /dev/null
 +++ b/configs/pinephone-pro-rk3399_defconfig
 @@ -0,0 +1,92 @@
@@ -857,7 +857,7 @@ index 0000000000..2cf80f7d35
 +CONFIG_ERRNO_STR=y
 diff --git a/include/configs/pinephone-pro-rk3399.h b/include/configs/pinephone-pro-rk3399.h
 new file mode 100644
-index 0000000000..fefa793fdd
+index 00000000000..fefa793fdd4
 --- /dev/null
 +++ b/include/configs/pinephone-pro-rk3399.h
 @@ -0,0 +1,23 @@
@@ -885,5 +885,1738 @@ index 0000000000..fefa793fdd
 +
 +#endif
 -- 
-2.32.0
+2.34.0
+
+
+From 671b2d63972de877b45d52e77e975057e3ec3c8c Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 12 Dec 2021 18:42:33 -0500
+Subject: [PATCH 2/6] Mostly sync with Linux dts
+
+Some problematic parts have been removed entirely.
+
+Based on:
+
+ - https://gitlab.com/mobian1/devices/rockchip-linux/-/commit/1eb26797c1b9356281efff18a79dee892ddc590d
+---
+ arch/arm/dts/rk3399-pinephone-pro.dts | 763 ++++++++++++++++++++++++--
+ 1 file changed, 725 insertions(+), 38 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
+index 3fe1845ced5..45837c05967 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro.dts
++++ b/arch/arm/dts/rk3399-pinephone-pro.dts
+@@ -1,23 +1,218 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2021 Martijn Braam <martijn@brixit.nl>
++ * Copyright (c) 2020 Martijn Braam <martijn@brixit.nl>
++ * Copyright (c) 2021 Kamil Trzciński <ayufan@ayufan.eu>
+  */
+ 
+ /dts-v1/;
++#include <dt-bindings/input/gpio-keys.h>
++#include <dt-bindings/input/linux-event-codes.h>
++#include <dt-bindings/usb/pd.h>
++#include <dt-bindings/leds/common.h>
+ #include "rk3399.dtsi"
+ #include "rk3399-opp.dtsi"
+ 
+ / {
+-	model = "Pine64 PinePhone Pro";
++	model = "Pine64 PinePhonePro";
+ 	compatible = "pine64,pinephone-pro", "rockchip,rk3399";
++	chassis-type = "handset";
++
++	aliases {
++		mmc0 = &sdio0;
++		mmc1 = &sdmmc;
++		mmc2 = &sdhci;
++	};
+ 
+ 	chosen {
++		bootargs = "earlycon=uart8250,mmio32,0xff1a0000";
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 1>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1600000>;
++		poll-interval = <100>;
++
++		button-up {
++			label = "Volume Up";
++			linux,code = <KEY_VOLUMEUP>;
++			press-threshold-microvolt = <100000>;
++		};
++
++		button-down {
++			label = "Volume Down";
++			linux,code = <KEY_VOLUMEDOWN>;
++			press-threshold-microvolt = <300000>;
++		};
++	};
++
++        bat: battery {
++                compatible = "simple-battery";
++                voltage-min-design-microvolt = <3400000>;
++                voltage-max-design-microvolt = <4350000>;
++                energy-full-design-microwatt-hours = <11400000>;
++                charge-full-design-microamp-hours = <3000000>;
++                precharge-current-microamp = <120000>;
++                charge-term-current-microamp = <150000>;
++                constant-charge-current-max-microamp = <1500000>;
++                constant-charge-voltage-max-microvolt = <4350000>;
++                factory-internal-resistance-micro-ohms = <150000>;
++                resistance-temp-table = <20 150>;
++                ocv-capacity-celsius = <20>;
++                ocv-capacity-table-0 =
++			<4308000 100>,
++			<4217000 95>,
++			<4161000 90>,
++			<4110000 85>,
++			<4066000 80>,
++			<4007000 75>,
++			<3974000 70>,
++			<3937000 65>,
++			<3896000 60>,
++			<3853000 55>,
++			<3827000 50>,
++			<3807000 45>,
++			<3793000 40>,
++			<3780000 35>,
++			<3768000 30>,
++			<3756000 25>,
++			<3740000 20>,
++			<3716000 15>,
++			<3689000 10>,
++			<3675000 5>,
++			<3400000 0>;
++        };
++
++	cluster1_opp_ppp: opp-table1b {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp00 {
++			opp-hz = /bits/ 64 <408000000>;
++			opp-microvolt = <800000>;
++			clock-latency-ns = <40000>;
++		};
++		opp01 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <800000>;
++		};
++		opp02 {
++			opp-hz = /bits/ 64 <816000000>;
++			opp-microvolt = <825000>;
++		};
++		opp03 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <875000>;
++		};
++		opp04 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <950000>;
++		};
++		opp05 {
++			opp-hz = /bits/ 64 <1416000000>;
++			opp-microvolt = <1025000>;
++		};
++	};
++
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm0 0 1000000 0>;
++		pwm-delay-us = <10000>;
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&red_led_pin &green_led_pin &blue_led_pin>;
++
++		led-red {
++			color = <LED_COLOR_ID_RED>;
++			function = LED_FUNCTION_INDICATOR;
++			gpios = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
++		};
++
++		led-green {
++			color = <LED_COLOR_ID_GREEN>;
++			function = LED_FUNCTION_INDICATOR;
++			gpios = <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
++		};
++
++		led-blue {
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_INDICATOR;
++			gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	gpio-key-power {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwrbtn_pin>;
++
++		power {
++			debounce-interval = <20>;
++			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
++			label = "Power";
++			linux,code = <KEY_POWER>;
++			wakeup-source;
++		};
++	};
++
++	gpio-key-ri {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&ri_pin>;
++
++		ring_indicator: ring-indicator {
++			label = "ring-indicator";
++			linux,can-disable;
++			linux,code = <KEY_WAKEUP>;
++			gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_LOW>;
++			wakeup-event-action = <EV_ACT_ASSERTED>;
++			wakeup-source;
++		};
++	};
++
++	// in1  - digital mic daughhterboard
++	// in2  - headset mic
++	// in3  - modem output  (muxed with mono)
++	// spol - earphone
++	// hpo  - heaphones
++	// lout - modem input
++	// spaker - amp enabled by SPK_CTL_H
++	//
++	// mclk - GPIO4_A0/I2S_CLK
++	//
++	// some gpio-jack-detection driver?
++	//pinctrl-0 = <&hp_det>; // GPIO4_D4
++
++	speaker_amp: audio-amplifier {
++		compatible = "simple-audio-amplifier";
++		pinctrl-names = "default";
++		pinctrl-0 = <&spk_en>;
++		enable-gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
++		sound-name-prefix = "Speaker Amp";
++	};
++
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
++		clocks = <&rk818 1>;
++		clock-names = "ext_clock";
+ 		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++		post-power-on-delay-ms = <100>;
++		power-off-delay-us = <500000>;
++
++		/* WL_REG_ON on module */
++		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
++	};
++
++	vibrator {
++		compatible = "gpio-vibrator";
++		enable-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
++		vcc-supply = <&vcc3v3_sys>;
+ 	};
+ 
+ 	/* Power tree */
+@@ -29,8 +224,50 @@
+ 		regulator-boot-on;
+ 	};
+ 
++	vcc5v0_sys: vcc5v0-host-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_sys";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++		regulator-boot-on;
++		vin-supply = <&boost_otg>;
++
++		regulator-state-mem {
++			regulator-on-in-suspend;
++		};
++	};
++
++	/*
++	 * This is not a regulator, but GPIO0_A6 is used to disable
++	 * VCC_SYS -> VBAT+ switch that helps boost that power path's
++	 * current carrying capacity.
++	 *
++	 * GPIO0_A6 high: path is disabled no matter what
++	 * GPIO0_A6 low: path is enabled if there's 5V voltage on
++	 * VBUS_TYPEC
++	 *
++	 * GPIO0_A6 must be high when the phone is providing VBUS_TYPEC
++	 * power.
++	 */
++	vcc5v0_typec: vcc5v0-typec-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_typec_en>;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-name = "vcc5v0_typec";
++		vin-supply = <&boost_otg>;
++
++		regulator-state-mem {
++			regulator-on-in-suspend;
++		};
++	};
++
+ 	/* Main 3.3v supply */
+-	vcc3v3_sys: vcc3v3-sys {
++	vcc3v3_sys: wifi_bat: vcc3v3-sys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_sys";
+ 		regulator-always-on;
+@@ -43,6 +280,105 @@
+ 			regulator-on-in-suspend;
+ 		};
+ 	};
++
++	vcc_4g_5v: vcc-4g-5v {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc_4g_5v_en>;
++		regulator-name = "vcc_4g_5v";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_sys>;
++		regulator-always-on;
++	};
++
++	vcc_4g: vcc-4g {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio4 RK_PC7 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc_4g_en>;
++		regulator-name = "vcc_4g";
++		regulator-min-microvolt = <3800000>;
++		regulator-max-microvolt = <3800000>;
++		vin-supply = <&vcc_sysin>;
++		regulator-always-on;
++	};
++
++	vcc1v8_codec: vcc1v8-codec-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc1v8_codec_en>;
++		regulator-name = "vcc1v8_codec";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc3v3_sys>;
++	};
++
++	/* MIPI DSI panel 1.8v supply */
++	vcc1v8_lcd: vcc1v8-lcd {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		regulator-name = "vcc1v8_lcd";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc3v3_sys>;
++		gpio = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&display_pwren1>;
++	};
++
++	/* MIPI DSI panel 2.8v supply */
++	vcc2v8_lcd: vcc2v8-lcd {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		regulator-name = "vcc2v8_lcd";
++		regulator-min-microvolt = <2800000>;
++		regulator-max-microvolt = <2800000>;
++		vin-supply = <&vcc3v3_sys>;
++		gpio = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&display_pwren>;
++	};
++
++	vcca1v8_s3: vcc1v8-s3 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcca1v8_s3";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc3v3_sys>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	typec_extcon_bridge: typec-extcon {
++		compatible = "linux,typec-extcon-bridge";
++		usb-role-switch;
++		orientation-switch;
++		mode-switch;
++		svid = /bits/ 16 <0xff01>;
++	};
++
++	sgm3140: led-controller {
++		compatible = "sgmicro,sgm3140";
++		vin-supply = <&vcc3v3_sys>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&flash_pins>;
++		enable-gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_HIGH>;
++		flash-gpios = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
++
++		sgm3140_flash: led {
++			function = LED_FUNCTION_FLASH;
++			color = <LED_COLOR_ID_WHITE>;
++			flash-max-timeout-us = <250000>;
++		};
++	};
+ };
+ 
+ &cpu_l0 {
+@@ -63,10 +399,18 @@
+ 
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_b>;
++	operating-points-v2 = <&cluster1_opp_ppp>;
+ };
+ 
+ &cpu_b1 {
+ 	cpu-supply = <&vdd_cpu_b>;
++	operating-points-v2 = <&cluster1_opp_ppp>;
++};
++
++&cdn_dp {
++	status = "okay";
++	extcon = <&typec_extcon_bridge>;
++	phys = <&tcphy0_dp>;
+ };
+ 
+ &emmc_phy {
+@@ -104,10 +448,11 @@
+ 		vcc7-supply = <&vcc3v3_sys>;
+ 		vcc8-supply = <&vcc_sysin>;
+ 		vcc9-supply = <&vcc3v3_sys>;
++		usb-supply = <&vcc5v0_typec>;
+ 
+ 		regulators {
+ 			vdd_cpu_l: DCDC_REG1 {
+-				regulator-name = "vdd_cpu_1";
++				regulator-name = "vdd_cpu_l";
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-min-microvolt = <750000>;
+@@ -139,7 +484,7 @@
+ 				};
+ 			};
+ 
+-			vcc_1v8: DCDC_REG4 {
++			vcc_1v8: vcc_wl: DCDC_REG4 {
+ 				regulator-name = "vcc_1v8";
+ 				regulator-always-on;
+ 				regulator-boot-on;
+@@ -222,8 +567,6 @@
+ 
+ 			vcc1v8_dvp: LDO_REG7 {
+ 				regulator-name = "vcc1v8_dvp";
+-				regulator-always-on;
+-				regulator-boot-on;
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-state-mem {
+@@ -242,8 +585,8 @@
+ 				};
+ 			};
+ 
+-			vcc_sd: LDO_REG9 {
+-				regulator-name = "vcc_sd";
++			vccio_sd: LDO_REG9 {
++				regulator-name = "vccio_sd";
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-state-mem {
+@@ -277,6 +620,41 @@
+ 				regulator-name = "otg_switch";
+ 			};
+ 		};
++
++		/*
++		 * XXX: Backported BSP stuff, drop this. Use standard
++		 * "monitored-battery" property.
++		 */
++		battery {
++			compatible = "rockchip,rk818-battery";
++			ocv_table = <3400 3675 3689 3716 3740 3756 3768 3780
++				3793 3807 3827 3853 3896 3937 3974 4007 4066
++				4110 4161 4217 4308>;
++			design_capacity = <2916>;
++			design_qmax = <2708>;
++			bat_res = <150>;
++			max_input_current = <3000>;
++			max_chrg_current = <2000>;
++			max_chrg_voltage = <4350>;
++			sleep_enter_current = <300>;
++			sleep_exit_current = <300>;
++			power_off_thresd = <3400>;
++			zero_algorithm_vol = <3950>;
++			fb_temperature = <105>;
++			sample_res = <10>;
++			max_soc_offset = <60>;
++			energy_mode = <0>;
++			monitor_sec = <5>;
++			virtual_power = <0>;
++			power_dc2otg = <0>;
++			otg5v_suspend_enable = <1>;
++		};
++
++		charger {
++			compatible = "rockchip,rk818-charger";
++			power-supplies = <&fusb0>;
++			monitored-battery = <&bat>;
++		};
+ 	};
+ 
+ 	vdd_cpu_b: regulator@40 {
+@@ -316,16 +694,35 @@
+ 	};
+ };
+ 
+-&i2c1 {
+-	i2c-scl-rising-time-ns = <300>;
+-	i2c-scl-falling-time-ns = <15>;
+-	status = "okay";
+-};
+ 
+ &i2c3 {
+ 	i2c-scl-rising-time-ns = <450>;
+ 	i2c-scl-falling-time-ns = <15>;
+ 	status = "okay";
++
++	touchscreen@14 {
++		compatible = "goodix,gt917s";
++		reg = <0x14>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PB5 IRQ_TYPE_EDGE_RISING>;
++		use-dt-irq-flags;
++		irq-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_HIGH>;
++		AVDD28-supply = <&vcc3v0_touch>;
++		VDDIO-supply = <&vcc3v0_touch>;
++		touchscreen-size-x = <720>;
++		touchscreen-size-y = <1440>;
++		poweroff-in-suspend;
++	};
++
++	light-sensor@48 {
++		compatible = "sensortek,stk3311";
++		reg = <0x48>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
++		vdd-supply = <&vcc_3v0>;
++		leda-supply = <&vcc_3v0>;
++	};
+ };
+ 
+ &i2c4 {
+@@ -340,8 +737,104 @@
+ 		interrupts = <RK_PA2 IRQ_TYPE_LEVEL_LOW>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&fusb0_int>;
+-		status = "okay";
++		extcon = <&typec_extcon_bridge>;
++		usb-role-switch = <&typec_extcon_bridge>;
++		vbus-supply = <&otg_switch>;
++
++		connector {
++			compatible = "usb-c-connector";
++			data-role = "dual";
++			label = "USB-C";
++			op-sink-microwatt = <2500000>;
++			power-role = "dual";
++			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM | PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++			source-pdos = <PDO_FIXED(5000, 900, PDO_FIXED_USB_COMM | PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++			try-power-role = "sink";
++			mode-switch = <&typec_extcon_bridge>;
++			orientation-switch = <&typec_extcon_bridge>;
++
++			altmodes {
++				dp {
++					svid = <0xff01>;
++					vdo = <0x0c0046>;
++				};
++			};
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					reg = <0>;
++
++					usbc_hs: endpoint {
++						remote-endpoint =
++							<&u2phy0_typec_hs>;
++					};
++				};
++
++				port@1 {
++					reg = <1>;
++
++					usbc_ss: endpoint {
++						remote-endpoint =
++							<&tcphy0_typec_ss>;
++					};
++				};
++
++				port@2 {
++					reg = <2>;
++
++					usbc_dp: endpoint {
++						remote-endpoint =
++							<&tcphy0_typec_dp>;
++					};
++				};
++			};
++		};
++	};
++
++	accelerometer@68 {
++		compatible = "invensense,mpu6500";
++		reg = <0x68>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <RK_PC6 IRQ_TYPE_LEVEL_LOW>;
++		vdd-supply = <&vcc_1v8>;
++		vddio-supply = <&vcc_1v8>;
++
++		mount-matrix =
++			"1", "0", "0",
++			"0", "-1", "0",
++			"0", "0", "1";
++	};
++
++	lis3mdl: magnetometer@1c {
++		compatible = "st,lis3mdl-magn";
++		reg = <0x1c>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <RK_PA1 IRQ_TYPE_LEVEL_LOW>;
++		vdd-supply = <&vcc3v3_sys>;
++		vddio-supply = <&vcc_1v8>;
++		status = "disabled";
+ 	};
++
++	// not populated currently
++	ak09911: compass@c {
++		compatible = "asahi-kasei,ak09911";
++		reg = <0x0c>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <RK_PA1 IRQ_TYPE_LEVEL_LOW>;
++		vdd-supply = <&vcc_3v0>;
++		vid-supply = <&vcc_1v8>;
++		status = "disabled";
++	};
++};
++
++&i2s0 {
++	rockchip,playback-channels = <2>;
++	rockchip,capture-channels = <2>;
++	pinctrl-0 = <&i2s0_2ch_bus>;
++	status = "okay";
+ };
+ 
+ &io_domains {
+@@ -349,12 +842,58 @@
+ 
+ 	bt656-supply = <&vcc1v8_dvp>;
+ 	audio-supply = <&vcca1v8_codec>;
+-	sdmmc-supply = <&vcc_sd>;
++	sdmmc-supply = <&vccio_sd>;
+ 	gpio1830-supply = <&vcc_3v0>;
+ };
+ 
++&mipi_dphy_rx0 {
++	status = "okay";
++};
++
++&mipi_dsi1 {
++	status = "okay";
++};
++
++&mipi_dsi {
++	status = "okay";
++	clock-master;
++
++	ports {
++		mipi_out: port@1 {
++			#address-cells = <0>;
++			#size-cells = <0>;
++			reg = <1>;
++
++			mipi_out_panel: endpoint {
++				remote-endpoint = <&mipi_in_panel>;
++			};
++		};
++	};
++
++	panel@0 {
++		compatible = "hannstar,hsd060bhw4";
++		reg = <0>;
++		backlight = <&backlight>;
++		reset-gpios = <&gpio4 RK_PD1 GPIO_ACTIVE_LOW>;
++		vcc-supply = <&vcc2v8_lcd>; // 2v8
++		iovcc-supply = <&vcc1v8_lcd>; // 1v8
++		pinctrl-names = "default";
++		pinctrl-0 = <&display_rst_l>;
++
++		port {
++			mipi_in_panel: endpoint {
++				remote-endpoint = <&mipi_out_panel>;
++			};
++		};
++	};
++};
++
++&uart3 {
++	status = "okay";
++};
++
+ &pmu_io_domains {
+-	pmu1830-supply = <&vcc_3v0>;
++	pmu1830-supply = <&vcc_1v8>;
+ 	status = "okay";
+ };
+ 
+@@ -369,16 +908,30 @@
+ 		};
+ 
+ 		bt_wake_l: bt-wake-l {
+-			rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <2 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ 
+ 	buttons {
+-		pwrbtn: pwrbtn {
++		pwrbtn_pin: pwrbtn-pin {
+ 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
+ 		};
+ 	};
+ 
++	camera {
++		wcam_rst: wcam-rst {
++			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		wcam_pdn: wcam-pdn {
++			rockchip,pins = <2 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		ucam_pdn: ucam-pdn {
++			rockchip,pins = <2 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	fusb302x {
+ 		fusb0_int: fusb0-int {
+ 			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
+@@ -386,22 +939,36 @@
+ 	};
+ 
+ 	leds {
+-		work_led_pin: work-led-pin {
+-			rockchip,pins = <0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
++		red_led_pin: red-led-pin {
++			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 
+-		diy_led_pin: diy-led-pin {
+-			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		green_led_pin: green-led-pin {
++			rockchip,pins = <4 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		blue_led_pin: blue-led-pin {
++			rockchip,pins = <4 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		flash_pins: flash-pins {
++			rockchip,pins =
++				<1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>,
++				<4 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ 
+-	pcie {
+-		pcie_perst: pcie-perst {
+-			rockchip,pins = <2 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
++	modem {
++		ri_pin: ri-pin {
++			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++
++		vcc_4g_5v_en: vcc-4g-5v-en-pin {
++			rockchip,pins = <1 RK_PC7 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 
+-		pcie_pwr_en: pcie-pwr-en {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
++		vcc_4g_en: vcc-4g-en-pin {
++			rockchip,pins = <4 RK_PC7 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ 
+@@ -434,13 +1001,35 @@
+ 
+ 	usb-typec {
+ 		vcc5v0_typec_en: vcc5v0_typec_en {
+-			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
++			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
+ 		};
+ 	};
+ 
+-	usb2 {
+-		vcc5v0_host_en: vcc5v0-host-en {
+-			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++	dsi {
++		display_rst_l: display-rst-l {
++			rockchip,pins = <4 RK_PD1 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++
++		display_pwren: display-pwren {
++			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++
++		display_pwren1: display-pwren1 {
++			rockchip,pins = <3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
++
++	sound {
++		vcc1v8_codec_en: vcc1v8-codec-en {
++			rockchip,pins = <3 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++
++		hp_det: hp-det {
++			rockchip,pins = <4 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		spk_en: spk-en {
++			rockchip,pins = <0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ };
+@@ -449,11 +1038,12 @@
+ 	status = "okay";
+ };
+ 
+-&pwm1 {
++&pwm2 {
+ 	status = "okay";
+ };
+ 
+-&pwm2 {
++&saradc {
++	vref-supply = <&vcca1v8_s3>;
+ 	status = "okay";
+ };
+ 
+@@ -474,13 +1064,13 @@
+ &sdmmc {
+ 	bus-width = <4>;
+ 	cap-sd-highspeed;
+-	cd-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
++	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
+ 	disable-wp;
+ 	max-frequency = <150000000>;
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
+-	vmmc-supply = <&vcc3v3_s3>;
+-	vqmmc-supply = <&vcc_1v8>;
++	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
++	vmmc-supply = <&vcc3v3_sys>;
++	vqmmc-supply = <&vccio_sd>;
+ 	status = "okay";
+ };
+ 
+@@ -491,6 +1081,27 @@
+ 	status = "okay";
+ };
+ 
++&tcphy0 {
++	extcon = <&typec_extcon_bridge>;
++	status = "okay";
++};
++
++&tcphy0_dp {
++	port {
++		tcphy0_typec_dp: endpoint {
++			remote-endpoint = <&usbc_dp>;
++		};
++	};
++};
++
++&tcphy0_usb3 {
++	port {
++		tcphy0_typec_ss: endpoint {
++			remote-endpoint = <&usbc_ss>;
++		};
++	};
++};
++
+ &tsadc {
+ 	/* tshut mode 0:CRU 1:GPIO */
+ 	rockchip,hw-tshut-mode = <1>;
+@@ -499,10 +1110,86 @@
+ 	status = "okay";
+ };
+ 
++&u2phy0 {
++	status = "okay";
++	extcon = <&typec_extcon_bridge>;
++
++	port {
++		u2phy0_typec_hs: endpoint {
++			remote-endpoint = <&usbc_hs>;
++		};
++	};
++};
++
++&u2phy0_otg {
++	status = "okay";
++};
++
++&u2phy0_host {
++	status = "okay";
++	phy-supply = <&vcc5v0_sys>;
++};
++
++&u2phy1 {
++	status = "okay";
++};
++
++&u2phy1_host {
++	status = "okay";
++	phy-supply = <&vcc5v0_sys>;
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm4345c5";
++		clocks = <&rk818 1>;
++		clock-names = "lpo";
++		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
++		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
++		max-speed = <1500000>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
++		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
++		vbat-supply = <&wifi_bat>;
++		vddio-supply = <&vcc_wl>;
++	};
++};
++
+ &uart2 {
+ 	status = "okay";
+ };
+ 
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb_host1_ehci {
++	status = "okay";
++};
++
++&usb_host1_ohci {
++	status = "okay";
++};
++
++&usbdrd3_0 {
++	status = "okay";
++};
++
++&usbdrd_dwc3_0 {
++	dr_mode = "otg";
++	extcon = <&typec_extcon_bridge>;
++	status = "okay";
++};
++
+ &vopb {
+ 	status = "okay";
+ };
+-- 
+2.34.0
+
+
+From d2596a800d1fea15b7d686e63253e96ce30a229e Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 30 Jan 2022 16:59:26 -0500
+Subject: [PATCH 3/6] [WIP] pine64-pinephonePro: SPI support
+
+For some reason, locally on my device the SPI Flash fails to be
+identified, except during SPL.
+
+This also is an issue in Linux.
+---
+ arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi |  8 ++++++--
+ arch/arm/dts/rk3399-pinephone-pro.dts         | 10 ++++++++++
+ configs/pinephone-pro-rk3399_defconfig        |  7 +++----
+ drivers/mtd/spi/spi-nor-ids.c                 |  5 +++++
+ 4 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
+index 9d44db59783..28bec0a6a70 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
+@@ -13,11 +13,11 @@
+ 	};
+ 
+ 	chosen {
+-		u-boot,spl-boot-order = "same-as-spl", &sdhci, &sdmmc;
++		u-boot,spl-boot-order = "same-as-spl", &spiflash, &sdhci, &sdmmc;
+ 	};
+ 
+ 	config {
+-		u-boot,spl-payload-offset = <0x60000>; /* @ 384KB */
++		u-boot,spl-payload-offset = <0x80000>; /* @ 512KB */
+ 	};
+ };
+ 
+@@ -42,3 +42,7 @@
+ 	max-frequency = <20000000>;
+ 	u-boot,dm-pre-reloc;
+ };
++
++&spiflash {
++	u-boot,dm-pre-reloc;
++};
+diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
+index 45837c05967..85954f61e8d 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro.dts
++++ b/arch/arm/dts/rk3399-pinephone-pro.dts
+@@ -1081,6 +1081,16 @@
+ 	status = "okay";
+ };
+ 
++&spi1 {
++	status = "okay";
++
++	spiflash: flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++	};
++};
++
+ &tcphy0 {
+ 	extcon = <&typec_extcon_bridge>;
+ 	status = "okay";
+diff --git a/configs/pinephone-pro-rk3399_defconfig b/configs/pinephone-pro-rk3399_defconfig
+index 2cf80f7d355..462f7365a56 100644
+--- a/configs/pinephone-pro-rk3399_defconfig
++++ b/configs/pinephone-pro-rk3399_defconfig
+@@ -1,18 +1,16 @@
+ CONFIG_ARM=y
+-CONFIG_SKIP_LOWLEVEL_INIT=y
+ CONFIG_ARCH_ROCKCHIP=y
+ CONFIG_SYS_TEXT_BASE=0x00200000
+ CONFIG_NR_DRAM_BANKS=1
+ CONFIG_ENV_SIZE=0x8000
++CONFIG_DEFAULT_DEVICE_TREE="rk3399-pinephone-pro"
+ CONFIG_ROCKCHIP_RK3399=y
+ CONFIG_TARGET_PINEPHONE_PRO_RK3399=y
+ CONFIG_DEBUG_UART_BASE=0xFF1A0000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_SPL_SPI_FLASH_SUPPORT=y
+ CONFIG_SPL_SPI_SUPPORT=y
+-CONFIG_DEFAULT_DEVICE_TREE="rk3399-pinephone-pro"
+ CONFIG_DEBUG_UART=y
+-CONFIG_SYS_LOAD_ADDR=0x800800
+ CONFIG_BOOTDELAY=3
+ CONFIG_USE_PREBOOT=y
+ CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-pinephone-pro.dtb"
+@@ -39,9 +37,9 @@ CONFIG_SPL_OF_CONTROL=y
+ CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
+ CONFIG_ENV_IS_IN_SPI_FLASH=y
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_SPL_DM_SEQ_ALIAS=y
+ CONFIG_ROCKCHIP_GPIO=y
+ CONFIG_SYS_I2C_ROCKCHIP=y
+-CONFIG_DM_KEYBOARD=y
+ CONFIG_LED=y
+ CONFIG_LED_GPIO=y
+ CONFIG_MISC=y
+@@ -51,6 +49,7 @@ CONFIG_MMC_DW_ROCKCHIP=y
+ CONFIG_MMC_SDHCI=y
+ CONFIG_MMC_SDHCI_SDMA=y
+ CONFIG_MMC_SDHCI_ROCKCHIP=y
++CONFIG_SF_DEFAULT_BUS=1
+ CONFIG_SF_DEFAULT_SPEED=20000000
+ CONFIG_SPI_FLASH_GIGADEVICE=y
+ CONFIG_SPI_FLASH_WINBOND=y
+diff --git a/drivers/mtd/spi/spi-nor-ids.c b/drivers/mtd/spi/spi-nor-ids.c
+index 4aef1ddd6e2..ff5bc2b2d78 100644
+--- a/drivers/mtd/spi/spi-nor-ids.c
++++ b/drivers/mtd/spi/spi-nor-ids.c
+@@ -112,6 +112,11 @@ const struct flash_info spi_nor_ids[] = {
+ 			SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
+ 			SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
+ 	},
++	{
++		INFO("gd25lq128e", 0x257018, 0, 64 * 1024, 256,
++			SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
++			SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
++	},
+ 	{
+ 		INFO("gd25q128", 0xc84018, 0, 64 * 1024, 256,
+ 			SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
+-- 
+2.34.0
+
+
+From a533df504e4a678b4d026a37ba57f70b89abe161 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 30 Jan 2022 20:09:46 -0500
+Subject: [PATCH 4/6] arch: arm: Sync rk3399 DTs and bindings
+
+---
+ arch/arm/dts/rk3399-opp.dtsi           |   6 +-
+ arch/arm/dts/rk3399-u-boot.dtsi        |   2 +-
+ arch/arm/dts/rk3399.dtsi               | 116 ++++++++++++++++++++++---
+ drivers/clk/rockchip/clk_rk3399.c      |   2 +-
+ include/dt-bindings/clock/rk3399-cru.h |  25 +++---
+ 5 files changed, 123 insertions(+), 28 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-opp.dtsi b/arch/arm/dts/rk3399-opp.dtsi
+index da41cd81ebb..fee5e711127 100644
+--- a/arch/arm/dts/rk3399-opp.dtsi
++++ b/arch/arm/dts/rk3399-opp.dtsi
+@@ -4,7 +4,7 @@
+  */
+ 
+ / {
+-	cluster0_opp: opp-table0 {
++	cluster0_opp: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 
+@@ -35,7 +35,7 @@
+ 		};
+ 	};
+ 
+-	cluster1_opp: opp-table1 {
++	cluster1_opp: opp-table-1 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 
+@@ -74,7 +74,7 @@
+ 		};
+ 	};
+ 
+-	gpu_opp_table: opp-table2 {
++	gpu_opp_table: opp-table-2 {
+ 		compatible = "operating-points-v2";
+ 
+ 		opp00 {
+diff --git a/arch/arm/dts/rk3399-u-boot.dtsi b/arch/arm/dts/rk3399-u-boot.dtsi
+index 73922c328a3..082461e817d 100644
+--- a/arch/arm/dts/rk3399-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-u-boot.dtsi
+@@ -40,7 +40,7 @@
+ 		compatible = "rockchip,rk3399-dmc";
+ 		devfreq-events = <&dfi>;
+ 		interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH 0>;
+-		clocks = <&cru SCLK_DDRCLK>;
++		clocks = <&cru SCLK_DDRC>;
+ 		clock-names = "dmc_clk";
+ 		reg = <0x0 0xffa80000 0x0 0x0800
+ 		       0x0 0xffa80800 0x0 0x1800
+diff --git a/arch/arm/dts/rk3399.dtsi b/arch/arm/dts/rk3399.dtsi
+index 3871c7fd83b..d3cdf6f42a3 100644
+--- a/arch/arm/dts/rk3399.dtsi
++++ b/arch/arm/dts/rk3399.dtsi
+@@ -124,6 +124,12 @@
+ 			#cooling-cells = <2>; /* min followed by max */
+ 			dynamic-power-coefficient = <436>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP>;
++
++			thermal-idle {
++				#cooling-cells = <2>;
++				duration-us = <10000>;
++				exit-latency-us = <500>;
++			};
+ 		};
+ 
+ 		cpu_b1: cpu@101 {
+@@ -136,6 +142,12 @@
+ 			#cooling-cells = <2>; /* min followed by max */
+ 			dynamic-power-coefficient = <436>;
+ 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP>;
++
++			thermal-idle {
++				#cooling-cells = <2>;
++				duration-us = <10000>;
++				exit-latency-us = <500>;
++			};
+ 		};
+ 
+ 		idle-states {
+@@ -361,6 +373,54 @@
+ 		status = "disabled";
+ 	};
+ 
++	debug@fe430000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe430000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_L>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_l0>;
++	};
++
++	debug@fe432000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe432000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_L>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_l1>;
++	};
++
++	debug@fe434000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe434000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_L>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_l2>;
++	};
++
++	debug@fe436000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe436000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_L>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_l3>;
++	};
++
++	debug@fe610000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe610000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_B>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_b0>;
++	};
++
++	debug@fe710000 {
++		compatible = "arm,coresight-cpu-debug", "arm,primecell";
++		reg = <0 0xfe710000 0 0x1000>;
++		clocks = <&cru PCLK_COREDBG_B>;
++		clock-names = "apb_pclk";
++		cpu = <&cpu_b1>;
++	};
++
+ 	usbdrd3_0: usb@fe800000 {
+ 		compatible = "rockchip,rk3399-dwc3";
+ 		#address-cells = <2>;
+@@ -1251,7 +1311,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff650800 0x0 0x40>;
+ 		interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "vpu_mmu";
+ 		clocks = <&cru ACLK_VCODEC>, <&cru HCLK_VCODEC>;
+ 		clock-names = "aclk", "iface";
+ 		#iommu-cells = <0>;
+@@ -1273,7 +1332,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff660480 0x0 0x40>, <0x0 0xff6604c0 0x0 0x40>;
+ 		interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "vdec_mmu";
+ 		clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>;
+ 		clock-names = "aclk", "iface";
+ 		power-domains = <&power RK3399_PD_VDU>;
+@@ -1284,7 +1342,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff670800 0x0 0x40>;
+ 		interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "iep_mmu";
+ 		clocks = <&cru ACLK_IEP>, <&cru HCLK_IEP>;
+ 		clock-names = "aclk", "iface";
+ 		#iommu-cells = <0>;
+@@ -1666,7 +1723,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff8f3f00 0x0 0x100>;
+ 		interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "vopl_mmu";
+ 		clocks = <&cru ACLK_VOP1>, <&cru HCLK_VOP1>;
+ 		clock-names = "aclk", "iface";
+ 		power-domains = <&power RK3399_PD_VOPL>;
+@@ -1723,7 +1779,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff903f00 0x0 0x100>;
+ 		interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "vopb_mmu";
+ 		clocks = <&cru ACLK_VOP0>, <&cru HCLK_VOP0>;
+ 		clock-names = "aclk", "iface";
+ 		power-domains = <&power RK3399_PD_VOPB>;
+@@ -1761,7 +1816,6 @@
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff914000 0x0 0x100>, <0x0 0xff915000 0x0 0x100>;
+ 		interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "isp0_mmu";
+ 		clocks = <&cru ACLK_ISP0_WRAPPER>, <&cru HCLK_ISP0_WRAPPER>;
+ 		clock-names = "aclk", "iface";
+ 		#iommu-cells = <0>;
+@@ -1769,11 +1823,36 @@
+ 		rockchip,disable-mmu-reset;
+ 	};
+ 
++	isp1: isp1@ff920000 {
++		compatible = "rockchip,rk3399-cif-isp";
++		reg = <0x0 0xff920000 0x0 0x4000>;
++		interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru SCLK_ISP1>,
++			 <&cru ACLK_ISP1_WRAPPER>,
++			 <&cru HCLK_ISP1_WRAPPER>;
++		clock-names = "isp", "aclk", "hclk";
++		iommus = <&isp1_mmu>;
++		phys = <&mipi_dsi1>;
++		phy-names = "dphy";
++		power-domains = <&power RK3399_PD_ISP1>;
++		status = "disabled";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++			};
++		};
++	};
++
+ 	isp1_mmu: iommu@ff924000 {
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff924000 0x0 0x100>, <0x0 0xff925000 0x0 0x100>;
+ 		interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "isp1_mmu";
+ 		clocks = <&cru ACLK_ISP1_WRAPPER>, <&cru HCLK_ISP1_WRAPPER>;
+ 		clock-names = "aclk", "iface";
+ 		#iommu-cells = <0>;
+@@ -1878,6 +1957,7 @@
+ 		rockchip,grf = <&grf>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
++		#phy-cells = <0>;
+ 		status = "disabled";
+ 
+ 		ports {
+@@ -1958,7 +2038,7 @@
+ 		#size-cells = <2>;
+ 		ranges;
+ 
+-		gpio0: gpio0@ff720000 {
++		gpio0: gpio@ff720000 {
+ 			compatible = "rockchip,gpio-bank";
+ 			reg = <0x0 0xff720000 0x0 0x100>;
+ 			clocks = <&pmucru PCLK_GPIO0_PMU>;
+@@ -1971,7 +2051,7 @@
+ 			#interrupt-cells = <0x2>;
+ 		};
+ 
+-		gpio1: gpio1@ff730000 {
++		gpio1: gpio@ff730000 {
+ 			compatible = "rockchip,gpio-bank";
+ 			reg = <0x0 0xff730000 0x0 0x100>;
+ 			clocks = <&pmucru PCLK_GPIO1_PMU>;
+@@ -1984,7 +2064,7 @@
+ 			#interrupt-cells = <0x2>;
+ 		};
+ 
+-		gpio2: gpio2@ff780000 {
++		gpio2: gpio@ff780000 {
+ 			compatible = "rockchip,gpio-bank";
+ 			reg = <0x0 0xff780000 0x0 0x100>;
+ 			clocks = <&cru PCLK_GPIO2>;
+@@ -1997,7 +2077,7 @@
+ 			#interrupt-cells = <0x2>;
+ 		};
+ 
+-		gpio3: gpio3@ff788000 {
++		gpio3: gpio@ff788000 {
+ 			compatible = "rockchip,gpio-bank";
+ 			reg = <0x0 0xff788000 0x0 0x100>;
+ 			clocks = <&cru PCLK_GPIO3>;
+@@ -2010,7 +2090,7 @@
+ 			#interrupt-cells = <0x2>;
+ 		};
+ 
+-		gpio4: gpio4@ff790000 {
++		gpio4: gpio@ff790000 {
+ 			compatible = "rockchip,gpio-bank";
+ 			reg = <0x0 0xff790000 0x0 0x100>;
+ 			clocks = <&cru PCLK_GPIO4>;
+@@ -2114,6 +2194,18 @@
+ 			};
+ 		};
+ 
++		cif {
++			cif_clkin: cif-clkin {
++				rockchip,pins =
++					<2 RK_PB2 3 &pcfg_pull_none>;
++			};
++
++			cif_clkouta: cif-clkouta {
++				rockchip,pins =
++					<2 RK_PB3 3 &pcfg_pull_none>;
++			};
++		};
++
+ 		edp {
+ 			edp_hpd: edp-hpd {
+ 				rockchip,pins =
+diff --git a/drivers/clk/rockchip/clk_rk3399.c b/drivers/clk/rockchip/clk_rk3399.c
+index f8cbda44551..735774e90af 100644
+--- a/drivers/clk/rockchip/clk_rk3399.c
++++ b/drivers/clk/rockchip/clk_rk3399.c
+@@ -1029,7 +1029,7 @@ static ulong rk3399_clk_set_rate(struct clk *clk, ulong rate)
+ 		 * return 0 to satisfy clk_set_defaults during device probe.
+ 		 */
+ 		return 0;
+-	case SCLK_DDRCLK:
++	case SCLK_DDRC:
+ 		ret = rk3399_ddr_set_clk(priv->cru, rate);
+ 		break;
+ 	case PCLK_EFUSE1024NS:
+diff --git a/include/dt-bindings/clock/rk3399-cru.h b/include/dt-bindings/clock/rk3399-cru.h
+index 211faf8fa89..e83b3fb2762 100644
+--- a/include/dt-bindings/clock/rk3399-cru.h
++++ b/include/dt-bindings/clock/rk3399-cru.h
+@@ -1,6 +1,7 @@
+-/* SPDX-License-Identifier: GPL-2.0+ */
++/* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+  * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
++ * Author: Xing Zheng <zhengxing@rock-chips.com>
+  */
+ 
+ #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3399_H
+@@ -121,16 +122,18 @@
+ #define SCLK_DPHY_RX0_CFG		165
+ #define SCLK_RMII_SRC			166
+ #define SCLK_PCIEPHY_REF100M		167
+-#define SCLK_USBPHY0_480M_SRC		168
+-#define SCLK_USBPHY1_480M_SRC		169
+-#define SCLK_DDRCLK			170
+-#define SCLK_TESTOUT2			171
++#define SCLK_DDRC			168
++#define SCLK_TESTCLKOUT1		169
++#define SCLK_TESTCLKOUT2		170
++#define SCLK_CIF_OUT_SRC		171
+ 
+ #define DCLK_VOP0			180
+ #define DCLK_VOP1			181
+ #define DCLK_VOP0_DIV			182
+ #define DCLK_VOP1_DIV			183
+ #define DCLK_M0_PERILP			184
++#define DCLK_VOP0_FRAC			185
++#define DCLK_VOP1_FRAC			186
+ 
+ #define FCLK_CM0S			190
+ 
+@@ -592,13 +595,13 @@
+ #define SRST_P_SPI0			214
+ #define SRST_P_SPI1			215
+ #define SRST_P_SPI2			216
+-#define SRST_P_SPI4			217
+-#define SRST_P_SPI5			218
++#define SRST_P_SPI3			217
++#define SRST_P_SPI4			218
+ #define SRST_SPI0			219
+ #define SRST_SPI1			220
+ #define SRST_SPI2			221
+-#define SRST_SPI4			222
+-#define SRST_SPI5			223
++#define SRST_SPI3			222
++#define SRST_SPI4			223
+ 
+ /* cru_softrst_con14 */
+ #define SRST_I2S0_8CH			224
+@@ -720,8 +723,8 @@
+ #define SRST_H_CM0S_NOC			3
+ #define SRST_DBG_CM0S			4
+ #define SRST_PO_CM0S			5
+-#define SRST_P_SPI3			6
+-#define SRST_SPI3			7
++#define SRST_P_SPI6			6
++#define SRST_SPI6			7
+ #define SRST_P_TIMER_0_1		8
+ #define SRST_P_TIMER_0			9
+ #define SRST_P_TIMER_1			10
+-- 
+2.34.0
+
+
+From d45d3515aa505fcf8dc1c730580f441d29943143 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 30 Jan 2022 20:10:10 -0500
+Subject: [PATCH 5/6] rk3399-pinephone-pro: Sync DT with pine64 WIP
+
+53c2c5f0957fe68074c11115b7b8fec33e3e58e8 + SPI NOR Patches
+---
+ arch/arm/dts/rk3399-pinephone-pro.dts | 155 ++++++++++++++++++++++++--
+ 1 file changed, 147 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
+index 85954f61e8d..446522380c7 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro.dts
++++ b/arch/arm/dts/rk3399-pinephone-pro.dts
+@@ -184,9 +184,52 @@
+ 	// spaker - amp enabled by SPK_CTL_H
+ 	//
+ 	// mclk - GPIO4_A0/I2S_CLK
+-	//
+-	// some gpio-jack-detection driver?
+-	//pinctrl-0 = <&hp_det>; // GPIO4_D4
++
++	rt5640-sound {
++		compatible = "simple-audio-card";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++		simple-audio-card,name = "PinePhonePro";
++		simple-audio-card,aux-devs = <&speaker_amp>;
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,hp-det-gpio = <&gpio4 RK_PD4 GPIO_ACTIVE_LOW>;
++		simple-audio-card,pin-switches = "Internal Speaker";
++
++		simple-audio-card,widgets =
++			"Microphone", "Headset Microphone",
++			"Microphone", "Internal Microphone",
++			"Headphone", "Headphones",
++			"Speaker", "Internal Earpiece",
++			"Speaker", "Internal Speaker",
++			"Line", "Line In Modem",
++			"Line", "Line Out Modem";
++
++		simple-audio-card,routing =
++			"Headphones", "HPOL",
++			"Headphones", "HPOR",
++			"Internal Earpiece", "SPOLP",
++			"Internal Earpiece", "SPOLN",
++			"Internal Speaker", "Speaker Amp OUTL",
++			"Internal Speaker", "Speaker Amp OUTR",
++			"Speaker Amp INL", "HPOL",
++			"Speaker Amp INR", "HPOR",
++			"DMIC1", "Internal Microphone",
++			"Headset Microphone", "MICBIAS1",
++			"IN2P", "Headset Microphone",
++			"Line Out Modem", "LOUTL",
++			"Line Out Modem", "LOUTR",
++			"IN3P", "Line In Modem",
++			"IN3N", "Line In Modem";
++
++		simple-audio-card,cpu {
++			sound-dai = <&i2s0>;
++		};
++
++		simple-audio-card,codec {
++			sound-dai = <&rt5640>;
++		};
++	};
+ 
+ 	speaker_amp: audio-amplifier {
+ 		compatible = "simple-audio-amplifier";
+@@ -694,6 +737,86 @@
+ 	};
+ };
+ 
++/*
++ * Cameras:
++ *
++ * cif clk out = gpio2 B3 / CIF_CLKOUTA_u
++ *
++ * both on i2c1  GPIO4_A1 (SDA) / GPIO4_A2 (SCL)
++ *
++ * both share power:
++ * VCC1V8_DVP         - LDO7  - supplied by VCC7 (VCC3V3_SYS)
++ * DVDD_DVP     1.5V  - autoenabled by VCC2V8_DVP   depends on VCC1V8_S3 (U118 supplies 1.2V, though, not 1.5V)
++ * VCC2V8_DVP   af    - autoenabled by VCC1V8_DVP   depends on VCC3V3_SYS
++ * AVDD2V8_DVP        - autoenabled by VCC1V8_DVP   depends on VCC3V3_SYS
++ *
++ * mipi0  = imx258
++ *   reset = gpio1 A0
++ *   powerdown = GPIO2_B4
++ *
++ * mipi1  = OV5640
++ *   powerdown = GPIO2_D4
++ *
++ *   bt656-supply = <&vcc1v8_dvp>;
++ */
++&i2c1 {
++	status = "okay";
++
++	clock-frequency = <400000>;
++	i2c-scl-rising-time-ns = <300>;
++	i2c-scl-falling-time-ns = <15>;
++
++	pinctrl-0 = <&i2c1_xfer &cif_clkouta>;
++
++	assigned-clocks = <&cru SCLK_CIF_OUT &cru SCLK_CIF_OUT_SRC>;
++	assigned-clock-parents = <&cru SCLK_CIF_OUT_SRC &cru PLL_GPLL>;
++	assigned-clock-rates = <19200000 0>;
++
++	/* Rear-facing camera */
++	wcam: camera@1a {
++		compatible = "sony,imx258";
++		reg = <0x1a>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&wcam_rst &wcam_pdn>;
++
++		clocks = <&cru SCLK_CIF_OUT>;
++		clock-names = "xvclk";
++
++		vif-supply = <&vcc1v8_dvp>;
++		/*XXX: also depends on vcca1v8_codec for I2C bus power */
++
++		reset-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_LOW>;
++		powerdown-gpios = <&gpio2 RK_PD4 GPIO_ACTIVE_HIGH>;
++		rotation = <180>;
++
++		port {
++			wcam_out: endpoint {
++				remote-endpoint = <&mipi_in_wcam>;
++				data-lanes = <1 2 3 4>;
++				link-frequencies = /bits/ 64 <320000000>;
++				//link-frequencies = /bits/ 64 <633600000>;
++			};
++		};
++	};
++
++	// XXX: modem codec supplies:
++	// - vcc1v8_codec
++	// - vcca3v0_codec
++
++	// supplies: (always on currently)
++	// - vcca3v0_codec
++	// - vcca1v8_codec
++	// - vcc5v0_sys - spk_vcc
++	rt5640: rt5640@1c {
++		compatible = "realtek,rt5640";
++		reg = <0x1c>;
++		clocks = <&cru SCLK_I2S_8CH_OUT>;
++		clock-names = "mclk";
++		realtek,dmic1-data-pin = <1>;
++		realtek,in3-differential;
++		#sound-dai-cells = <0>;
++	};
++};
+ 
+ &i2c3 {
+ 	i2c-scl-rising-time-ns = <450>;
+@@ -846,11 +969,25 @@
+ 	gpio1830-supply = <&vcc_3v0>;
+ };
+ 
++&isp0 {
++	status = "okay";
++
++	ports {
++		port@0 {
++			mipi_in_wcam: endpoint@0 {
++				reg = <0>;
++				remote-endpoint = <&wcam_out>;
++				data-lanes = <1 2 3 4>;
++			};
++		};
++	};
++};
++
+ &mipi_dphy_rx0 {
+ 	status = "okay";
+ };
+ 
+-&mipi_dsi1 {
++&isp0_mmu {
+ 	status = "okay";
+ };
+ 
+@@ -924,10 +1061,6 @@
+ 		};
+ 
+ 		wcam_pdn: wcam-pdn {
+-			rockchip,pins = <2 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-
+-		ucam_pdn: ucam-pdn {
+ 			rockchip,pins = <2 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+@@ -1202,6 +1335,9 @@
+ 
+ &vopb {
+ 	status = "okay";
++	assigned-clocks = <&cru DCLK_VOP0_DIV>, <&cru DCLK_VOP0>, <&cru ACLK_VOP0>, <&cru HCLK_VOP0>;
++	assigned-clock-rates = <0>, <0>, <400000000>, <100000000>;
++	assigned-clock-parents = <&cru PLL_CPLL>, <&cru DCLK_VOP0_FRAC>;
+ };
+ 
+ &vopb_mmu {
+@@ -1210,6 +1346,9 @@
+ 
+ &vopl {
+ 	status = "okay";
++	assigned-clocks = <&cru DCLK_VOP1_DIV>, <&cru DCLK_VOP1>, <&cru ACLK_VOP1>, <&cru HCLK_VOP1>;
++	assigned-clock-rates = <0>, <0>, <400000000>, <100000000>;
++	assigned-clock-parents = <&cru PLL_CPLL>, <&cru DCLK_VOP1_FRAC>;
+ };
+ 
+ &vopl_mmu {
+-- 
+2.34.0
+
+
+From 914ee649d574851ae68a54c91f3821e2b67cb7fd Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 30 Jan 2022 21:44:07 -0500
+Subject: [PATCH 6/6] [WIP] pinephone-pro fix(???) SPI Flash usage
+
+---
+ board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+index 8efeb6ea3d0..f9fecb14e09 100644
+--- a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
++++ b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+@@ -27,9 +27,6 @@ static void setup_iodomain(void)
+ 
+ 	/* BT565 is in 1.8v domain */
+ 	rk_setreg(&grf->io_vsel, 1 << GRF_IO_VSEL_BT565_SHIFT);
+-
+-	/* Set GPIO1 1.8v/3.0v source select to PMU1830_VOL */
+-	rk_setreg(&pmugrf->soc_con0, 1 << PMUGRF_CON0_VSEL_SHIFT);
+ }
+ 
+ int misc_init_r(void)
+-- 
+2.34.0
 
