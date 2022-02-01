@@ -2,6 +2,7 @@
 
 let
   inherit (lib)
+    mkIf
     mkOption
     types
   ;
@@ -30,6 +31,11 @@ in
           The unarchived content are available in the `default` output.
         '';
         type = types.package;
+      };
+      firmwareSPI = mkOption {
+        type = with types; nullOr package;
+        default = null;
+        internal = true;
       };
     };
   };
@@ -75,11 +81,7 @@ in
         ''
       ) {
         firmware = config.Tow-Boot.outputs.firmware;
-        firmwareSPI =
-          if withSPI
-          then firmwareSPIEval.config.Tow-Boot.outputs.firmware
-          else null
-        ;
+        inherit (config.build) firmwareSPI;
         sharedDiskImage = config.Tow-Boot.outputs.diskImage;
         spiInstallerImage =
           (
@@ -96,6 +98,7 @@ in
           ).config.Tow-Boot.outputs.diskImage
         ;
       };
+      firmwareSPI = mkIf withSPI firmwareSPIEval.config.Tow-Boot.outputs.firmware;
     };
   };
 }
