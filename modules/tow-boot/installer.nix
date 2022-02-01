@@ -15,15 +15,6 @@ let
     mkScript
   ;
 
-  firmwareFile =
-    let
-      inherit (config.Tow-Boot.installer.targetConfig)
-        Tow-Boot
-      ;
-    in
-    "${Tow-Boot.outputs.firmware}/binaries/Tow-Boot.${Tow-Boot.variant}.bin"
-  ;
-
   installerType =
     if config.Tow-Boot.installer.enable
     then config.Tow-Boot.installer.targetConfig.Tow-Boot.variant
@@ -247,7 +238,7 @@ in
               populateCommands = ''
                 cp -v ${mkScript bootcmd} ./boot.scr
                 cp -v ${mkScript flashscript} ./flash.scr
-                cp -v ${firmwareFile} ./Tow-Boot.spi.bin
+                cp -v "${config.build.firmwareSPI}/binaries/Tow-Boot.spi.bin" ./Tow-Boot.spi.bin
               '';
               size = 8 * 1024 * 1024;
             };
