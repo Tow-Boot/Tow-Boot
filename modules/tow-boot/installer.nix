@@ -15,6 +15,8 @@ let
     mkScript
   ;
 
+  isPhoneUX = config.Tow-Boot.phone-ux.enable;
+
   installerType =
     if config.Tow-Boot.installer.enable
     then config.Tow-Boot.installer.targetConfig.Tow-Boot.variant
@@ -223,11 +225,26 @@ in
           '';
         };
       };
+      touch-installer = {
+        eval = mkOption {
+          type = types.unspecified;
+          internal = true;
+          description = ''
+            The Celun eval for the installer system.
+          '';
+        };
+        partitionContent = mkOption {
+          type = types.package;
+          description  = ''
+            The partition content for the installer system.
+          '';
+        };
+      };
     };
   };
 
   config = mkMerge [
-    (mkIf (installerType == "spi") {
+    (mkIf (installerType == "spi" && !isPhoneUX) {
       Tow-Boot.diskImage = {
         partitions = [
           {
@@ -246,6 +263,46 @@ in
             bootable = true;
           }
         ];
+      };
+    })
+    (mkIf (installerType == "spi" && isPhoneUX) {
+      Tow-Boot = {
+        diskImage = {
+          partitions = [
+            {
+              partitionType = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
+              partitionUUID = "44444444-4444-4444-0000-000000000003";
+              filesystem = {
+                filesystem = "ext4";
+                populateCommands = ''
+                  cp -vt ./ ${config.Tow-Boot.touch-installer.partitionContent}/*
+                '';
+                extraPadding = 8 * 1024 * 1024;
+              };
+              name = "spi-installer";
+              bootable = true;
+            }
+          ];
+        };
+        touch-installer = {
+          eval =
+            (import ../../embedded-linux-os/touch-installer-app {
+              device = ../../embedded-linux-os/devices/${config.device.identifier};
+              configuration = {
+                Tow-Boot.installer.config = {
+                  deviceName = "${config.device.manufacturer} ${config.device.name}";
+                  payload = "${config.build.firmwareSPI}/binaries/Tow-Boot.spi.bin";
+                  # TODO: support more than SPI installs
+                  storageMedia = "SPI";
+                  targetBlockDevice = "/dev/mtdblock0";
+                };
+              };
+            })
+          ;
+          inherit ((config.Tow-Boot.touch-installer.eval).config.wip.u-boot.output)
+            partitionContent
+          ;
+        };
       };
     })
   ];
