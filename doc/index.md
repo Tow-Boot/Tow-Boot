@@ -49,7 +49,7 @@ in the menu interface saved to the firmware storage.
 Support for generic mainline-based ARM distros as a first class citizen. Whether
 they boot using UEFI (preferred), or extlinux-compatible boot.
 
-See [`README.distro`](https://source.denx.de/u-boot/u-boot/-/blob/master/doc/README.distro)
+See [`develop/distro.rst`](https://source.denx.de/u-boot/u-boot/-/blob/master/doc/develop/distro.rst)
 from *U-Boot* for all the boot modes that aim to be supported.
 
 
