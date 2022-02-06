@@ -43,6 +43,9 @@
       # Basic pinephone pro enablement
       ./0001-pinephone-pro-base-support.patch
 
+      # SPI Flash support
+      ./0001-pinephone-pro-spi-support.patch
+
       # Fix volume keys
       ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch
       ./0001-WIP-rk3399-pinephone-pro-Tweak-and-fix-keys-adc-valu.patch
