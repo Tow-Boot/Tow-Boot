@@ -59,22 +59,8 @@ let
 in
 (
   # Break gracefully if `device` is not set.
-  # TODO: better document how to provide a device
   if device == null then throw ''
     Please provide a device to build for.
-    =====================================
-
-    Add either of the following parameters:
-
-      --argstr device vendorName-deviceName
-
-    or
-
-      --arg device ./boards/vendorName-deviceName
-
-    The former is equivalent to the latter.
-    The format with a path allows using a device declared out of tree.
-
   '' else
 
   # Maybe print a banner for the device eval.
@@ -91,7 +77,7 @@ in
 # Hijack the `default` output, and shove useful eval attributes in passthru.
 # This makes the default build produce a useful result, and allows usage such as:
 #
-#    $ nix-build --argstr device ... -A build.archive
+#    $ nix-build -A vendorName-deviceName.build.archive
 #
 eval.config.build.default.overrideAttrs({ passthru ? {}, ... }: {
   passthru = passthru // {
