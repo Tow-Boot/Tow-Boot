@@ -38,6 +38,15 @@
       (helpers: with helpers; {
         CMD_POWEROFF = lib.mkForce yes;
       })
+      (helpers: with helpers; {
+        # Workarounds required for eMMC issues and current patchset.
+        MMC_IO_VOLTAGE = yes;
+        MMC_SDHCI_SDMA = yes;
+        MMC_SPEED_MODE_SET = yes;
+        MMC_UHS_SUPPORT = yes;
+        MMC_HS400_ES_SUPPORT = yes;
+        MMC_HS400_SUPPORT = yes;
+      })
     ];
     patches = [
       # Basic pinephone pro enablement
@@ -70,9 +79,6 @@
         url = "https://patchwork.ozlabs.org/series/237654/mbox/";
         sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
       })
-
-      # Work around issue with eMMC driver
-      ./0001-HACK-rockchip_sdhci-Work-around-broken-mmc-set_ios_p.patch
     ];
   };
 }
