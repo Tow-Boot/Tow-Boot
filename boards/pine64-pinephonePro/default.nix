@@ -41,7 +41,7 @@
     ];
     patches = [
       # Basic pinephone pro enablement
-      ./0001-pinephone-pro-support.patch
+      ./0001-pinephone-pro-base-support.patch
 
       # Fix volume keys
       ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch
