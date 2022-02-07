@@ -49,27 +49,17 @@
       })
     ];
     patches = [
-      # Basic pinephone pro enablement
-      ./0001-pinephone-pro-base-support.patch
+      #
+      # Generic changes, not device specific
+      #
 
-      # SPI Flash support
-      ./0001-pinephone-pro-spi-support.patch
-
-      # Fix volume keys
+      # Upstreamable
       ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch
-      ./0001-WIP-rk3399-pinephone-pro-Tweak-and-fix-keys-adc-valu.patch
+      ./0001-mtd-spi-nor-ids-Add-GigaDevice-GD25LQ128E-entry.patch
 
-      # Enable led and vibrate on boot to notify user of boot status
-      ./0001-rk3399-Light-PPP-red-LED-and-vibrate-ASAP-during-boo.patch
-
-      # Fix weird rockchip-isms in U-Boot
-      # TODO: move into general rk3399 handling?
-      ./0001-Tow-Boot-Do-not-honor-Rockchip-download-mode.patch
-
-      # Add improper shutdown implementation
-      # See also: https://patchwork.ozlabs.org/project/uboot/cover/1568880493-22962-1-git-send-email-zhangqing@rock-chips.com/
-      ./0001-pmic-shutdown-rk3399.patch
-      ./0001-HACK-implement-do_poweroff-for-rk8xx.patch
+      # Non-upstreamable
+      ./0001-HACK-Do-not-honor-Rockchip-download-mode.patch
+      ./0001-rk8xx-poweroff-support.patch
 
       # Subject: [PATCH] phy: rockchip: inno-usb2: fix hang when multiple controllers exit
       # https://patchwork.ozlabs.org/project/uboot/patch/20210406151059.1187379-1-icenowy@aosc.io/
@@ -77,6 +67,12 @@
         url = "https://patchwork.ozlabs.org/series/237654/mbox/";
         sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
       })
+
+      #
+      # Device-specific changes
+      #
+
+      ./0001-pine64-pinephonepro-device-enablement.patch
     ];
   };
 }
