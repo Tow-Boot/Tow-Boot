@@ -2,9 +2,11 @@
 
 let
   inherit (lib)
+    concatStringsSep
     mkIf
     mkMerge
     mkOption
+    optionalString
     types
   ;
 
@@ -15,6 +17,10 @@ let
     mkScript
   ;
 
+  inherit (config.hardware)
+    mmcBootIndex
+  ;
+
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
 
   installerType =
@@ -23,25 +29,58 @@ let
     else null
   ;
 
+  prettyType = {
+    "spi" = "SPI";
+    "mmcboot" = "eMMC Boot";
+  }.${installerType};
+
   bootcmd = writeText "${config.device.identifier}-boot.cmd" ''
     echo
-    echo "Tow-Boot SPI installer script"
+    echo "Tow-Boot ${prettyType} installer script"
     echo
 
     # Commands used by either menu systems, or manually.
-    setenv spi_erase 'sf probe; echo "Currently erasing..."; sf erase 0 0x${lib.toHexString config.hardware.SPISize}; echo "Done!"; sleep 5'
-    setenv spi_flash 'setenv script flash.scr; run boot_a_script'
+    ${optionalString (installerType == "spi") ''
+      setenv spi_erase '${concatStringsSep ";" [
+        ''sf probe''
+        ''echo "Currently erasing..."''
+        ''sf erase 0 0x${lib.toHexString config.hardware.SPISize}''
+        ''echo "Done!"''
+        ''sleep 5''
+      ]}'
+    ''}
+    ${optionalString (installerType == "mmcboot") ''
+      setenv mmcboot_erase '${concatStringsSep ";" [
+        ''mmc dev ${mmcBootIndex} 1''
+        ''mmc erase 0 2000''
+        ''mmc dev ${mmcBootIndex} 2''
+        ''mmc erase 0 2000''
+        ''echo "Done!"''
+        ''sleep 5''
+      ]}'
+    ''}
+    setenv ${installerType}_flash 'setenv script flash.scr; run boot_a_script'
 
-    setenv bootmenu_0 'Flash firmware to SPI=run spi_flash'
-    setenv bootmenu_1 'Completely erase SPI=run spi_erase'
+    setenv bootmenu_0 'Flash firmware to ${prettyType}=run ${installerType}_flash'
+    ${optionalString (installerType == "spi") ''
+      setenv bootmenu_1 'Completely erase SPI=run spi_erase'
+    ''}
+    ${optionalString (installerType == "mmcboot") ''
+      setenv bootmenu_1 'Erase platform firmware from eMMC Boot=run mmcboot_erase'
+    ''}
     setenv bootmenu_2 'Reboot=reset'
     setenv bootmenu_3
 
 
     while true; do
       if tb_menu new; then
-        tb_menu add 'Flash firmware to SPI' "" 'run spi_flash'
-        tb_menu add 'Completely erase SPI'  "" 'run spi_erase'
+        tb_menu add 'Flash firmware to ${prettyType}' "" 'run ${installerType}_flash'
+    ${optionalString (installerType == "spi") ''
+        tb_menu add 'Completely erase ${prettyType}'  "" 'run ${installerType}_erase'
+    ''}
+    ${optionalString (installerType == "mmcboot") ''
+        tb_menu add 'Erase firmware from ${prettyType}'  "" 'run ${installerType}_erase'
+    ''}
         tb_menu separator
         tb_menu add 'Reboot' 'Reboots the device' 'reset'
         tb_menu show
@@ -54,9 +93,9 @@ let
           echo '* No menu system available *'
           echo '****************************'
           echo
-          echo 'Use `run spi_erase` to erase the SPI.'
+          echo 'Use `run ${installerType}_erase` to erase the ${prettyType}.'
           echo
-          echo 'Use `run spi_flash` to erase and flash to SPI.'
+          echo 'Use `run ${installerType}_flash` to erase and flash to ${prettyType}.'
           echo
           echo 'Use `reset` to reset the system.'
           echo
@@ -248,7 +287,11 @@ in
       Tow-Boot.diskImage = {
         partitions = [
           {
-            partitionType = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
+            partitionType = lib.mkDefault (
+              if config.Tow-Boot.diskImage.partitioningScheme == "gpt"
+              then "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+              else "83"
+            );
             partitionUUID = "44444444-4444-4444-0000-000000000003";
             filesystem = {
               filesystem = "ext4";
@@ -303,6 +346,30 @@ in
             partitionContent
           ;
         };
+      };
+    })
+    (mkIf (installerType == "mmcboot") {
+      Tow-Boot.diskImage = {
+        partitions = [
+          {
+            partitionType = lib.mkDefault (
+              if config.Tow-Boot.diskImage.partitioningScheme == "gpt"
+              then "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+              else "83"
+            );
+            partitionUUID = "44444444-4444-4444-0000-000000000004";
+            filesystem = {
+              filesystem = "ext4";
+              populateCommands = ''
+                cp -v ${mkScript bootcmd} ./boot.scr
+                cp -v "${config.build.firmwareMMCBoot}/binaries/Tow-Boot.mmcboot.bin" ./Tow-Boot.mmcboot.bin
+              '';
+              size = 8 * 1024 * 1024;
+            };
+            name = "mmcboot-installer";
+            bootable = true;
+          }
+        ];
       };
     })
   ];
