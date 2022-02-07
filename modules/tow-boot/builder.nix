@@ -131,7 +131,7 @@ in
             done
             for f in arch/arm/dts/*rk3399*.dts* arch/arm/dts/*rk3328*.dts*; do
               (set -x
-              sed -i"" -e 's/serial2:1500000n8/serial2:15200n8/' "$f"
+              sed -i"" -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
               )
             done
             )
