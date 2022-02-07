@@ -7,7 +7,13 @@ let
     types
   ;
 
+  withMMCBoot = config.hardware.mmcBootIndex != null;
+
   withSPI = config.hardware.SPISize != null;
+
+  firmwareMMCBootEval = config.helpers.composeConfig {
+    config.Tow-Boot.variant = "mmcboot";
+  };
 
   firmwareSPIEval = config.helpers.composeConfig {
     config.Tow-Boot.variant = "spi";
@@ -31,6 +37,11 @@ in
           The unarchived content are available in the `default` output.
         '';
         type = types.package;
+      };
+      firmwareMMCBoot = mkOption {
+        type = with types; nullOr package;
+        default = null;
+        internal = true;
       };
       firmwareSPI = mkOption {
         type = with types; nullOr package;
@@ -60,7 +71,7 @@ in
       };
 
       default = pkgs.callPackage (
-        { lib, runCommandNoCC, firmware, firmwareSPI, sharedDiskImage, spiInstallerImage }:
+        { lib, runCommandNoCC, firmware, firmwareMMCBoot, firmwareSPI, sharedDiskImage, mmcBootInstallerImage, spiInstallerImage }:
         let
           inherit (lib) optionalString;
         in
@@ -72,6 +83,12 @@ in
           cp -rt $out/config/ ${firmware}/config/*
           cp -rt $out/source/ ${firmware.source}/*
           cp ${sharedDiskImage} $out/shared.disk-image.img
+          ${optionalString (firmwareMMCBoot != null) ''
+            cp -rt $out/binaries/ ${firmwareMMCBoot}/binaries/*
+            cp -rt $out/config/ ${firmwareMMCBoot}/config/*
+            cp -rt $out/source/ ${firmwareMMCBoot.source}/*
+            cp ${mmcBootInstallerImage} $out/mmcboot.installer.img
+          ''}
           ${optionalString (firmwareSPI != null) ''
             cp -rt $out/binaries/ ${firmwareSPI}/binaries/*
             cp -rt $out/config/ ${firmwareSPI}/config/*
@@ -81,8 +98,25 @@ in
         ''
       ) {
         firmware = config.Tow-Boot.outputs.firmware;
-        inherit (config.build) firmwareSPI;
+        inherit (config.build)
+          firmwareMMCBoot
+          firmwareSPI
+        ;
         sharedDiskImage = config.Tow-Boot.outputs.diskImage;
+        mmcBootInstallerImage =
+          (
+            # Note: This has to use the `noenv` (default) variant!!
+            #       The installer image *uses* the noenv binary.
+            #       The `mmcboot` variant is an additional input used to build the
+            #       installed *payload*.
+            config.helpers.composeConfig {
+              config = {
+                Tow-Boot.installer.enable = true;
+                Tow-Boot.installer.targetConfig = firmwareMMCBootEval.config;
+              };
+            }
+          ).config.Tow-Boot.outputs.diskImage
+        ;
         spiInstallerImage =
           (
             # Note: This has to use the `noenv` (default) variant!!
@@ -98,6 +132,7 @@ in
           ).config.Tow-Boot.outputs.diskImage
         ;
       };
+      firmwareMMCBoot = mkIf withMMCBoot firmwareMMCBootEval.config.Tow-Boot.outputs.firmware;
       firmwareSPI = mkIf withSPI firmwareSPIEval.config.Tow-Boot.outputs.firmware;
     };
   };

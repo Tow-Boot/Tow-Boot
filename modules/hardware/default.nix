@@ -42,6 +42,15 @@ in
         default = null;
         type = with types; nullOr int;
       };
+      mmcBootIndex = mkOption {
+        type = with types; nullOr str;
+        default = null;
+        description = ''
+          Enables building the dedicated mmc boot partition variant.
+
+          Enable only on platforms where an SPI flash is not available, or not guaranteed.
+        '';
+      };
       # Do not use generic SOCs unless used for specific requirements.
       socs = {
         generic-aarch64.enable = mkOption {
