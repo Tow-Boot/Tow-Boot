@@ -62,9 +62,6 @@
       # Enable led and vibrate on boot to notify user of boot status
       ./0001-rk3399-Light-PPP-red-LED-and-vibrate-ASAP-during-boo.patch
 
-      # Vibrator support
-      ./0001-add-vibrator-and-gpio-vibrator.patch
-
       # Fix weird rockchip-isms in U-Boot
       # TODO: move into general rk3399 handling?
       ./0001-Tow-Boot-Do-not-honor-Rockchip-download-mode.patch
@@ -74,6 +71,7 @@
       ./0001-pmic-shutdown-rk3399.patch
       ./0001-HACK-implement-do_poweroff-for-rk8xx.patch
 
+      # Subject: [PATCH] phy: rockchip: inno-usb2: fix hang when multiple controllers exit
       # https://patchwork.ozlabs.org/project/uboot/patch/20210406151059.1187379-1-icenowy@aosc.io/
       (pkgs.fetchpatch {
         url = "https://patchwork.ozlabs.org/series/237654/mbox/";
