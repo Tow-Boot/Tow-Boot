@@ -16,6 +16,7 @@ let
   #
 
   amlogicG12 = lib.any (soc: config.hardware.socs.${soc}.enable) [
+    "amlogic-a311d"
     "amlogic-s922x"
   ];
   amlogicGXL = lib.any (soc: config.hardware.socs.${soc}.enable) [
@@ -32,6 +33,12 @@ in
 {
   options = {
     hardware.socs = {
+      amlogic-a311d.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Amlogic A311D";
+        internal = true;
+      };
       amlogic-s805x.enable = mkOption {
         type = types.bool;
         default = false;
@@ -56,11 +63,15 @@ in
   config = mkMerge [
     {
       hardware.socList = [
+        "amlogic-a311d"
         "amlogic-s805x"
         "amlogic-s905"
         "amlogic-s922x"
       ];
     }
+    (mkIf cfg.amlogic-a311d.enable {
+      system.system = "aarch64-linux";
+    })
     (mkIf cfg.amlogic-s805x.enable {
       system.system = "aarch64-linux";
     })
