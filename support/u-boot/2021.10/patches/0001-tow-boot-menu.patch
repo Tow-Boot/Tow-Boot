@@ -83,7 +83,7 @@ new file mode 100644
 index 0000000000..8666636672
 --- /dev/null
 +++ b/cmd/tow-boot/Kconfig
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,40 @@
 +menu "Tow-Boot additional commands"
 +
 +config TOW_BOOT_MENU
@@ -116,6 +116,12 @@ index 0000000000..8666636672
 +	default "SD"
 +	help
 +	  Name used in the interface for MMC1
++
++config TOW_BOOT_MMC2_NAME
++	string "MMC2 user-friendly name"
++	default "(Unused)"
++	help
++	  Name used in the interface for MMC2
 +
 +endmenu
 diff --git a/cmd/tow-boot/Makefile b/cmd/tow-boot/Makefile
