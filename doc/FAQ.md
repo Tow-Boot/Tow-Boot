@@ -24,8 +24,8 @@ First, the "any `AArch64` devices" has to assume that the operating system can
 run on those devices. For this question, we assume the operating system does.
 
 It all depends on whether the systems require dedicated or shared storage for
-the firmware. If the system requires shared storage, and can only boot the
-initial firmware from the SD card, the SD card must contain its firmware. This
+the firmware. If the system requires shared storage, and can only start the
+platform firmware from the SD card, the SD card must contain its firmware. This
 will probably not work well for two different enough platforms.
 
 Though, still assuming the operating system can boot on all the devices you
