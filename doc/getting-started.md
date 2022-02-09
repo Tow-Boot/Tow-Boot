@@ -2,10 +2,10 @@ Getting Started
 ===============
 
 There are two main general ways to install *Tow-Boot*. Installing to a dedicated
-initial boot firmware storage media, if your board supports it, or installing
+platform firmware storage media, if your board supports it, or installing
 on shared storage.
 
-To know whether your board supports the dedicated storage for the initial boot
+To know whether your board supports the dedicated storage for the platform
 firmware, consult the documentation for your board.
 
 On most boards supporting dedicated storage, it is possible to install using
@@ -27,7 +27,7 @@ possible, but out of scope for this guide.
 Learn about the CPU boot order of your board, and ensure no dedicated or shared
 storage has priority over the one you're going to use. 
 
-> **NOTE**: If another Initial Boot Firmware is present on the dedicated
+> **NOTE**: If another Platform Firmware is present on the dedicated
 > storage for your board, it is possible that it will have priority.
 >
 > You may need to erase it, or do other manipulations on your board to skip it
@@ -61,7 +61,7 @@ already formatted in a controlled manner. The partition table is likely to be
 GPT formatted, but some SoC families force the use of MBR.
 
 The disk will contain a partition, this partition serves to **protect** the
-initial boot firmware. It is important to know that with almost all SoC
+platform firmware. It is important to know that with almost all SoC
 families you **cannot** move the partition. It may be possible to resize it,
 but the size has been chosen to allow further expansion if needed.
 
@@ -78,5 +78,5 @@ but the size has been chosen to allow further expansion if needed.
 > you.
 
 Using the *shared storage* strategy, you can simulate *dedicated storage* by
-**not** installing and using the storage media the initial boot firmware lives
+**not** installing and using the storage media the platform firmware lives
 on.
