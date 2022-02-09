@@ -26,7 +26,7 @@ partitions you have created.
 > partition, it may work as well.
 
 When using **dedicated firmware storage**, nothing special has to be done to
-keep the *initial boot firmware* working.
+keep the *platform firmware* working.
 
 
 Bootloader Installation
