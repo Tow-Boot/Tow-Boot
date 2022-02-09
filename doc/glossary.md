@@ -6,10 +6,10 @@ Terminology as used in the project.
 * * *
 
 
-Initial Boot Firmware
----------------------
+Platform Firmware
+-----------------
 
-The *Initial Boot Firmware* is a generic term used to describe the first thing
+The *Platform Firmware* is a generic term used to describe the first thing
 the CPU starts at boot time. On your typical `x86_64` system, it would be what
 was previously called the *BIOS*. Now often diminutively called by the name
 *EFI*. This is what initializes enough of the hardware so that the *operating
@@ -17,7 +17,7 @@ system* can start. Additionally, it often provides facilities for the user to
 do basic configuration, and manage boot options.
 
 In the ARM with SBCs landscape, **U-Boot** is the de facto solution for the
-*Initial Boot Firmware*. Though *U-Boot* is confusingly, but rightly, often
+*Platform Firmware*. Though *U-Boot* is confusingly, but rightly, often
 referred to as a *Boot Loader*. *U-Boot* plays double duties often. It is
 tasked with *initializing the hardware*, and often also used to handle *loading
 and booting* the operating system.
@@ -27,7 +27,7 @@ Boot Loader
 -----------
 
 The *Boot loader* is a program which may or may not be distinct from the
-*Initial Boot Firmware*, which is meant to load a start an *Operating System*.
+*Platform Firmware*, which is meant to load and boot an *Operating System*.
 
 *Boot loaders* are now commonly written following the *UEFI* spec. *GRUB*,
 *rEFInd* and *systemd-boot* are examples of UEFI *boot loaders*.
