@@ -80,3 +80,10 @@ but the size has been chosen to allow further expansion if needed.
 Using the *shared storage* strategy, you can simulate *dedicated storage* by
 **not** installing and using the storage media the platform firmware lives
 on.
+
+
+Building Tow-Boot
+-----------------
+
+This is not a *getting started* topic exactly. This is covered in the
+*[Development Guide](development-guide.md)* section.
