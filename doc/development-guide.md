@@ -15,20 +15,42 @@ The author uses NixOS, but NixOS is not a requirement.
 Only *Nix* the package manager is required to build this project. It can be
 installed on any Linux distribution.
 
+It is preferred to install from the official Nix installer. Using the
+distribution-packaged Nix may not work.
+
 #### I don't want to or can't install `Nix` on my system
 
 Sorry.
 
-Though you can use a Docker container image **TODO** that is pre-configured to
-work well with this project.
+Though you can use a build shim that uses a Docker container.
 
 Using Nix through Docker is not ideal, but should work when working under
 specific conditions.
 
-While Nix works on macOS, this project require a Linux builder to work. Using
-the Docker builder is an alternative to setting up a Linux virtual machine.
-After all, Docker on macOS is a specialized Linux virtual machine. **TO BE TESTED**
+When using the build shim, replace `nix-build` invocations with the path to 
+the shim (e.g.`./support/docker/build.sh`). Note that this only works if the
+command does not reference a nix file directly.
 
+#### I'm not on a Linux system
+
+While Nix works on macOS, this project require a Linux builder to work.
+Using the Docker build shim may work, testing is needed, contributions welcome.
+
+
+I just want to build
+--------------------
+
+You still should read a bit more past this section, but if you absolutely only
+want to build, here's how you can build the `uBoot-sandbox` board.
+
+```
+ $ nix-build -A uBoot-sandbox
+```
+
+After the build is finished successfully, a `result` symlink will refer to the
+build output. The build output by default is the content of the archive.
+
+* * *
 
 A primer on Nix
 ---------------
