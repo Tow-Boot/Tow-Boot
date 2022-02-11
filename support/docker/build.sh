@@ -55,10 +55,12 @@ if [ -e /Tow-Boot ]; then
 	nix-build --cores 0 "$@"
 	)
 
+	stderr.printf "(Unwrapping store paths...)\n"
+
 	# Unwrap the `result` symlink
 	out=$(readlink -f result)
 	rm result
-	cp -r "$out" result
+	cp -vr "$out" result >&2
 	chown -R "$REAL_UID:$REAL_GID" result
 else
 	if [[ "$relative_dir" =~ ^/ ]]; then
