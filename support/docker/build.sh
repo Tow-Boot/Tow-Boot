@@ -21,13 +21,22 @@ set -u
 set -o pipefail
 PS4=" $ "
 
+project_dir="$(cd "$(dirname "$0")/../.."; pwd)"
+current_dir="$(pwd)"
+relative_dir="${current_dir/$project_dir/.}"
+
+stderr.printf() {
+	printf "$@" >&2
+}
+
 _nix_docker() {
 	local STORE_VOLUME
 	STORE_VOLUME="$(docker volume create "Tow-Boot--nix-store")"
 
 	docker run \
 		--volume "$STORE_VOLUME:/nix" \
-		--volume "$(cd "$(dirname "$0")/../.."; pwd):/Tow-Boot" \
+		--volume "$project_dir:/Tow-Boot" \
+		--workdir "/Tow-Boot/$relative_dir" \
 		-it nixos/nix \
 		"$@"
 }
@@ -35,8 +44,6 @@ _nix_docker() {
 if [ -e /Tow-Boot ]; then
 	REAL_UID="$1"; shift
 	REAL_GID="$1"; shift
-
-	cd /Tow-Boot
 
 	# Cleanup a leftover result (unclean and rude)
 	if [ -e result ]; then
@@ -54,6 +61,11 @@ if [ -e /Tow-Boot ]; then
 	cp -r "$out" result
 	chown -R "$REAL_UID:$REAL_GID" result
 else
+	if [[ "$relative_dir" =~ ^/ ]]; then
+		stderr.printf "Error: the docker wrapper script needs to be executed in the Tow-Boot checkout.\n"
+		exit 1
+	fi
+
 	# Outside the docker environment, we're calling this script in the container.
 	_nix_docker /Tow-Boot/support/docker/build.sh \
 		"$(id -u)" "$(id -g)" \
