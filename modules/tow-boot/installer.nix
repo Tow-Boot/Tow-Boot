@@ -105,7 +105,7 @@ let
     done
   '';
 
-  flashscript = let
+  spiFlashscript = let
     error = messages: ''
       echo ""
       echo " ********* "
@@ -244,6 +244,145 @@ let
     fi
   '';
 
+  mmcBootFlashscript = let
+    error = messages: ''
+      echo ""
+      echo " ********* "
+      echo " * ERROR * "
+      echo " ********* "
+      echo ""
+      ${messages}
+      echo ""
+      if pause 'Press any key to go back to the menu...'; then
+        echo -n
+      else
+        echo ""
+        echo "* * * Returning to the menu in 60 seconds"
+        echo ""
+        sleep 60
+      fi
+    '';
+  in writeText "${config.device.identifier}-flash.cmd" ''
+    echo
+    echo
+    echo eMMC Boot Firmware installer
+    echo
+    echo
+
+    if test $board_identifier != "${config.device.identifier}"; then
+      ${error ''
+      echo "This is the installer for: [${config.device.identifier}]"
+      echo "The board detected is:     "[$board_identifier]
+      ''}
+    else
+      # Some variables we will be using
+      # (Useless use of setexpr, but eh)
+      setexpr new_firmware_addr_r $kernel_addr_r + 0
+      setexpr new_firmware_addr_r_tail $new_firmware_addr_r + 0x2000
+
+      echo "devtype = $devtype"
+      echo "devnum = $devnum"
+      part list $devtype $devnum -bootable bootpart
+      echo "bootpart = $bootpart"
+      echo ""
+      echo ":: Starting flash operation"
+      echo ""
+
+      echo "-> Targeting MMC${mmcBootIndex}..."
+      if mmc dev ${mmcBootIndex} 1; then
+
+        echo ""
+        echo "-> Reading new firmware from storage..."
+        if load $devtype $devnum:$bootpart $new_firmware_addr_r Tow-Boot.mmcboot.bin; then
+          # Assumes 512 bytes blocks.
+          # It is the maximum value it can be, and the most likely value.
+          # Block sizes smaller than 512 are not expected.
+          #  - https://source.denx.de/u-boot/u-boot/-/blob/v2022.01/drivers/mmc/mmc.c#L2540-2543
+          # Furthermore, JESD84-A43 states 512 bytes read/write support must be supported.
+          # This *should* mean that in practice 512 is the value used all the time.
+          #   ¯\_(ツ)_/¯
+          blocksize=0x200
+          setexpr neutersize 0x2000 / $blocksize
+          # rounded-up integer division is `(a+b-1) / b`
+          setexpr new_firmware_size_blocks $filesize + $blocksize
+          setexpr new_firmware_size_blocks $new_firmware_size_blocks - 1
+          setexpr new_firmware_size_blocks $new_firmware_size_blocks / $blocksize
+          setexpr new_firmware_size_tail_blocks $new_firmware_size_blocks - $neutersize
+
+          echo ""
+          echo "-> Hardening against failures..."
+          echo "   We are deliberately breaking the initial part of the eMMC Boot Flash contents."
+          # Safe only if the Boot ROM can read from alternate sources!!
+
+          # Erasing the first 8KiB of the eMMC Boot Flash
+          # With all tested devices, this is sufficient to neuter.
+          # This helps ensure a failure in the following steps does not brick the device.
+          if mmc erase 0 $neutersize; then
+            echo ""
+            echo "   A stray reboot should be safe now."
+
+            echo ""
+            echo "-> Writing new firmware tail to eMMC Boot..."
+            if mmc write $new_firmware_addr_r_tail $neutersize $new_firmware_size_tail_blocks; then
+
+              echo ""
+              echo "-> Writing new firmware head to eMMC Boot..."
+              if mmc write $new_firmware_addr_r 0x0 $neutersize; then
+                ${config.Tow-Boot.installer.additionalMMCBootCommands}
+
+                echo ""
+                echo "✅ Flashing seems to have been successful!"
+                echo ""
+                if pause 'Press any key to reboot...'; then
+                  echo -n
+                else
+                  echo "Resetting in 5 seconds"
+                  sleep 5
+                fi
+                reset
+
+              # mmc write head
+              else
+                ${error ''
+                echo "❌ Error flashing new firmware head to eMMC Boot."
+                echo "   Rebooting now may fail."
+                ''}
+              fi
+
+            # mmc write tail
+            else
+              ${error ''
+              echo "⚠️ Error flashing new firmware tail to eMMC Boot."
+              echo "  Rebooting now should be safe as the eMMC Boot was removed from the boot chain."
+              ''}
+            fi
+
+          # mmc erase 0 0x2000
+          else
+            ${error ''
+            echo "❌ Failed to harden against failures."
+            echo "   If is unknown whether rebooting is safe or not right now."
+            ''}
+          fi
+
+        # load Tow-Boot.mmcboot.bin
+        else
+          ${error ''
+          echo "⚠️ Error reading new firmware from storage."
+          echo "  Rebooting should be safe, nothing was done."
+          ''}
+        fi
+
+      # sf probe
+      else
+        ${error ''
+        echo "⚠️ Running `mmc dev ${mmcBootIndex} 1` failed unexpectedly."
+        echo "  Rebooting should be safe, nothing was done."
+        ''}
+      fi
+    fi
+  '';
+
 in
 {
   options = {
@@ -261,6 +400,13 @@ in
           type = types.unspecified;
           description = ''
             Installer eval to be installed by the installer.
+          '';
+        };
+        additionalMMCBootCommands = mkOption {
+          type = types.lines;
+          default = "";
+          description = ''
+            Additional commands to run after successfully writing the firmware to the mmcboot partition.
           '';
         };
       };
@@ -297,7 +443,7 @@ in
               filesystem = "ext4";
               populateCommands = ''
                 cp -v ${mkScript bootcmd} ./boot.scr
-                cp -v ${mkScript flashscript} ./flash.scr
+                cp -v ${mkScript spiFlashscript} ./flash.scr
                 cp -v "${config.build.firmwareSPI}/binaries/Tow-Boot.spi.bin" ./Tow-Boot.spi.bin
               '';
               size = 8 * 1024 * 1024;
@@ -362,6 +508,7 @@ in
               filesystem = "ext4";
               populateCommands = ''
                 cp -v ${mkScript bootcmd} ./boot.scr
+                cp -v ${mkScript mmcBootFlashscript} ./flash.scr
                 cp -v "${config.build.firmwareMMCBoot}/binaries/Tow-Boot.mmcboot.bin" ./Tow-Boot.mmcboot.bin
               '';
               size = 8 * 1024 * 1024;
