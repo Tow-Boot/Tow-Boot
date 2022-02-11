@@ -149,6 +149,8 @@ stdenvNoCC.mkDerivation rec {
               "echo -n ', uuid=${partition.partitionUUID}'"}
           ${optionalString (partition ? bootable && partition.bootable)
               ''echo -n ', attrs="LegacyBIOSBootable"' ''}
+          ${optionalString (partition ? requiredPartition && partition.requiredPartition)
+              ''echo -n ', attrs="RequiredPartition"' ''}
           ${optionalString (partition ? partitionLabel)
               ''echo -n ', name="${partition.partitionLabel}"' ''}
           echo "" # Finishes the command

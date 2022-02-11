@@ -64,9 +64,18 @@ in
       firmwarePartition = {
         name = "Tow-Boot.${config.device.identifier}.bin";
         partitionLabel = "Firmware (Tow-Boot)";
+        # > Protective partitions are entries in the partition table that cover
+        # > the LBA region occupied by firmware and have the ‘Required Partition’
+        # > attribute set.
+        # — EBBR chapter 4.1.1
+        requiredPartition = true;
         # In theory this shouldn't be static, every partition should have a
         # unique identifier, but that's not really possible here.
         partitionUUID = "CE8F2026-17B1-4B5B-88F3-3E239F8BD3D8";
+        # > A protective partition must use a PartitionTypeGUID that identifies
+        # > it as a firmware protective partition. (e.g., don’t reuse a GUID
+        # > used by non-protective partitions).
+        # — EBBR chapter 4.1.1
         partitionType = lib.mkDefault (
           if config.Tow-Boot.diskImage.partitioningScheme == "gpt"
           # https://github.com/ARM-software/ebbr/issues/84

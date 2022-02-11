@@ -89,6 +89,14 @@ let
         '';
       };
 
+      requiredPartition = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          For GPT, sets the Required Partition attribute on the partition.
+        '';
+      };
+
       filesystem = mkOption {
         type = types.submodule ({
           imports = import (../filesystem-image/module-list.nix);
