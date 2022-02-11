@@ -45,23 +45,29 @@ if [ -e /Tow-Boot ]; then
 	REAL_UID="$1"; shift
 	REAL_GID="$1"; shift
 
-	# Cleanup a leftover result (unclean and rude)
-	if [ -e result ]; then
-		rm -rf result
-	fi
+	# It's fine to use a static name here since it's an ephemeral container.
+	mkdir -p "/tmp-build-dir"
+	cd "/tmp-build-dir"
 
 	# Call `nix-build`, showing the user the actual invocation.
-	(set -x
-	nix-build --cores 0 "$@"
+	(
+	NIX_PATH="Tow-Boot=/Tow-Boot"
+	set -x
+	nix-build \
+		--cores 0 \
+		'<Tow-Boot/default.nix>' \
+		"$@"
 	)
 
-	stderr.printf "(Unwrapping store paths...)\n"
+	stderr.printf "\n(Unwrapping store paths...)\n"
 
-	# Unwrap the `result` symlink
-	out=$(readlink -f result)
-	rm result
-	cp -vr "$out" result >&2
-	chown -R "$REAL_UID:$REAL_GID" result
+	for f in *; do
+		target="$(readlink -f "$f")"
+		rm -rf "$current_dir/$f"
+		stderr.printf "%s -> %s\n" "$f" "$target"
+		cp -r "$target" "$current_dir/$f"
+		chown -R "$REAL_UID:$REAL_GID" "$current_dir/$f"
+	done
 else
 	if [[ "$relative_dir" =~ ^/ ]]; then
 		stderr.printf "Error: the docker wrapper script needs to be executed in the Tow-Boot checkout.\n"
