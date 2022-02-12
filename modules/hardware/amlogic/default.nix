@@ -129,6 +129,16 @@ in
             meson64-bootmk --output Tow-Boot.bin "''${args[@]}"
             )
 
+            if [[ "$variant" == "mmcboot" ]]; then
+              echo ":: Offsetting for direct mmcboot write"
+              (PS4=" $ "; set -x
+              mv -v Tow-Boot.bin Tow-Boot.bin.tmp
+              dd if=/dev/zero of=offset.bin bs=512 count=1
+              cat offset.bin Tow-Boot.bin.tmp > Tow-Boot.bin
+              rm -v Tow-Boot.bin.tmp
+              )
+            fi
+
             echo " :: Installing..."
             cp -v Tow-Boot.bin $out/binaries/Tow-Boot.$variant.bin
           '';
