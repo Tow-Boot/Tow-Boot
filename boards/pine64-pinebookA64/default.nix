@@ -7,6 +7,7 @@
 
   hardware = {
     soc = "allwinner-a64";
+    mmcBootIndex = "1";
   };
 
   Tow-Boot = {
