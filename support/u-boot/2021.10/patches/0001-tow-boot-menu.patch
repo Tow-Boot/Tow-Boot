@@ -105,14 +105,14 @@ index 0000000000..8666636672
 +
 +config TOW_BOOT_MMC0_NAME
 +	string "MMC0 user-friendly name"
-+	default "SD" if ARCH_SUNXI
++	default "SD" if ARCH_SUNXI || MESON_G12A
 +	default "eMMC"
 +	help
 +	  Name used in the interface for MMC0
 +
 +config TOW_BOOT_MMC1_NAME
 +	string "MMC1 user-friendly name"
-+	default "eMMC" if ARCH_SUNXI
++	default "eMMC" if ARCH_SUNXI || MESON_G12A
 +	default "SD"
 +	help
 +	  Name used in the interface for MMC1
