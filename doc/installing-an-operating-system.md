@@ -18,3 +18,4 @@ Linux
 
  - [Fedora](distributions/fedora.md)
  - [NixOS](distributions/nixos.md)
+ * [Manjaro](distributions/manjaro.md)
