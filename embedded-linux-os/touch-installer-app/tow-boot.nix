@@ -24,7 +24,7 @@ in
           };
           storageMedia = mkOption {
             description = "Storage media type";
-            type = types.enum [ "SPI" "EMMC" ];
+            type = types.enum [ "SPI" "EMMC" "EMMCBOOT" ];
           };
           payload = mkOption {
             description = "File to install to the storage media";
