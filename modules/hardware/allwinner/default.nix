@@ -7,6 +7,7 @@ let
     mkOption
     types
   ;
+  inherit (config.hardware) mmcBootIndex;
   cfg = config.hardware.socs;
   allwinnerSOCs = [
     "allwinner-a64"
@@ -57,6 +58,10 @@ in
         ;
         builder.installPhase = ''
           cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
+        '';
+        installer.additionalMMCBootCommands = ''
+          mmc bootbus ${mmcBootIndex} 1 0 0
+          mmc partconf ${mmcBootIndex} 1 1 1
         '';
       };
     })
