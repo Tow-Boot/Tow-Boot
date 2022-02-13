@@ -16,6 +16,7 @@ in
 
   hardware = {
     soc = "allwinner-a64";
+    mmcBootIndex = "1";
   };
 
   Tow-Boot = {
@@ -52,5 +53,8 @@ in
       (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
       ./0001-HACK-cmd-ums-Ensure-USB-gadget-is-probed-via-workaro.patch
     ];
+    touch-installer = {
+      targetBlockDevice = "/dev/mmcblk2boot0";
+    };
   };
 }
