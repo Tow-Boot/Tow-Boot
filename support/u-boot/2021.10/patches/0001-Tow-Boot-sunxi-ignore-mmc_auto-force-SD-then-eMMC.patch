@@ -26,7 +26,7 @@ index 958b850da4..971172a492 100644
  
  #define BOOTENV_DEV_NAME_MMC_AUTO(devtypeu, devtypel, instance) \
 -	"mmc_auto "
-+	"mmc0 mmc1 " /* SD, then eMMC */
++	"mmc1 mmc0 " /* eMMC, then SD */
  
  #define BOOT_TARGET_DEVICES_MMC(func) func(MMC_AUTO, mmc_auto, na)
  #else
