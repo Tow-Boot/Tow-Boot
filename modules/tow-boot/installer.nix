@@ -424,6 +424,10 @@ in
             The partition content for the installer system.
           '';
         };
+        targetBlockDevice = mkOption {
+          description = "Block device to install to";
+          type = types.str;
+        };
       };
     };
   };
@@ -474,6 +478,8 @@ in
           ];
         };
         touch-installer = {
+          # Should be good for most SPI Flash.
+          targetBlockDevice = lib.mkDefault "/dev/mtdblock0";
           eval =
             (import ../../embedded-linux-os/touch-installer-app {
               device = ../../embedded-linux-os/devices/${config.device.identifier};
@@ -481,9 +487,10 @@ in
                 Tow-Boot.installer.config = {
                   deviceName = "${config.device.manufacturer} ${config.device.name}";
                   payload = "${config.build.firmwareSPI}/binaries/Tow-Boot.spi.bin";
-                  # TODO: support more than SPI installs
                   storageMedia = "SPI";
-                  targetBlockDevice = "/dev/mtdblock0";
+                  inherit (config.Tow-Boot.touch-installer)
+                    targetBlockDevice
+                  ;
                 };
               };
             })
