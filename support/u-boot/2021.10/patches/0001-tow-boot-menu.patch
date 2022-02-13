@@ -83,7 +83,7 @@ new file mode 100644
 index 0000000000..8666636672
 --- /dev/null
 +++ b/cmd/tow-boot/Kconfig
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,40 @@
 +menu "Tow-Boot additional commands"
 +
 +config TOW_BOOT_MENU
@@ -105,17 +105,23 @@ index 0000000000..8666636672
 +
 +config TOW_BOOT_MMC0_NAME
 +	string "MMC0 user-friendly name"
-+	default "SD" if ARCH_SUNXI
++	default "SD" if ARCH_SUNXI || MESON_G12A
 +	default "eMMC"
 +	help
 +	  Name used in the interface for MMC0
 +
 +config TOW_BOOT_MMC1_NAME
 +	string "MMC1 user-friendly name"
-+	default "eMMC" if ARCH_SUNXI
++	default "eMMC" if ARCH_SUNXI || MESON_G12A
 +	default "SD"
 +	help
 +	  Name used in the interface for MMC1
++
++config TOW_BOOT_MMC2_NAME
++	string "MMC2 user-friendly name"
++	default "(Unused)"
++	help
++	  Name used in the interface for MMC2
 +
 +endmenu
 diff --git a/cmd/tow-boot/Makefile b/cmd/tow-boot/Makefile

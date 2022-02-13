@@ -40,7 +40,7 @@ new file mode 100644
 index 0000000000..284667ab8e
 --- /dev/null
 +++ b/include/tow-boot_env.h
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,58 @@
 +#ifndef _TOW_BOOT_ENV_H
 +#define _TOW_BOOT_ENV_H
 +
@@ -65,6 +65,7 @@ index 0000000000..284667ab8e
 +	"bootcmd=run setup_leds; run distro_bootcmd\0" \
 +	"target_name_mmc0=" CONFIG_TOW_BOOT_MMC0_NAME "\0" \
 +	"target_name_mmc1=" CONFIG_TOW_BOOT_MMC1_NAME "\0" \
++	"target_name_mmc2=" CONFIG_TOW_BOOT_MMC2_NAME "\0" \
 +	"target_name_usb0=USB\0" \
 +	"target_name_nvme0=NVME\0" \
 +	"target_name_pxe=PXE\0" \

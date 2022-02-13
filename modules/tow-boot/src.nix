@@ -40,6 +40,7 @@ in
             # Intrusive opinionated patches
             (base + "/0001-Tow-Boot-sunxi-ignore-mmc_auto-force-SD-then-eMMC.patch")
             (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
+            (base + "/0001-meson-Prefer-eMMC-to-SD-card-boot.patch")
           ];
         };
       in
