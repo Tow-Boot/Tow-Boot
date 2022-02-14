@@ -8,6 +8,7 @@
   hardware = {
     soc = "allwinner-h5";
     mmcBootIndex = "1";
+    allwinner.crust.defconfig = "orangepi_zero_plus_defconfig";
   };
 
   Tow-Boot = {
