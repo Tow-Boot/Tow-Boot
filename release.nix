@@ -50,7 +50,7 @@ in
     ${concatStringsSep "\n" (builtins.map (eval: ''
       (
       echo " :: Packaging ${eval.config.device.identifier}"
-      cp -t $out/ ${eval.build.archive}
+      cp ${eval.build.archive} $out/${eval.build.archive.name}
       )
     '') releasedEvals)}
   ''
