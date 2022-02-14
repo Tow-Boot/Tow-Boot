@@ -28,6 +28,8 @@
       FRAMEBUFFER_CONSOLE = yes;
       VT_CONSOLE = yes;
 
+      # TODO: "USB gadget" feature
+      USB_GADGET = yes;
       # Otherwise gadget battery may unexpectedly drain.
       # The default is `2`.
       USB_GADGET_VBUS_DRAW = freeform "500";
