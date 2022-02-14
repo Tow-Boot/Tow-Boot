@@ -11,7 +11,9 @@ changed to use that module.
 
 let
   inherit (lib)
+    mkIf
     mkOption
+    optionalString
     types
   ;
 
@@ -27,6 +29,8 @@ let
 
     busybox
     glibc
+
+    mmc-utils
   ;
 
   inherit (config.Tow-Boot.installer.config)
@@ -41,6 +45,10 @@ let
 
   # Alias to `output.extraUtils` for internal usage.
   inherit (cfg.output) extraUtils;
+
+  # XXX: for now we only have A64 devices in the touch installer
+  # TODO: move the platform knowledge here back into Tow-Boot proper
+  anyAllwinner = config.hardware.cpu == "allwinner-a64";
 in
 {
 
@@ -179,6 +187,9 @@ in
     };
 
     examples.touch-installer.extraUtils.packages = [
+      (mkIf (config.Tow-Boot.installer.config.storageMedia == "EMMCBOOT") {
+        package = mmc-utils;
+      })
       {
         package = busybox;
         extraCommand = ''
@@ -203,9 +214,56 @@ in
         ;
       }
 
+      (writeScriptBin "tow-boot-installer--common-checks" ''
+
+        device="${targetBlockDevice}"
+
+        ${optionalString (config.Tow-Boot.installer.config.storageMedia == "EMMCBOOT") ''
+          for f in /sys/block/mmcblk*boot*/force_ro; do
+            echo 0 > "$f"
+          done
+        ''}
+
+        if ! test -e "$device"; then
+          echo "Error: $device not found"
+          echo ""
+
+          ${optionalString (config.Tow-Boot.installer.config.storageMedia == "SPI") ''
+            echo " $ dmesg | grep -i spi"
+
+            echo "---"
+            # Also skip GICv3 messages that are irrelevant here...
+            dmesg | grep -i spi | grep -v 'GICv3'
+            echo "---"
+          ''}
+          ${optionalString (config.Tow-Boot.installer.config.storageMedia == "EMMCBOOT") ''
+            echo " $ dmesg | grep -i mmc"
+
+            echo "---"
+            dmesg | grep -i mmc
+            echo "---"
+          ''}
+
+          exit 4
+        fi
+
+      '')
+
       (writeScriptBin "tow-boot-installer--erase-checks" ''
         #!/bin/sh
-        exec tow-boot-installer--install-checks "$@"
+
+        device="${targetBlockDevice}"
+
+        ${optionalString (
+          config.Tow-Boot.installer.config.storageMedia == "EMMCBOOT"
+          && anyAllwinner
+        ) ''
+        mmc bootbus set single_hs x1 x4 "$device"
+        # Disable boot partition
+        mmc bootpart enable 0 0 "$device"
+        ''}
+
+        exec tow-boot-installer--common-checks "$@"
       '')
 
       (writeScriptBin "tow-boot-installer--install-checks" ''
@@ -213,22 +271,16 @@ in
 
         device="${targetBlockDevice}"
 
-        if ! test -e "$device"; then
-          echo "Error: $device not found"
-          echo ""
+        ${optionalString (
+          config.Tow-Boot.installer.config.storageMedia == "EMMCBOOT"
+          && anyAllwinner
+        ) ''
+        mmc bootbus set single_hs x1 x4 "$device"
+        # Enable boot partition 1, enable BOOT_ACK bits
+        mmc bootpart enable 1 1 "$device"
+        ''}
 
-          # TODO: fix debugging info for other target device types.
-          echo " $ dmesg | grep -i spi"
-
-          echo "---"
-          # Also skip GICv3 messages that are irrelevant here...
-          dmesg | grep -i spi | grep -v 'GICv3'
-          echo "---"
-
-          exit 4
-        fi
-
-        exit 0
+        exec tow-boot-installer--common-checks "$@"
       '')
 
       (writeScriptBin "mount-basic-mounts" ''
