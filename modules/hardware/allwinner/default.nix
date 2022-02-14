@@ -39,6 +39,18 @@ in
         internal = true;
       };
     };
+    hardware.allwinner = {
+      crust = {
+        defconfig = mkOption {
+          type = types.str;
+          description = ''
+            `defconfig` to use for the crust firmware build.
+
+            Defaults to the same name as the U-Boot defconfig.
+          '';
+        };
+      };
+    };
   };
 
   config = mkMerge [
@@ -46,6 +58,10 @@ in
       hardware.socList = allwinnerSOCs;
     }
     (mkIf anyAllwinner {
+
+      hardware.allwinner.crust = {
+        defconfig = lib.mkDefault config.Tow-Boot.defconfig;
+      };
       Tow-Boot = {
         diskImage = {
           # Reduce GPT size to fit the firmware.
@@ -68,6 +84,7 @@ in
     (mkIf (anyAllwinner64) {
       Tow-Boot.builder.additionalArguments = {
         BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareAllwinner}/bl31.bin";
+        SCP = lib.mkDefault "${pkgs.Tow-Boot.crustFirmware { inherit (config.hardware.allwinner.crust) defconfig; }}/scp.bin";
       };
     })
     (mkIf cfg.allwinner-a64.enable {
