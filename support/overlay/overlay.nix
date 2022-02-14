@@ -58,6 +58,15 @@ in
       armTrustedFirmwareS905
     ;
 
+    crustFirmware = final.callPackage ./crust-firmware {
+      inherit (final.buildPackages)
+        stdenv
+        flex
+        yacc
+      ;
+      or1k-toolchain = final.pkgsCross.or1k.buildPackages;
+    };
+
     amlogicFirmware = callPackage ./amlogic-firmware { };
 
     gxlimg = callPackage ./gxlimg { };
