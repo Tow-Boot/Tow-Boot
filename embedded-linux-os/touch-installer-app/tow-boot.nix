@@ -64,8 +64,8 @@ in
         src = fetchFromGitHub {
           owner = "Tow-Boot";
           repo = "touch-installer";
-          rev = "4eace955855b2c64b1a55b4da61eedbad3fc3219";
-          sha256 = "sha256-MWlPaLkAI0y4KNmW0bVW7D88BcT8bedbeO5XF4AUFRk=";
+          rev = "1e506f7800f750efe75df53cc0176c4afaa1d033";
+          sha256 = "sha256-KAJyy8urh7vKwq+1/icaYLZU633nwsLeEE6NG8fV+zk=";
         };
         lvgui = fetchFromGitHub {
           owner = "mobile-nixos";
