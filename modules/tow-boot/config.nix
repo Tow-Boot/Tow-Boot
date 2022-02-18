@@ -35,7 +35,7 @@ in
 
       # Boot menu and default boot configuration
 
-      TOW_BOOT_MENU = yes;
+      TOW_BOOT_MENU = lib.mkIf config.Tow-Boot.useDefaultPatches yes;
 
       # Gives *some* time for the user to act.
       # Though an already-knowledgeable user will know they can use the key
@@ -55,7 +55,9 @@ in
           reset = "\\e[0m";
           bright = "\\e[1m";
         in
-        freeform ''"${reset}Please press [${bright}ESCAPE${reset}] or [${bright}CTRL+C${reset}] to enter the boot menu."''
+        lib.mkIf config.Tow-Boot.useDefaultPatches (
+          freeform ''"${reset}Please press [${bright}ESCAPE${reset}] or [${bright}CTRL+C${reset}] to enter the boot menu."''
+        )
       ;
 
       # And this ends up causing the menu to be used on ESCAPE (or CTRL+C)

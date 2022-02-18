@@ -83,12 +83,14 @@ in
     Tow-Boot = {
       outputs.firmware = lib.mkDefault (pkgs.callPackage (
         { stdenv
+        , lib
         , buildPackages
         , src
         , defconfig
         , patches
         , variant
         , uBootVersion
+        , useDefaultPatches
         , boardIdentifier
         , towBootIdentifier
         , additionalArguments
@@ -136,10 +138,10 @@ in
             done
             )
           ''
-          + ''
+          + (lib.optionalString (useDefaultPatches) ''
             substituteInPlace include/tow-boot_env.h \
               --replace "@boardIdentifier@" "${boardIdentifier}"
-          ''
+          '')
           + postPatch
           + ''
             # Packaging the source just before the build for maximum GPL compliance
@@ -235,6 +237,7 @@ in
           patches
           variant
           uBootVersion
+          useDefaultPatches
         ;
         inherit (config.Tow-Boot.builder)
           additionalArguments
@@ -249,7 +252,7 @@ in
       });
 
       builder = {
-        postPatch = mkIf (config.Tow-Boot.setup_leds != null) ''
+        postPatch = mkIf (config.Tow-Boot.useDefaultPatches && config.Tow-Boot.setup_leds != null) ''
           substituteInPlace include/tow-boot_env.h \
             --replace 'setup_leds=echo\0' 'setup_leds=${config.Tow-Boot.setup_leds}\0'
         '';
