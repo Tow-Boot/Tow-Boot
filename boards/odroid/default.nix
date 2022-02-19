@@ -14,6 +14,7 @@
     extraConfig = ''
       CONFIG_USE_PREBOOT=y
       CONFIG_PREBOOT="usb start ; usb info"
+      CONFIG_SF_DEFAULT_SPEED=52000000
     '';
 
   };
