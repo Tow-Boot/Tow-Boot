@@ -4,8 +4,9 @@ let
   inherit (lib)
     mkDefault
     mkIf
+    optionals
   ;
-  inherit (config.Tow-Boot) uBootVersion;
+  inherit (config.Tow-Boot) uBootVersion variant;
 in
 
 {
@@ -36,12 +37,25 @@ in
 
             # Intrusive non-upstreamable workarounds
             (base + "/0001-HACK-video-sync-dirty.patch")
+          ]
 
-            # Intrusive opinionated patches
+          #
+          # Intrusive opinionated patches
+          #
+
+          # Patches to force eMMC OS boot to happen before SD OS boot
+          ++ (optionals (variant != "boot-installer") [
             (base + "/0001-Tow-Boot-sunxi-ignore-mmc_auto-force-SD-then-eMMC.patch")
             (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
             (base + "/0001-meson-Prefer-eMMC-to-SD-card-boot.patch")
-          ];
+          ])
+          # Patches to force SD OS boot to happen before OS boot
+          ++ (optionals (variant == "boot-installer") [
+            # Allwinner detects the platform firmware location and prefers it first
+            # Rockchip already prefers SD to eMMC (since b212ad24a604b00b240add35516b7381965deb31)
+            # Amlogic already prefers SD to eMMC
+          ])
+          ;
         };
       in
         if patchSets ? ${uBootVersion}
