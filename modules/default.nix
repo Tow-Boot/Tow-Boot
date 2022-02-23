@@ -16,7 +16,6 @@ in
     ./kconfig.nix
     ./overlays.nix
     ./system.nix
-    ./temp.nix # legacy builder support during migration
   ];
 
   options = {

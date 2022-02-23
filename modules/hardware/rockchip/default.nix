@@ -9,6 +9,8 @@ let
     mkMerge
     mkOption
     types
+    versionOlder
+    versionAtLeast
   ;
   inherit (config.Tow-Boot)
     variant
@@ -57,35 +59,36 @@ in
             CMD_POWEROFF = no;
           })
         ];
-        patches = [
-          ./0001-HACK-efi_runtime-pretend-we-can-t-reset.patch
-          #
-          # eMMC woes fixes
-          # ---------------
-          #
-          # Ensures eMMC nodes are present in SPL FDT.
-          #
-          (fetchpatch {
-            url = "https://source.denx.de/u-boot/u-boot/-/commit/f8b36089af26c3596a8b3796af336cee42cc1757.patch";
-            sha256 = "sha256-iFqR5CJ/X0Fz41Ta3kcZW48Kcm9mI4m5bAcp66PkNU0=";
-          })
-          #
-          # Unbreaks eMMC for some usage.
-          # First two patches are changes needed to apply the series.
-          #
-          (fetchpatch {
-            url = "https://source.denx.de/u-boot/u-boot/-/commit/40e6f52454fc9adb6269ef8089c1fd2ded85fee8.patch";
-            sha256 = "sha256-RGBfAR8YC3kY3/2C4cFQR59DtMvYDUdwE6++0jGPNi0=";
-          })
-          (fetchpatch {
-            url = "https://source.denx.de/u-boot/u-boot/-/commit/022f552704b6467966e4fad39c85a6aca9204c94.patch";
-            sha256 = "sha256-mDWlJQQjQykb9kzIKZYEBI2Ktdpgc7LZyWspvb2F62w=";
-          })
-          (fetchpatch {
-            # https://patchwork.ozlabs.org/project/uboot/cover/20220116201814.11672-1-alpernebiyasak@gmail.com/
-            url = "https://patchwork.ozlabs.org/series/281327/mbox/";
-            sha256 = "sha256-gjHwZWIPUzWMUk2+7Mhd4XJuorBluVL9J9LaO9fUaKw=";
-          })
+        patches = mkMerge [
+          [
+            ./0001-HACK-efi_runtime-pretend-we-can-t-reset.patch
+          ]
+          [
+            # Ensures eMMC nodes are present in SPL FDT.
+            (fetchpatch {
+              url = "https://source.denx.de/u-boot/u-boot/-/commit/f8b36089af26c3596a8b3796af336cee42cc1757.patch";
+              sha256 = "sha256-iFqR5CJ/X0Fz41Ta3kcZW48Kcm9mI4m5bAcp66PkNU0=";
+            })
+          ]
+          (mkIf ((!versionAtLeast config.Tow-Boot.uBootVersion "2022.01") && (versionAtLeast config.Tow-Boot.uBootVersion "2021.10")) [
+            # Required backports for 2021.10, for the next patch.
+            (fetchpatch {
+              url = "https://source.denx.de/u-boot/u-boot/-/commit/40e6f52454fc9adb6269ef8089c1fd2ded85fee8.patch";
+              sha256 = "sha256-RGBfAR8YC3kY3/2C4cFQR59DtMvYDUdwE6++0jGPNi0=";
+            })
+            (fetchpatch {
+              url = "https://source.denx.de/u-boot/u-boot/-/commit/022f552704b6467966e4fad39c85a6aca9204c94.patch";
+              sha256 = "sha256-mDWlJQQjQykb9kzIKZYEBI2Ktdpgc7LZyWspvb2F62w=";
+            })
+          ])
+          (mkIf ((versionAtLeast config.Tow-Boot.uBootVersion "2021.10")) [
+            # Fix eMMC regressions.
+            (fetchpatch {
+              # https://patchwork.ozlabs.org/project/uboot/cover/20220116201814.11672-1-alpernebiyasak@gmail.com/
+              url = "https://patchwork.ozlabs.org/series/281327/mbox/";
+              sha256 = "sha256-gjHwZWIPUzWMUk2+7Mhd4XJuorBluVL9J9LaO9fUaKw=";
+            })
+          ])
         ];
         firmwarePartition = {
             offset = partitionOffset * 512; # 32KiB into the image, or 64 × 512 long sectors
