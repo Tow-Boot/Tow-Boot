@@ -18,6 +18,10 @@ let
   firmwareSPIEval = config.helpers.composeConfig {
     config.Tow-Boot.variant = "spi";
   };
+
+  firmwareBootSDFirstEval = config.helpers.composeConfig {
+    config.Tow-Boot.variant = "boot-installer";
+  };
 in
 {
   options = {
@@ -47,6 +51,16 @@ in
         type = with types; nullOr package;
         default = null;
         internal = true;
+      };
+      firmwareBootSDFirst = mkOption {
+        type = with types; nullOr package;
+        default = null;
+        internal = true;
+        description = ''
+          Used for installer image duties.
+
+          **Do not expose to end-users.**
+        '';
       };
     };
   };
@@ -134,6 +148,7 @@ in
       };
       firmwareMMCBoot = mkIf withMMCBoot firmwareMMCBootEval.config.Tow-Boot.outputs.firmware;
       firmwareSPI = mkIf withSPI firmwareSPIEval.config.Tow-Boot.outputs.firmware;
+      firmwareBootSDFirst = firmwareBootSDFirstEval.config.Tow-Boot.outputs.firmware;
     };
   };
 }

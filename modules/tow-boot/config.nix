@@ -110,7 +110,7 @@ in
       TPL_ENV_IS_NOWHERE = mkDefault no;
       SPL_ENV_IS_NOWHERE = mkDefault no;
     })
-    (mkIf (variant == "noenv") (helpers: with helpers; {
+    (mkIf (variant == "noenv" || variant == "boot-installer") (helpers: with helpers; {
       ENV_IS_NOWHERE = yes;
       TPL_ENV_IS_NOWHERE = option yes;
       SPL_ENV_IS_NOWHERE = option yes;

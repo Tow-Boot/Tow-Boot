@@ -69,7 +69,7 @@ in
       };
       variant = mkOption {
         # TIP: look for `composeConfig` for customizing `Tow-Boot.variant`.
-        type = types.enum [ "noenv" "spi" "mmcboot" ];
+        type = types.enum [ "noenv" "spi" "mmcboot" "boot-installer" ];
         default = "noenv";
         description = ''
           Build variant for this eval.

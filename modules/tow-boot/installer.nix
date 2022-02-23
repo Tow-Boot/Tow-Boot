@@ -434,6 +434,7 @@ in
 
   config = mkMerge [
     (mkIf (installerType == "spi" && !isPhoneUX) {
+      Tow-Boot.firmwarePartition.raw = lib.mkForce "${config.build.firmwareBootSDFirst}/binaries/Tow-Boot.boot-installer.bin";
       Tow-Boot.diskImage = {
         partitions = [
           {
@@ -460,6 +461,7 @@ in
     })
     (mkIf (installerType == "spi" && isPhoneUX) {
       Tow-Boot = {
+        firmwarePartition.raw = lib.mkForce "${config.build.firmwareBootSDFirst}/binaries/Tow-Boot.boot-installer.bin";
         diskImage = {
           partitions = [
             {
@@ -502,6 +504,7 @@ in
       };
     })
     (mkIf (installerType == "mmcboot" && !isPhoneUX) {
+      Tow-Boot.firmwarePartition.raw = lib.mkForce "${config.build.firmwareBootSDFirst}/binaries/Tow-Boot.boot-installer.bin";
       Tow-Boot.diskImage = {
         partitions = [
           {
@@ -528,6 +531,7 @@ in
     })
     (mkIf (installerType == "mmcboot" && isPhoneUX) {
       Tow-Boot = {
+        firmwarePartition.raw = lib.mkForce "${config.build.firmwareBootSDFirst}/binaries/Tow-Boot.boot-installer.bin";
         diskImage = {
           partitions = [
             {
