@@ -1,5 +1,5 @@
 Manjaro
------
+=======
 
 Notes specific to Manjaro.
 
