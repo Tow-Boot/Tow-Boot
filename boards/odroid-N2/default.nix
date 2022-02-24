@@ -18,6 +18,7 @@
       (helpers: with helpers; {
         USE_PREBOOT = yes;
         PREBOOT = freeform ''"usb start ; usb info"'';
+        SF_DEFAULT_SPEED = freeform ''52000000'';
       })
     ];
     patches = [
