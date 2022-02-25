@@ -3,7 +3,7 @@
 {
   device = {
     manufacturer = "Radxa";
-    name = "ROCK Pi 4 model A/B";
+    name = lib.mkDefault "ROCK Pi 4 model A/B";
     identifier = lib.mkDefault "radxa-RockPi4";
   };
 
