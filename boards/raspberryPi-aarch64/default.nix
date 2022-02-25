@@ -46,6 +46,9 @@ in
   };
 
   Tow-Boot = {
+    # FIXME: a small lie for now until we get the upcoming changes in.
+    defconfig = lib.mkDefault "rpi_arm64_defconfig";
+
     config = [
       (helpers: with helpers; {
         CMD_POWEROFF = no;
