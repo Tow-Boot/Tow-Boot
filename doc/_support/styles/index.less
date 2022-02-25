@@ -17,3 +17,56 @@
 		display: none;
 	}
 }
+
+.device-sidebar {
+    background-color: #fff;
+    #screen-sm-min({
+        float: right;
+        width: 33%;
+        margin-left: @gutter;
+		margin-top: 0;
+    });
+    #screen-sm-only({
+        font-size: 80%;;
+    });
+
+    border: 1px solid #000;
+
+	& > *:last-child {
+		&, &.dlist > dl {
+			margin-bottom: 0;
+		}
+	}
+
+    & > h1,
+    & > h2 {
+        margin: 0;
+		padding: @gutter / 2;
+		font-size: 1.1em;
+
+        background: #000;
+        color: #fff;
+        padding-left: @gutter/2;
+        padding-right: @gutter/2;
+        text-align: center;
+    }
+
+    margin-bottom: @gutter;
+
+	dl {
+		padding: @gutter / 2;
+		margin: 0;
+	}
+	dl dt {
+		font-weight: bold;
+	}
+	dl dd {
+		margin: 0;
+		margin-left: @gutter;
+	}
+    dl dd > .paragraph:last-child p,
+    dl dd > p:last-child {
+        margin-bottom: 0;
+    }
+}
+
