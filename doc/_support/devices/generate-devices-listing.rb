@@ -16,8 +16,7 @@ end
 NOTES_HEADER = "## Device-specific notes"
 
 COLUMNS = [
-  #{ key: "device.identifier",   name: "Identifier" },
-  { key: "device.manufacturer", name: "Manufacturer" },
+  { key: "device.identifier",   name: "Identifier" },
   { key: "device.name",         name: "Name" },
   { key: "hardware.soc",        name: "SoC" },
 ]
@@ -41,12 +40,33 @@ File.open(File.join($out, "devices/index.md"), "w") do |file|
 
   <div class="devices-list">
 
-  |#{COLUMNS.map {|col| " #{col[:name]               } |" }.join("")}
-  |#{COLUMNS.map {|col| " #{col[:name].gsub(/./, "-")} |" }.join("")}
   EOF
 
+  lastManufacturer = nil
   $devicesInfo.keys.sort.each do |identifier|
     data = $devicesInfo[identifier]
+    if $lastManufacturer != data["device"]["manufacturer"]
+
+      unless $lastManufacturer == nil
+        # Close `responsive-table` from the last manufacturer
+        file.puts <<~EOF
+          </div>
+        EOF
+      end
+
+      $lastManufacturer = data["device"]["manufacturer"]
+
+      file.puts <<~EOF
+
+      ## #{data["device"]["manufacturer"]}
+
+      <div class="responsive-table">
+
+      |#{COLUMNS.map {|col| " #{col[:name]               } |" }.join("")}
+      |#{COLUMNS.map {|col| " #{col[:name].gsub(/./, "-")} |" }.join("")}
+      EOF
+
+    end
     file.print("|")
     COLUMNS.each do |col|
       value = data.dig(*(col[:key].split(".")))
@@ -61,6 +81,7 @@ File.open(File.join($out, "devices/index.md"), "w") do |file|
 
   file.puts <<~EOF
 
+    </div>
   </div>
 
   EOF
