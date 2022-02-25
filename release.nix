@@ -10,36 +10,13 @@ let
     filter
   ;
 
-  evalFor = device: (
-    import ./support/nix/eval-with-configuration.nix {
-      inherit
-        pkgs
-        device
-      ;
-      #verbose = true;
-      configuration = {
-        # Special configs for imperative use only here
-        system.automaticCross = true;
-      };
-    }
-  );
-
   # We're slightly cheating here
   version =
     let info = (import ./modules/tow-boot/identity.nix).Tow-Boot; in
     "${info.releaseNumber}${info.releaseIdentifier}"
   ;
 
-  keepEval = (eval: eval.config.device.inRelease);
-
-  all-devices =
-    builtins.filter
-    (d: builtins.pathExists (./. + "/boards/${d}/default.nix"))
-    (builtins.attrNames (builtins.readDir ./boards))
-  ;
-
-  evals = builtins.map (device: evalFor device) all-devices;
-  releasedEvals = filter keepEval evals;
+  release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
 in
   pkgs.runCommandNoCC "Tow-Boot.release.${version}" {
     inherit version;
@@ -52,5 +29,5 @@ in
       echo " :: Packaging ${eval.config.device.identifier}"
       cp ${eval.build.archive} $out/${eval.build.archive.name}
       )
-    '') releasedEvals)}
+    '') release-tools.releasedDevicesEvaluations)}
   ''
