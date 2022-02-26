@@ -29,6 +29,9 @@ let
     amlogicG12
     amlogicGXL
   ];
+
+  anyAmlogic = lib.any (v: v) [amlogicGXL amlogicG12];
+  isPhoneUX = config.Tow-Boot.phone-ux.enable;
 in
 {
   options = {
@@ -202,6 +205,24 @@ in
           '';
         };
       };
+    })
+
+    # Documentation fragments
+    (mkIf (anyAmlogic && !isPhoneUX) {
+      documentation.sections.installationInstructions =
+        lib.mkDefault
+        (config.documentation.helpers.genericInstallationInstructionsTemplate {
+          startupConflictNote = ''
+
+            > **NOTE**: The SoC startup order for Amlogic systems will
+            > prefer *SPI*, then *eMMC*, followed by *SD* last.
+            >
+            > You may need to prevent default startup sources from being used
+            > to install using the Tow-Boot installer image.
+
+          '';
+        })
+      ;
     })
   ];
 }
