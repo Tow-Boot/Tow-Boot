@@ -16,6 +16,7 @@ let
   ];
   anyAllwinner = lib.any (soc: config.hardware.socs.${soc}.enable) allwinnerSOCs;
   anyAllwinner64 = anyAllwinner && config.system.system == "aarch64-linux";
+  isPhoneUX = config.Tow-Boot.phone-ux.enable;
 in
 {
   options = {
@@ -103,6 +104,17 @@ in
     })
     (mkIf cfg.allwinner-h5.enable {
       system.system = "aarch64-linux";
+    })
+
+    # Documentation fragments
+    (mkIf (anyAllwinner && !isPhoneUX) {
+      documentation.sections.installationInstructions =
+        lib.mkDefault
+        (config.documentation.helpers.genericInstallationInstructionsTemplate {
+          # Allwinner will prefer SD card always.
+          startupConflictNote = "";
+        })
+      ;
     })
   ];
 }
