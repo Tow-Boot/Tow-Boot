@@ -118,6 +118,7 @@ $devicesInfo.values.each do |info|
 
     EOF
 
+    file.puts(info["documentation"]["installationInstructions"])
 
     # Generate the page contents
 
