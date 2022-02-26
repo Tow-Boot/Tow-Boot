@@ -57,4 +57,5 @@ in
       targetBlockDevice = "/dev/mmcblk2boot0";
     };
   };
+  documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
 }
