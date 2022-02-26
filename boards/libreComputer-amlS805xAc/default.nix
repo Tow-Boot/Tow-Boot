@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   device = {
@@ -18,4 +18,30 @@
       FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/lafrite";
     };
   };
+
+  documentation.sections.installationInstructions =
+    ''
+      ## Installation instructions
+
+      This board does not have an SD card slot.
+
+      This makes initial install relatively tricky.
+
+      ### Installing to SPI (recommended)
+
+      For now, this is left undocumented as this requires either doing it from
+      an operating system, writing it from the vendor's U-Boot build, or using
+      the tethered USB boot protocol.
+
+      In the future, a tethered USB boot install method will be made available.
+
+      ### Installing to shared storage (not supported)
+
+      There is no reason to install to shared storage. This board was designed
+      to work with firmware installed to dedicated storage.
+
+      To install, you will need to figure out a way to write the shared disk
+      image to the eMMC.
+    ''
+  ;
 }
