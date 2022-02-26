@@ -61,6 +61,11 @@ in
               system
             ;
           };
+          documentation = {
+            inherit (config.documentation.sections)
+              installationInstructions
+            ;
+          };
         });
       };
     };
