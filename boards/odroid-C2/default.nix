@@ -94,4 +94,9 @@
       length = 4 * 1024 * 1024; # Expected max size
     };
   };
+  documentation.sections.installationInstructions =
+    (config.documentation.helpers.genericInstallationInstructionsTemplate {
+      startupConflictNote = "";
+    })
+  ;
 }
