@@ -75,4 +75,5 @@
       ./0001-pine64-pinephonepro-device-enablement.patch
     ];
   };
+  documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
 }
