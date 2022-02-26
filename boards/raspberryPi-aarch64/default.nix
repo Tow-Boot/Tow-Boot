@@ -118,4 +118,9 @@ in
       };
     };
   };
+  documentation.sections.installationInstructions = ''
+    ## Installation instructions
+
+    ${config.documentation.helpers.genericSharedStorageInstructionsTemplate { storage = "an SD card, USB drive (if the Raspberry Pi is configured correctly) or eMMC (for systems with eMMC)"; }}
+  '';
 }
