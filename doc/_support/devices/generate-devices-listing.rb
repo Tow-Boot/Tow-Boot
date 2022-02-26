@@ -99,12 +99,20 @@ $devicesInfo.values.each do |info|
       # #{info["device"]["fullName"]}
 
       <dl>
-        <dt>Manufacturer</dt><dd>#{info["device"]["manufacturer"]}</dd>
-        <dt>Name</dt><dd>#{info["device"]["name"]}</dd>
-        <dt>Identifier</dt><dd>#{info["device"]["identifier"]}</dd>
-        <dt>SoC</dt><dd>#{info["hardware"]["soc"]}</dd>
-        <dt>Architecture</dt><dd>#{info["system"]["system"]}</dd>
-        <dt>Source</dt><dd><a href="#{githubURL(identifier)}">Tow-Boot repository</a></dd>
+        <dt>Manufacturer</dt>
+          <dd>#{info["device"]["manufacturer"]}</dd>
+        <dt>Name</dt>
+          <dd>#{info["device"]["name"]}</dd>
+        <dt>Identifier</dt>
+          <dd>#{info["device"]["identifier"]}</dd>
+        <dt>SoC</dt>
+          <dd>#{info["hardware"]["soc"]}</dd>
+        <dt>Dedicated firmware storage</dt>
+          <dd>#{yesno(info["hardware"]["withSPI"] || info["hardware"]["withMMCBoot"])}</dd>
+        <dt>Architecture</dt>
+          <dd>#{info["system"]["system"]}</dd>
+        <dt>Source</dt>
+          <dd><a href="#{githubURL(identifier)}">Tow-Boot repository</a></dd>
       </dl>
     </section>
 
