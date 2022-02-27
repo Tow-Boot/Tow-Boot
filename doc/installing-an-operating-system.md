@@ -17,4 +17,6 @@ Linux
 <!-- This list is **alphabetically ordered** -->
 
  - [Fedora](distributions/fedora.md)
+ - [Manjaro](distributions/manjaro.md)
  - [NixOS](distributions/nixos.md)
+
