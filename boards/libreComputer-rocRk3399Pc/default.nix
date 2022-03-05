@@ -5,6 +5,7 @@
     manufacturer = "Libre Computer";
     name = "Renegade Elite";
     identifier = lib.mkDefault "libreComputer-rocRk3399Pc";
+    productPageURL = "https://libre.computer/products/rk3399/";
   };
 
   hardware = {

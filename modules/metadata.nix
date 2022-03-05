@@ -39,6 +39,7 @@ in
               identifier
               name
               manufacturer
+              productPageURL
             ;
             fullName = "${config.device.manufacturer} ${config.device.name}";
           };

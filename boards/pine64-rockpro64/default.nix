@@ -3,6 +3,7 @@
     manufacturer = "PINE64";
     name = "ROCKPro64";
     identifier = "pine64-rockpro64";
+    productPageURL = "https://www.pine64.org/rockpro64/";
   };
 
   hardware = {

@@ -5,6 +5,7 @@
     manufacturer = "PINE64";
     name = "Pinephone Pro";
     identifier = "pine64-pinephonePro";
+    productPageURL = "https://www.pine64.org/pinephonepro/";
   };
 
   hardware = {

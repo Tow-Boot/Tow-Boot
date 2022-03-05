@@ -5,6 +5,7 @@
     manufacturer = "PINE64";
     name = "Pinebook Pro";
     identifier = "pine64-pinebookPro";
+    productPageURL = "https://www.pine64.org/pinebook-pro/";
   };
 
   hardware = {
