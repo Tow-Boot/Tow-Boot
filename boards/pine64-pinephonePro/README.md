@@ -11,6 +11,6 @@ button at startup before and during the second vibration. The LED will turn
 blue if done successfully. In this mode, the phone will work like a USB drive
 when connected to a host computer.
 
-Booting an operating system, or an installer written to an SD card will require
-holding the *volume down* button before and during the second vibration. When
-done successfully, the LED will turn aqua.
+Booting an operating system from an SD card will require holding the *volume
+down* button before and during the second vibration. When done successfully,
+the LED will turn aqua.
