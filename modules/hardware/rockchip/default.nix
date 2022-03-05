@@ -21,6 +21,9 @@ let
   partitionOffset = 64; # in sectors
   secondOffset = 16384; # in sectors
   sectorSize = 512;
+
+  anyRockchip = lib.any (v: v) [cfg.rockchip-rk3399.enable];
+  isPhoneUX = config.Tow-Boot.phone-ux.enable;
 in
 {
   options = {
@@ -125,6 +128,24 @@ in
           ];
         };
       };
+    })
+
+    # Documentation fragments
+    (mkIf (anyRockchip && !isPhoneUX) {
+      documentation.sections.installationInstructions =
+        lib.mkDefault
+        (config.documentation.helpers.genericInstallationInstructionsTemplate {
+          startupConflictNote = ''
+
+            > **NOTE**: The SoC startup order for Rockchip systems will
+            > prefer *SPI*, then *eMMC*, followed by *SD* last.
+            >
+            > You may need to prevent default startup sources from being used
+            > to install using the Tow-Boot installer image.
+
+          '';
+        })
+      ;
     })
   ];
 }

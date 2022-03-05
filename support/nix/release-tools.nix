@@ -34,4 +34,29 @@ rec {
       ++ [ additionalConfiguration ]
     ;
   };
+
+  evalFor = device: config: (
+    import ./eval-with-configuration.nix {
+      inherit
+        pkgs
+        device
+      ;
+      configuration = {
+        # Special configs for imperative use only here
+        system.automaticCross = true;
+      } // config;
+    }
+  );
+
+  keepEval = (eval: eval.config.device.inRelease);
+
+  allDevices =
+    builtins.filter
+    (d: builtins.pathExists (../../. + "/boards/${d}/default.nix"))
+    (builtins.attrNames (builtins.readDir ../../boards))
+  ;
+
+  evals = builtins.map (device: evalFor device { }) allDevices;
+
+  releasedDevicesEvaluations = builtins.filter keepEval evals;
 }

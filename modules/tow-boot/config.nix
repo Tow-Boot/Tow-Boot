@@ -21,6 +21,8 @@ let
   envSizeInKiB = 128;
   envSize = envSizeInKiB * 1024;
   envSPIOffset = config.hardware.SPISize - envSize;
+
+  withMMCBoot = config.hardware.mmcBootIndex != null;
 in
 {
   Tow-Boot.config = [
@@ -79,6 +81,11 @@ in
       CONSOLE_TRUETYPE = no;
       CONSOLE_TRUETYPE_NIMBUS = no;
     })
+    (mkIf withMMCBoot (helpers: with helpers; {
+      # Needed for all builds of a target supporting mmcboot.
+      # This is because *any other build* needs to be able to address mmc boot partitions.
+      SUPPORT_EMMC_BOOT = yes;
+    }))
     (helpers: with helpers; {
       # Environment
       # -----------
@@ -103,7 +110,13 @@ in
       TPL_ENV_IS_NOWHERE = mkDefault no;
       SPL_ENV_IS_NOWHERE = mkDefault no;
     })
-    (mkIf (variant == "noenv") (helpers: with helpers; {
+    (mkIf (variant == "noenv" || variant == "boot-installer") (helpers: with helpers; {
+      ENV_IS_NOWHERE = yes;
+      TPL_ENV_IS_NOWHERE = option yes;
+      SPL_ENV_IS_NOWHERE = option yes;
+    }))
+    (mkIf (variant == "mmcboot") (helpers: with helpers; {
+      # TODO: Explore options for storing env in mmcboot partition.
       ENV_IS_NOWHERE = yes;
       TPL_ENV_IS_NOWHERE = option yes;
       SPL_ENV_IS_NOWHERE = option yes;

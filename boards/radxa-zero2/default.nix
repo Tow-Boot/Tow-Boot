@@ -49,6 +49,7 @@ in
 
   hardware = {
     soc = "amlogic-a311d";
+    mmcBootIndex = "1";
   };
 
   Tow-Boot = {

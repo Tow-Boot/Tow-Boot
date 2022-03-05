@@ -12,8 +12,10 @@ in
     ./tow-boot
     ./build.nix
     ./device.nix
+    ./documentation.nix
     ./helpers.nix
     ./kconfig.nix
+    ./metadata.nix
     ./overlays.nix
     ./system.nix
   ];

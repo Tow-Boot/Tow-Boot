@@ -5,10 +5,10 @@
 }@args:
 
 let
-  all-devices =
-    builtins.filter
-    (d: builtins.pathExists (./. + "/boards/${d}/default.nix"))
-    (builtins.attrNames (builtins.readDir ./boards))
+  release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
+
+  inherit (release-tools)
+    allDevices
   ;
 
   evalFor = device:
@@ -31,7 +31,7 @@ let
     })
   ;
 
-  outputs = builtins.listToAttrs (builtins.map (device: { name = device; value = evalFor device; }) all-devices);
+  outputs = builtins.listToAttrs (builtins.map (device: { name = device; value = evalFor device; }) allDevices);
   outputsCount = builtins.length (builtins.attrNames outputs);
 
   pkgs = import ./nixpkgs.nix {};

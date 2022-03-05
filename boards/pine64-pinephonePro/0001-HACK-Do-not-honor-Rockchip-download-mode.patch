@@ -1,0 +1,40 @@
+From 0415361e7adfe761ef5d9cf6abdfbcfb23fa65a3 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 18 Dec 2021 00:21:26 -0500
+Subject: [PATCH] [HACK] Do not honor Rockchip download mode
+
+We're implementing our own "download mode".
+---
+ arch/arm/mach-rockchip/boot_mode.c | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/arch/arm/mach-rockchip/boot_mode.c b/arch/arm/mach-rockchip/boot_mode.c
+index 2158934159a..545ab01e8cb 100644
+--- a/arch/arm/mach-rockchip/boot_mode.c
++++ b/arch/arm/mach-rockchip/boot_mode.c
+@@ -70,22 +70,11 @@ __weak int rockchip_dnl_key_pressed(void)
+ 		return false;
+ }
+ 
+-void rockchip_dnl_mode_check(void)
+-{
+-	if (rockchip_dnl_key_pressed()) {
+-		printf("download key pressed, entering download mode...");
+-		set_back_to_bootrom_dnl_flag();
+-		do_reset(NULL, 0, 0, NULL);
+-	}
+-}
+-
+ int setup_boot_mode(void)
+ {
+ 	void *reg = (void *)CONFIG_ROCKCHIP_BOOT_MODE_REG;
+ 	int boot_mode = readl(reg);
+ 
+-	rockchip_dnl_mode_check();
+-
+ 	boot_mode = readl(reg);
+ 	debug("%s: boot mode 0x%08x\n", __func__, boot_mode);
+ 
+-- 
+2.34.0
+

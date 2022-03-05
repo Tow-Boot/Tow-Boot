@@ -7,6 +7,7 @@ let
     mkOption
     types
   ;
+  inherit (config.hardware) mmcBootIndex;
   cfg = config.hardware.socs;
   allwinnerSOCs = [
     "allwinner-a64"
@@ -15,6 +16,7 @@ let
   ];
   anyAllwinner = lib.any (soc: config.hardware.socs.${soc}.enable) allwinnerSOCs;
   anyAllwinner64 = anyAllwinner && config.system.system == "aarch64-linux";
+  isPhoneUX = config.Tow-Boot.phone-ux.enable;
 in
 {
   options = {
@@ -38,6 +40,18 @@ in
         internal = true;
       };
     };
+    hardware.allwinner = {
+      crust = {
+        defconfig = mkOption {
+          type = types.str;
+          description = ''
+            `defconfig` to use for the crust firmware build.
+
+            Defaults to the same name as the U-Boot defconfig.
+          '';
+        };
+      };
+    };
   };
 
   config = mkMerge [
@@ -45,6 +59,10 @@ in
       hardware.socList = allwinnerSOCs;
     }
     (mkIf anyAllwinner {
+
+      hardware.allwinner.crust = {
+        defconfig = lib.mkDefault config.Tow-Boot.defconfig;
+      };
       Tow-Boot = {
         diskImage = {
           # Reduce GPT size to fit the firmware.
@@ -58,11 +76,19 @@ in
         builder.installPhase = ''
           cp -v u-boot-sunxi-with-spl.bin $out/binaries/Tow-Boot.$variant.bin
         '';
+        installer.additionalMMCBootCommands = ''
+          mmc bootbus ${mmcBootIndex} 1 0 0
+          mmc partconf ${mmcBootIndex} 1 1 1
+        '';
+        patches = [
+          ./0001-sunxi-Use-mmc_get_env_dev-only-if-relevant.patch
+        ];
       };
     })
     (mkIf (anyAllwinner64) {
       Tow-Boot.builder.additionalArguments = {
         BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareAllwinner}/bl31.bin";
+        SCP = lib.mkDefault "${pkgs.Tow-Boot.crustFirmware { inherit (config.hardware.allwinner.crust) defconfig; }}/scp.bin";
       };
     })
     (mkIf cfg.allwinner-a64.enable {
@@ -78,6 +104,17 @@ in
     })
     (mkIf cfg.allwinner-h5.enable {
       system.system = "aarch64-linux";
+    })
+
+    # Documentation fragments
+    (mkIf (anyAllwinner && !isPhoneUX) {
+      documentation.sections.installationInstructions =
+        lib.mkDefault
+        (config.documentation.helpers.genericInstallationInstructionsTemplate {
+          # Allwinner will prefer SD card always.
+          startupConflictNote = "";
+        })
+      ;
     })
   ];
 }

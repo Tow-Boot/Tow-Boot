@@ -33,10 +33,10 @@ storage has priority over the one you're going to use.
 > You may need to erase it, or do other manipulations on your board to skip it
 > for a single boot.
 
-1. Write the `spi-installer.img` file to an SD card or another valid storage
+1. Write the `spi.installer.img` file to an SD card or another valid storage
    media for your particular board.
    ```
-    # dd if=spi-installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+    # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
 1. Use the menu-driven interface to choose **Flash firmware to SPI**.
@@ -65,10 +65,10 @@ platform firmware. It is important to know that with almost all SoC
 families you **cannot** move the partition. It may be possible to resize it,
 but the size has been chosen to allow further expansion if needed.
 
-1. Write the `disk-image.img` file to an SD card or another valid storage
+1. Write the `shared.disk-image.img` file to an SD card or another valid storage
    media for your particular board.
    ```
-    # dd if=disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+    # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
 
