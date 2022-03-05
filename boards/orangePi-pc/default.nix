@@ -3,6 +3,7 @@
     manufacturer = "Orange Pi";
     name = "PC";
     identifier = "orangePi-pc";
+    productPageURL = "http://www.orangepi.org/orangepipc/";
   };
 
   hardware = {

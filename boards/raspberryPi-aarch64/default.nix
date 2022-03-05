@@ -38,6 +38,7 @@ in
     manufacturer = "Raspberry Pi";
     name = "Combined AArch64";
     identifier = lib.mkDefault "raspberryPi-aarch64";
+    productPageURL = "https://www.raspberrypi.com/products/";
   };
 
   hardware = {

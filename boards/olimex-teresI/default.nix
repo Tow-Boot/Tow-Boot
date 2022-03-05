@@ -3,6 +3,7 @@
     manufacturer = "Olimex";
     name = "TERES-I";
     identifier = "olimex-teresI";
+    productPageURL = "https://www.olimex.com/Products/DIY-Laptop/KITS/TERES-A64-BLACK/open-source-hardware";
   };
 
   hardware = {
