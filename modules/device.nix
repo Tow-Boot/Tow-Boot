@@ -37,6 +37,15 @@ in
         '';
         type = types.str;
       };
+      productPageURL = mkOption {
+        description = ''
+          URL to the product page.
+
+          Prefer the more "showcase" URL than a store page.
+        '';
+        default = null;
+        type = with types; nullOr str;
+      };
     };
   };
 }
