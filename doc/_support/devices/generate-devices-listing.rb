@@ -92,6 +92,10 @@ $devicesInfo.values.each do |info|
   identifier = info["device"]["identifier"]
   puts ":: Generating devices/#{identifier}.md"
   File.open(File.join($out, "devices/#{identifier}.md"), "w") do |file|
+    links = [
+      ["Product page", info["device"]["productPageURL"]]
+    ].select { |pair| !!pair.last }
+
     file.puts <<~EOF
 
     <section class="device-sidebar">
@@ -113,6 +117,16 @@ $devicesInfo.values.each do |info|
           <dd>#{info["system"]["system"]}</dd>
         <dt>Source</dt>
           <dd><a href="#{githubURL(identifier)}">Tow-Boot repository</a></dd>
+        #{if links.length > 0 then
+          <<~EOL
+          <dt>Links</dt>
+            #{
+            links.map do |pair|
+              %Q{<dd><a href="#{pair.last}">#{pair.first}</a></dd>}
+            end.join("\n")
+            }
+          EOL
+        end}
       </dl>
     </section>
 
