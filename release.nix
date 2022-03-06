@@ -10,11 +10,12 @@ let
     filter
   ;
 
+  anonymousEval = release-tools.evalFor {} {
+    hardware.soc = "generic-aarch64";
+  };
+
   # We're slightly cheating here
-  version =
-    let info = (import ./modules/tow-boot/identity.nix).Tow-Boot; in
-    "${info.releaseNumber}${info.releaseIdentifier}"
-  ;
+  version = "${anonymousEval.config.Tow-Boot.uBootVersion}-${anonymousEval.config.Tow-Boot.releaseNumber}${anonymousEval.config.Tow-Boot.releaseIdentifier}";
 
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
 in
