@@ -86,7 +86,7 @@ in
           To do so, you will need to write the SPI installer image to ${storage}.
 
           ```
-           # dd if=mmcboot.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+           # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
           ```
 
           Once done, start the system, and in the boot menu, select
