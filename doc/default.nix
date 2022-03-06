@@ -10,7 +10,7 @@ pkgs.callPackage (
 { runCommandNoCC, cmark-gfm, ruby }:
 
 runCommandNoCC "Tow-Boot-documentation" {
-  src = ./.;
+  src = (builtins.fetchGit ../.) + "/doc";
   nativeBuildInputs = [
     cmark-gfm
     (ruby.withPackages (pkgs: with pkgs; [ nokogiri ]))
