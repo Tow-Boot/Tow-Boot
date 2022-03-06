@@ -33,8 +33,9 @@ storage has priority over the one you're going to use.
 > You may need to erase it, or do other manipulations on your board to skip it
 > for a single boot.
 
-After writing the firmware, it will pause momentarily with *Flashing seems to
-have been successful! Resetting in 5 seconds*, and will reboot the board.
+After writing the firmware, the installer will report success, and depending,
+either reboot on any key input, or allow you to go back to the main menu, for
+the graphical installer.
 
 Assuming the dedicated storage has priority, or that the SD card has been
 removed, it should now be booting in Tow-Boot from the dedicated storage.
