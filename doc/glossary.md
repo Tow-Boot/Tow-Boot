@@ -41,7 +41,9 @@ location where it is not expected the target booted system would live.
 
 Generally speaking, an SPI flash chip **is** *dedicated storage*.
 
-A built-in eMMC, even if small, would be *shared storage*.
+A built-in eMMC, even if small, would be considered *shared storage*. Note that
+the eMMC may have *hardware boot partitions*, these are considered *dedicated
+storage*, but may not be usable on all platforms.
 
 
 Shared storage
