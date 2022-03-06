@@ -43,6 +43,17 @@ in
           (Use sparingly.)
         '';
       };
+      preBuild = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          Additional instructions to execute before the build.
+
+          Prefer `postPatch` if it modifies the source. `preBuild` should be
+          used only to add binaries to the build tree when the build requires
+          them to be in the tree.
+        '';
+      };
       installPhase = mkOption {
         type = types.lines;
         description = ''
@@ -99,6 +110,7 @@ in
         , buildInputs
         , nativeBuildInputs
         , postPatch
+        , preBuild
         }:
 
         stdenv.mkDerivation ({
@@ -159,6 +171,8 @@ in
               --transform "s,^,$archive/,"
             )
           '';
+
+          inherit preBuild;
 
           buildInputs = buildInputs;
 
@@ -246,6 +260,7 @@ in
           buildInputs
           nativeBuildInputs
           postPatch
+          preBuild
         ;
         boardIdentifier = config.device.identifier;
         inherit towBootIdentifier;
