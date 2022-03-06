@@ -33,6 +33,19 @@ storage has priority over the one you're going to use.
 > You may need to erase it, or do other manipulations on your board to skip it
 > for a single boot.
 
+After writing the firmware, the installer will report success, and depending,
+either reboot on any key input, or allow you to go back to the main menu, for
+the graphical installer.
+
+Assuming the dedicated storage has priority, or that the SD card has been
+removed, it should now be booting in Tow-Boot from the dedicated storage.
+
+You can now install a Linux distribution, without having to care about keeping
+the storage media formatted in a specific manner.
+
+
+### For SPI
+
 1. Write the `spi.installer.img` file to an SD card or another valid storage
    media for your particular board.
    ```
@@ -41,14 +54,16 @@ storage has priority over the one you're going to use.
 1. Boot the media on your board
 1. Use the menu-driven interface to choose **Flash firmware to SPI**.
 
-After writing the firmware, it will pause momentarily with *Flashing seems to
-have been successful! Resetting in 5 seconds*, and will reboot the board.
 
-Assuming the dedicated storage has priority, or that the SD card has been
-removed, it should now be booting in Tow-Boot from the dedicated storage.
+### For eMMC Boot
 
-You can now install a Linux distribution, without having to care about keeping
-the storage media formatted in a specific manner.
+1. Write the `mmcboot.installer.img` file to an SD card or another valid storage
+   media for your particular board.
+   ```
+    # dd if=mmcboot.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+   ```
+1. Boot the media on your board
+1. Use the menu-driven interface to choose **Flash firmware to eMMC Boot**.
 
 
 Shared storage strategy

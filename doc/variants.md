@@ -3,6 +3,7 @@ Variants
 
  - `noenv` does not save environment anywhere
  - `spi` saves the environment to the SPI device
+ - `mmcboot` does not save environment anywhere
 
 
 `noenv`
@@ -27,7 +28,15 @@ embedded Tow-Boot*.
 `spi`
 -----
 
-This variant is to be used on systems with dedicated firmware storage.
+This variant is to be used on systems with SPI Flash as dedicated firmware
+storage.
+
+
+`mmcboot`
+---------
+
+This variant is to be used on systems with eMMC Hardware boot partitions
+as dedicated firmware storage.
 
 
 
