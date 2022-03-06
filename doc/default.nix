@@ -31,6 +31,7 @@ runCommandNoCC "Tow-Boot-documentation" {
   ruby ${./_support/converter}/main.rb src/ $out/
   cp -r ${styles} $out/styles
   cp $src/favicon.png $out/
+  echo tow-boot.org > $out/CNAME
   )
 ''
 
