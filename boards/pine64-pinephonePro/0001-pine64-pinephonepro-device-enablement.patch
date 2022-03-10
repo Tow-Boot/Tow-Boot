@@ -235,51 +235,6 @@ index 3871c7fd83b..d3cdf6f42a3 100644
  		status = "disabled";
  
  		ports {
-@@ -1958,7 +2038,7 @@
- 		#size-cells = <2>;
- 		ranges;
- 
--		gpio0: gpio0@ff720000 {
-+		gpio0: gpio@ff720000 {
- 			compatible = "rockchip,gpio-bank";
- 			reg = <0x0 0xff720000 0x0 0x100>;
- 			clocks = <&pmucru PCLK_GPIO0_PMU>;
-@@ -1971,7 +2051,7 @@
- 			#interrupt-cells = <0x2>;
- 		};
- 
--		gpio1: gpio1@ff730000 {
-+		gpio1: gpio@ff730000 {
- 			compatible = "rockchip,gpio-bank";
- 			reg = <0x0 0xff730000 0x0 0x100>;
- 			clocks = <&pmucru PCLK_GPIO1_PMU>;
-@@ -1984,7 +2064,7 @@
- 			#interrupt-cells = <0x2>;
- 		};
- 
--		gpio2: gpio2@ff780000 {
-+		gpio2: gpio@ff780000 {
- 			compatible = "rockchip,gpio-bank";
- 			reg = <0x0 0xff780000 0x0 0x100>;
- 			clocks = <&cru PCLK_GPIO2>;
-@@ -1997,7 +2077,7 @@
- 			#interrupt-cells = <0x2>;
- 		};
- 
--		gpio3: gpio3@ff788000 {
-+		gpio3: gpio@ff788000 {
- 			compatible = "rockchip,gpio-bank";
- 			reg = <0x0 0xff788000 0x0 0x100>;
- 			clocks = <&cru PCLK_GPIO3>;
-@@ -2010,7 +2090,7 @@
- 			#interrupt-cells = <0x2>;
- 		};
- 
--		gpio4: gpio4@ff790000 {
-+		gpio4: gpio@ff790000 {
- 			compatible = "rockchip,gpio-bank";
- 			reg = <0x0 0xff790000 0x0 0x100>;
- 			clocks = <&cru PCLK_GPIO4>;
 @@ -2114,6 +2194,18 @@
  			};
  		};
@@ -2647,3 +2602,61 @@ index c51d1657a2a..22c2ced2d79 100644
 -- 
 2.34.0
 
+
+From 06e365aed2350dfc85efe3df8e2194957194d883 Mon Sep 17 00:00:00 2001
+From: Dragan Simic <dragan.simic@gmail.com>
+Date: Thu, 10 Feb 2022 14:43:05 +0100
+Subject: [PATCH] Reconfigure GPIO4_D3 as input on PinePhone Pro
+
+---
+ .../pinephone-pro-rk3399.c                    | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+index 2c0120bed4..e368078437 100644
+--- a/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
++++ b/board/pine64/pinephone-pro-rk3399/pinephone-pro-rk3399.c
+@@ -35,6 +35,30 @@ static void setup_iodomain(void)
+ 	rk_setreg(&grf->io_vsel, 1 << GRF_IO_VSEL_BT565_SHIFT);
+ }
+ 
++static int setup_gpios(void)
++{
++	struct gpio_desc gpio;
++	int ret;
++
++	/*
++	 * MaskROM enables output on GPIO4_D3 and leaves it that way, seemingly
++	 * because the RK3399 reference BOX and VR REF designs use GPIO4_D3 as
++	 * EFUSE_VQPS (AD23) power control output, while it is a light sensor
++	 * interrupt on the PinePhone Pro and needs to be configured as input.
++	 */
++	ret = dm_gpio_lookup_name("E27", &gpio);
++	if (ret)
++		return ret;
++
++	ret = dm_gpio_request(&gpio, "light_int_l");
++	if (ret)
++		return ret;
++
++	dm_gpio_set_dir_flags(&gpio, GPIOD_IS_IN);
++
++	return 0;
++}
++
+ int misc_init_r(void)
+ {
+ 	const u32 cpuid_offset = 0x7;
+@@ -53,6 +77,10 @@ int misc_init_r(void)
+ 		return ret;
+ 
+ 	ret = rockchip_setup_macaddr();
++	if (ret)
++		return ret;
++
++	ret = setup_gpios();
+ 
+ 	return ret;
+ }
+--
+2.33.1
