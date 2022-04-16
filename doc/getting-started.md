@@ -85,6 +85,15 @@ but the size has been chosen to allow further expansion if needed.
    ```
     # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
+
+1. Some partitioning tools require the secondary GPT to be at the end of the
+   disk before attempting any operations. Grow the GPT partition to the physical
+   size of the medium. (This operation is a no-op that forces a rewrite of the
+   partition table.)
+   ```
+    # sfdisk --append /dev/XXX
+   ```
+
 1. Boot the media on your board
 
 > **NOTE**: When installing your operating system, make sure that you do not
