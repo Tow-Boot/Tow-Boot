@@ -89,8 +89,8 @@ but the size has been chosen to allow further expansion if needed.
 
 > **NOTE**: When installing your operating system, make sure that you do not
 > re-create the partition table from scratch, only edit the existing one.
-> The *Installing an Operating System* section from this manual will remind
-> you.
+> The [*Installing an Operating System*](installing-an-operating-system.md)
+> section from this manual will remind you.
 
 Using the *shared storage* strategy, you can simulate *dedicated storage* by
 **not** installing and using the storage media the platform firmware lives
