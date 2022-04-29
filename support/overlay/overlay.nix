@@ -56,6 +56,7 @@ in
       armTrustedFirmwareAllwinner
       armTrustedFirmwareRK3399
       armTrustedFirmwareS905
+      armTrustedFirmwareIMX8QM
     ;
 
     crustFirmware = final.callPackage ./crust-firmware {
@@ -68,6 +69,9 @@ in
     };
 
     amlogicFirmware = callPackage ./amlogic-firmware { };
+
+    imx8qmFirmware = callPackage ./imx-firmware/imx8qm/imx-firmware.nix { };
+    imx8qmOpTee = callPackage ./imx-firmware/imx8qm/imx-optee-os.nix { };
 
     gxlimg = callPackage ./gxlimg { };
 

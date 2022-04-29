@@ -1,0 +1,39 @@
+Index: uboot-imx/include/configs/imx8qm_mek.h
+===================================================================
+--- uboot-imx.orig/include/configs/imx8qm_mek.h
++++ uboot-imx/include/configs/imx8qm_mek.h
+@@ -83,6 +83,12 @@
+ #define AHAB_ENV "sec_boot=no\0"
+ #endif
+ 
++#ifdef CONFIG_DISTRO_DEFAULTS
++	/* Currently there is only one boot device available since
++	   others were not tested */
++	#define BOOT_TARGET_DEVICES(func) func(USB, usb, 0)
++	#include <config_distro_bootcmd.h>
++#endif
+ 
+ #define JAILHOUSE_ENV \
+ 	"jh_mmcboot=" \
+@@ -166,6 +172,7 @@
+ /* Initial environment variables */
+ #define CONFIG_EXTRA_ENV_SETTINGS		\
+ 	CONFIG_MFG_ENV_SETTINGS \
++	BOOTENV \
+ 	M4_BOOT_ENV \
+ 	XEN_BOOT_ENV \
+ 	JAILHOUSE_ENV\
+@@ -175,11 +182,13 @@
+ 	SPLASH_IMAGE_ADDR \
+ 	CONFIG_CONSOLE \
+ 	FDT_ADDR \
++	"fdt_addr_r=${fdt_addr}\0" \
+ 	"fdt_high=0xffffffffffffffff\0"		\
+ 	"cntr_addr=0x98000000\0"			\
+ 	"cntr_file=os_cntr_signed.bin\0" \
+ 	"boot_fdt=try\0" \
+ 	FDT_FILE \
++	"fdtfile=${fdt_file}\0" \
+ 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
+ 	"mmcpart=1\0" \
+ 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
