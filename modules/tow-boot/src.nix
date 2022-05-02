@@ -20,23 +20,17 @@ in
             # Misc patches to upstream
             (base + "/0001-cmd-Add-pause-command.patch")
             (base + "/0001-cmd-env-Add-indirect-to-indirectly-set-values.patch")
-            (base + "/0001-lib-export-vsscanf.patch")
 
             # Misc patches, not upstreamable as-is
-            (base + "/0001-bootmenu-improvements.patch")
-            (base + "/0001-autoboot-show-menu-only-on-menu-key.patch")
             (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
-            (base + "/0001-splash-improvements.patch")
             (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
 
             # Tow-Boot specific patches, not upstreamable as-is
-            (base + "/0001-pdcurses.patch")
             (base + "/0001-tow-boot-menu.patch")
             (base + "/0001-Tow-Boot-Provide-opinionated-boot-flow.patch")
             (base + "/0001-Tow-Boot-treewide-Identify-as-Tow-Boot.patch")
 
             # Intrusive non-upstreamable workarounds
-            (base + "/0001-HACK-video-sync-dirty.patch")
           ]
 
           #

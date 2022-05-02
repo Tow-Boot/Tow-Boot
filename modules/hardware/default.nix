@@ -14,6 +14,7 @@ in
   imports = [
     ./allwinner
     ./amlogic
+    ./starfive
     ./rockchip
     ./generic.nix
   ];
