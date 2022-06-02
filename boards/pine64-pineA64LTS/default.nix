@@ -13,8 +13,10 @@
 
   Tow-Boot = {
     defconfig = "pine64-lts_defconfig";
-    patches = [
-      ./0001-configs-pine64-lts-Enable-SPI-flash.patch
+    config = [
+      (helpers: with helpers; {
+        SPI_FLASH_WINBOND = yes;
+      })
     ];
   };
 }
