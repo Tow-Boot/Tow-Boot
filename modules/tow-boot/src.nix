@@ -11,7 +11,7 @@ in
 
 {
   Tow-Boot = {
-    uBootVersion = mkDefault "2021.10";
+    uBootVersion = mkDefault "2022.07";
 
     patches = mkIf (config.Tow-Boot.useDefaultPatches) (
       let
@@ -76,6 +76,7 @@ in
           "2021.10" = "1m0bvwv8r62s4wk4w3cmvs888dhv9gnfa98dczr4drk2jbhj7ryd";
           "2022.01" = "sha256-gbRUMifbIowD+KG/XdvIE7C7j2VVzkYGTvchpvxoBBM=";
           "2022.04" = "sha256-aOBlQTkmd44nbsOr0ouzL6gquqSmiY1XDB9I+9sIvNA=";
+          "2022.07" = "sha256-krCOtJwk2hTBrb9wpxro83zFPutCMOhZrYtnM9E9z14=";
         };
       in
       mkDefault (pkgs.fetchurl {
