@@ -54,7 +54,7 @@ diff --git a/configs/roc-pc-mezzanine-rk3399_defconfig b/configs/roc-pc-mezzanin
 index 519cdc9ff1..74ceab98aa 100644
 --- a/configs/roc-pc-mezzanine-rk3399_defconfig
 +++ b/configs/roc-pc-mezzanine-rk3399_defconfig
-@@ -15,6 +15,7 @@ CONFIG_SPL_SPI_SUPPORT=y
+@@ -15,6 +15,7 @@ CONFIG_SPL_SPI=y
  CONFIG_DEFAULT_DEVICE_TREE="rk3399-roc-pc-mezzanine"
  CONFIG_DEBUG_UART=y
  # CONFIG_ANDROID_BOOT_IMAGE is not set
@@ -66,7 +66,7 @@ diff --git a/configs/roc-pc-rk3399_defconfig b/configs/roc-pc-rk3399_defconfig
 index 90de0d19c4..1f75e40d2c 100644
 --- a/configs/roc-pc-rk3399_defconfig
 +++ b/configs/roc-pc-rk3399_defconfig
-@@ -15,6 +15,7 @@ CONFIG_SPL_SPI_SUPPORT=y
+@@ -15,6 +15,7 @@ CONFIG_SPL_SPI=y
  CONFIG_DEFAULT_DEVICE_TREE="rk3399-roc-pc"
  CONFIG_DEBUG_UART=y
  # CONFIG_ANDROID_BOOT_IMAGE is not set
