@@ -1,12 +1,5 @@
 { config, lib, pkgs, ... }:
 
-let
-  pw = id: sha256: pkgs.fetchpatch {
-    inherit sha256;
-    name = "${id}.patch";
-    url = "https://patchwork.ozlabs.org/patch/${id}/raw/";
-  };
-in
 {
   device = {
     manufacturer = "PINE64";
@@ -48,10 +41,6 @@ in
     patches = [
       ./0001-Enable-led-and-vibrate-on-boot-to-notify-user-of-boo.patch
       ./0001-HACK-button-sun4i-lradc-Provide-UCLASS_BUTTON-driver.patch
-
-      # Fixes USB gadget mode enabled outside of defconfig for allwinner
-      # https://patchwork.ozlabs.org/project/uboot/patch/20191127195602.7482-1-samuel@dionne-riel.com/
-      (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
       ./0001-HACK-cmd-ums-Ensure-USB-gadget-is-probed-via-workaro.patch
     ];
     touch-installer = {
