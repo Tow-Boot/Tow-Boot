@@ -55,7 +55,6 @@
       #
 
       # Upstreamable
-      ./0001-adc-rockchip-saradc-Implement-reference-voltage.patch
       ./0001-mtd-spi-nor-ids-Add-GigaDevice-GD25LQ128E-entry.patch
 
       # Non-upstreamable
