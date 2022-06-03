@@ -1,4 +1,4 @@
-From d27b59df5e6dfc7e3b2d9dbed5e1564c486aae80 Mon Sep 17 00:00:00 2001
+From e69c4a3c2d1f6f68fb13c8837992afd0ffd91f90 Mon Sep 17 00:00:00 2001
 From: Joseph Chen <chenjh@rock-chips.com>
 Date: Thu, 19 Sep 2019 16:09:12 +0800
 Subject: [PATCH 1/3] dm: pmic: add pmic_shutdown() interface
@@ -36,10 +36,10 @@ index 5dcf6d8079d..be7089d9722 100644
  	.id		= UCLASS_PMIC,
  	.name		= "pmic",
 diff --git a/include/power/pmic.h b/include/power/pmic.h
-index be9de6b4de7..231195e5ea8 100644
+index 70f2709bd0b..4fee604252d 100644
 --- a/include/power/pmic.h
 +++ b/include/power/pmic.h
-@@ -164,6 +164,7 @@ struct dm_pmic_ops {
+@@ -166,6 +166,7 @@ struct dm_pmic_ops {
  	int (*read)(struct udevice *dev, uint reg, uint8_t *buffer, int len);
  	int (*write)(struct udevice *dev, uint reg, const uint8_t *buffer,
  		     int len);
@@ -47,7 +47,7 @@ index be9de6b4de7..231195e5ea8 100644
  };
  
  /**
-@@ -306,6 +307,14 @@ struct uc_pmic_priv {
+@@ -308,6 +309,14 @@ struct uc_pmic_priv {
  	uint trans_len;
  };
  
@@ -59,14 +59,14 @@ index be9de6b4de7..231195e5ea8 100644
 + */
 +int pmic_shutdown(struct udevice *dev);
 +
- #endif /* CONFIG_DM_PMIC */
+ #endif /* DM_PMIC */
  
- #ifdef CONFIG_POWER
+ /* TODO: Change to CONFIG_IS_ENABLED(DM_PMIC) when SPL_DM_PMIC exists */
 -- 
-2.34.0
+2.35.1
 
 
-From 8ae5ab580d89ed86f26b0b828b0a00adf7a451da Mon Sep 17 00:00:00 2001
+From ae3dfe1d0c0b1aa1b947616eb81fd766d8eb4e27 Mon Sep 17 00:00:00 2001
 From: Joseph Chen <chenjh@rock-chips.com>
 Date: Thu, 19 Sep 2019 16:09:27 +0800
 Subject: [PATCH 2/3] power: pmic: rk8xx: add pmic_shutdown() implement
@@ -138,14 +138,14 @@ index 5f442fea689..f7450dd0c4c 100644
  
  static const struct udevice_id rk8xx_ids[] = {
 -- 
-2.34.0
+2.35.1
 
 
-From 9038a7237f3428e8948037cbf735fb1dc484e39d Mon Sep 17 00:00:00 2001
+From fa793c39c60cc2d52f6ac2305a98b8f95db39f42 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sat, 18 Dec 2021 15:28:06 -0500
-Subject: [PATCH 3/3] =?UTF-8?q?[HACK]=C2=A0implement=20`do=5Fpoweroff`=20f?=
- =?UTF-8?q?or=20rk8xx?=
+Subject: [PATCH 3/3] =?UTF-8?q?=C2=A0implement=20`do=5Fpoweroff`=20for=20r?=
+ =?UTF-8?q?k8xx?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -229,5 +229,5 @@ index f7450dd0c4c..4b873a39baf 100644
 +}
 +#endif
 -- 
-2.34.0
+2.35.1
 
