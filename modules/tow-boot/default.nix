@@ -7,6 +7,7 @@
     ./installer.nix
     ./options.nix
     ./phone-ux.nix
+    ./smbios.nix
     ./src.nix
   ];
 }
