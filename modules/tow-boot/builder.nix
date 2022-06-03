@@ -169,6 +169,8 @@ in
             buildPackages.flex
             buildPackages.openssl
             buildPackages.swig
+            buildPackages.gnutls  # For tools/mkeficapsule
+            buildPackages.libuuid # For tools/mkeficapsule
             (buildPackages.python3.withPackages (p: [
               p.libfdt
               p.setuptools # for pkg_resources
