@@ -74,7 +74,6 @@
       #
 
       ./0001-pine64-pinephonepro-device-enablement.patch
-      ./0001-rk3399-pinephone-pro-add-smbios-info.patch
     ];
   };
   documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
