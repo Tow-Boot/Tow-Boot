@@ -1,0 +1,71 @@
+From b58fa10598ac446784615f56030150d205e96487 Mon Sep 17 00:00:00 2001
+From: Martijn Braam <martijn@brixit.nl>
+Date: Fri, 18 Mar 2022 15:48:46 +0100
+Subject: [PATCH 1/2] rk3399-pinephone-pro: add smbios info
+
+Provide the SMBIOS data for the PinePhone Pro. U-Boot still hardcodes
+the chassis type and related values.
+
+Signed-off-by: Martijn Braam <martijn@brixit.nl>
+---
+ arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
+index 28bec0a6a7..30ef75f8f7 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-pinephone-pro-u-boot.dtsi
+@@ -19,6 +19,26 @@
+ 	config {
+ 		u-boot,spl-payload-offset = <0x80000>; /* @ 512KB */
+ 	};
++	smbios {
++		compatible = "u-boot,sysinfo-smbios";
++		
++		smbios {
++			system {
++				manufacturer = "PINE64";
++				product = "PinePhone Pro";
++				family = "PinePhone";
++			};
++
++			baseboard {
++				manufacturer = "PINE64";
++				product = "PinePhone Pro";
++			};
++
++			chassis {
++				manufacturer = "PINE64";
++			};
++		};
++	};
+ };
+ 
+ &i2c0 {
+-- 
+2.35.1
+
+
+From 287b1d67382991ab52c44b7fc387ea5c1803e30d Mon Sep 17 00:00:00 2001
+From: Martijn Braam <martijn@brixit.nl>
+Date: Fri, 18 Mar 2022 22:40:33 +0100
+Subject: [PATCH 2/2] rk3399-pinephone-pro: add smbios config
+
+---
+ configs/pinephone-pro-rk3399_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/configs/pinephone-pro-rk3399_defconfig b/configs/pinephone-pro-rk3399_defconfig
+index 52cab80ab1..72b30d43a1 100644
+--- a/configs/pinephone-pro-rk3399_defconfig
++++ b/configs/pinephone-pro-rk3399_defconfig
+@@ -90,3 +90,6 @@ CONFIG_VIDEO_ROCKCHIP=y
+ CONFIG_DISPLAY_ROCKCHIP_EDP=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++CONFIG_SYSINFO=y
++CONFIG_SYSINFO_SMBIOS=y
++
+-- 
+2.35.1
+
