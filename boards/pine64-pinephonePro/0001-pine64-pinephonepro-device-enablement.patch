@@ -2647,3 +2647,154 @@ index c51d1657a2a..22c2ced2d79 100644
 -- 
 2.34.0
 
+From 132da837a96cb3cfbbf2937d3e9e743d7005b548 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 21 Apr 2022 20:05:45 -0400
+Subject: [PATCH] arch: arm: dts: Add RK3399-T OPP for Pinephone Pro
+
+---
+ arch/arm/dts/rk3399-pinephone-pro.dts |   2 +-
+ arch/arm/dts/rk3399-t-opp.dtsi        | 118 ++++++++++++++++++++++++++
+ 2 files changed, 119 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/dts/rk3399-t-opp.dtsi
+
+diff --git a/arch/arm/dts/rk3399-pinephone-pro.dts b/arch/arm/dts/rk3399-pinephone-pro.dts
+index 9a658f37c6..47be6fb3e7 100644
+--- a/arch/arm/dts/rk3399-pinephone-pro.dts
++++ b/arch/arm/dts/rk3399-pinephone-pro.dts
+@@ -10,7 +10,7 @@
+ #include <dt-bindings/usb/pd.h>
+ #include <dt-bindings/leds/common.h>
+ #include "rk3399.dtsi"
+-#include "rk3399-opp.dtsi"
++#include "rk3399-t-opp.dtsi"
+ 
+ / {
+ 	model = "Pine64 PinePhonePro";
+diff --git a/arch/arm/dts/rk3399-t-opp.dtsi b/arch/arm/dts/rk3399-t-opp.dtsi
+new file mode 100644
+index 0000000000..ec153015d9
+--- /dev/null
++++ b/arch/arm/dts/rk3399-t-opp.dtsi
+@@ -0,0 +1,118 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2016-2017 Fuzhou Rockchip Electronics Co., Ltd
++ * Copyright (c) 2022 Samuel Dionne-Riel <samuel@dionne-riel.com>
++ */
++
++/ {
++	cluster0_opp: opp-table-0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp00 {
++			opp-hz = /bits/ 64 <408000000>;
++			opp-microvolt = <825000 825000 925000>;
++			clock-latency-ns = <40000>;
++		};
++		opp01 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <825000 825000 925000>;
++		};
++		opp02 {
++			opp-hz = /bits/ 64 <816000000>;
++			opp-microvolt = <850000 850000 925000>;
++		};
++		opp03 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <925000 925000 925000>;
++		};
++	};
++
++	cluster1_opp: opp-table-1 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp00 {
++			opp-hz = /bits/ 64 <408000000>;
++			opp-microvolt = <825000 825000 1150000>;
++			clock-latency-ns = <40000>;
++		};
++		opp01 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <825000 825000 1150000>;
++		};
++		opp02 {
++			opp-hz = /bits/ 64 <816000000>;
++			opp-microvolt = <825000 825000 1150000>;
++		};
++		opp03 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <875000 875000 1150000>;
++		};
++		opp04 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <950000 950000 1150000>;
++		};
++		opp05 {
++			opp-hz = /bits/ 64 <1416000000>;
++			opp-microvolt = <1025000 1025000 1150000>;
++		};
++		opp06 {
++			opp-hz = /bits/ 64 <1500000000>;
++			opp-microvolt = <1100000 1100000 1150000>;
++		};
++	};
++
++	gpu_opp_table: opp-table-2 {
++		compatible = "operating-points-v2";
++
++		opp00 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <825000 825000 975000>;
++		};
++		opp01 {
++			opp-hz = /bits/ 64 <297000000>;
++			opp-microvolt = <825000 825000 975000>;
++		};
++		opp02 {
++			opp-hz = /bits/ 64 <400000000>;
++			opp-microvolt = <825000 825000 975000>;
++		};
++		opp03 {
++			opp-hz = /bits/ 64 <500000000>;
++			opp-microvolt = <875000 875000 975000>;
++		};
++		opp04 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <925000 925000 975000>;
++		};
++	};
++};
++
++&cpu_l0 {
++	operating-points-v2 = <&cluster0_opp>;
++};
++
++&cpu_l1 {
++	operating-points-v2 = <&cluster0_opp>;
++};
++
++&cpu_l2 {
++	operating-points-v2 = <&cluster0_opp>;
++};
++
++&cpu_l3 {
++	operating-points-v2 = <&cluster0_opp>;
++};
++
++&cpu_b0 {
++	operating-points-v2 = <&cluster1_opp>;
++};
++
++&cpu_b1 {
++	operating-points-v2 = <&cluster1_opp>;
++};
++
++&gpu {
++	operating-points-v2 = <&gpu_opp_table>;
++};
+-- 
+2.35.1
+
