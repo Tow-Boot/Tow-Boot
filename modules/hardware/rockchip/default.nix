@@ -24,6 +24,7 @@ let
 
   anyRockchip = lib.any (v: v) [cfg.rockchip-rk3399.enable];
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
+  withSPI = config.hardware.SPISize != null;
 in
 {
   options = {
@@ -47,7 +48,7 @@ in
       system.system = "aarch64-linux";
       Tow-Boot = {
         config = [
-          (helpers: with helpers; {
+          (mkIf withSPI (helpers: with helpers; {
             # SPI boot Support
             MTD = yes;
             DM_MTD = yes;
@@ -57,7 +58,9 @@ in
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
             SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
             SPL_DM_SEQ_ALIAS = yes;
+          }))
 
+          (helpers: with helpers; {
             # Not supported on this platform
             CMD_POWEROFF = no;
           })
