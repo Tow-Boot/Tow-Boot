@@ -1,0 +1,69 @@
+From 585149b7b2dbfd957afce9c4f455319558a6321f Mon Sep 17 00:00:00 2001
+From: Andrew Abbott <andrew@mirx.dev>
+Date: Sat, 27 Nov 2021 20:38:43 +1100
+Subject: [PATCH] board: rock64: Enable booting from SPI flash
+
+For some reason, the RK3328 uses rksd-format images when loading from
+SPI.
+
+CONFIG_SYS_SPI_U_BOOT_OFFS has been set the same as the ROCKPro64, since
+the boards have the same size flash and thus can share the same layout.
+
+Origin: https://github.com/mirrexagon/u-boot/commit/239a2984da3290a0b59ba623cb1294b77ef334a5
+
+Modified to apply on stock U-Boot, without the other changes from the
+originating branch.
+---
+ arch/arm/dts/rk3328-rock64-u-boot.dtsi | 2 +-
+ arch/arm/mach-rockchip/rk3328/rk3328.c | 1 +
+ configs/rock64-rk3328_defconfig        | 5 +++++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/rk3328-rock64-u-boot.dtsi b/arch/arm/dts/rk3328-rock64-u-boot.dtsi
+index 3c3b1370e31..32155a516d3 100644
+--- a/arch/arm/dts/rk3328-rock64-u-boot.dtsi
++++ b/arch/arm/dts/rk3328-rock64-u-boot.dtsi
+@@ -7,7 +7,7 @@
+ #include "rk3328-sdram-lpddr3-1600.dtsi"
+ / {
+ 	chosen {
+-		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
++		u-boot,spl-boot-order = "same-as-spl", &spi_flash, &sdmmc, &emmc;
+ 	};
+ 
+ 	smbios {
+diff --git a/arch/arm/mach-rockchip/rk3328/rk3328.c b/arch/arm/mach-rockchip/rk3328/rk3328.c
+index ec3336cb49a..160212cbd25 100644
+--- a/arch/arm/mach-rockchip/rk3328/rk3328.c
++++ b/arch/arm/mach-rockchip/rk3328/rk3328.c
+@@ -22,6 +22,7 @@ DECLARE_GLOBAL_DATA_PTR;
+ 
+ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
+ 	[BROM_BOOTSOURCE_EMMC] = "/rksdmmc@ff520000",
++	[BROM_BOOTSOURCE_SPINOR] = "/spi@ff190000/spiflash@0",
+ 	[BROM_BOOTSOURCE_SD] = "/rksdmmc@ff500000",
+ };
+ 
+diff --git a/configs/rock64-rk3328_defconfig b/configs/rock64-rk3328_defconfig
+index f0ef1e5c98f..29d9c0119c1 100644
+--- a/configs/rock64-rk3328_defconfig
++++ b/configs/rock64-rk3328_defconfig
+@@ -14,6 +14,10 @@ CONFIG_SPL_STACK_R_ADDR=0x600000
+ CONFIG_DEBUG_UART_BASE=0xFF130000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_DEBUG_UART=y
++CONFIG_SPL_SPI_FLASH_SUPPORT=y
++CONFIG_SPL_SPI=y
++CONFIG_SYS_SPI_U_BOOT_OFFS=0x60000
++CONFIG_SPL_SPI_LOAD=y
+ CONFIG_TPL_SYS_MALLOC_F_LEN=0x800
+ # CONFIG_ANDROID_BOOT_IMAGE is not set
+ CONFIG_FIT=y
+@@ -100,3 +104,4 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++CONFIG_ROCKCHIP_SPI_IMAGE=y
+-- 
+2.35.1
+
