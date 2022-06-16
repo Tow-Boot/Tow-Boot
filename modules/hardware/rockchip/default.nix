@@ -31,6 +31,7 @@ let
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
   withSPI = config.hardware.SPISize != null;
   useSpi2K4Kworkaround = cfg.rockchip-rk3399.enable;
+  useSpiSDLayout = cfg.rockchip-rk3328.enable;
   chipName =
          if cfg.rockchip-rk3328.enable then "rk3328"
     else if cfg.rockchip-rk3399.enable then "rk3399"
@@ -139,6 +140,15 @@ in
                 -d "tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin" spl.bin
               # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
               cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/binaries/Tow-Boot.$variant.bin
+              )
+            '')
+            (mkIf (variant == "spi" && useSpiSDLayout) ''
+              echo ":: Preparing image for SPI flash (SD layout)..."
+              (PS4=" $ "; set -x
+              dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=0
+              # 0x80000 here is CONFIG_SYS_SPI_U_BOOT_OFFS
+              dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((0x80000 / sectorSize))
+              cp -v Tow-Boot.$variant.bin $out/binaries/
               )
             '')
             (mkIf (variant != "spi") ''
