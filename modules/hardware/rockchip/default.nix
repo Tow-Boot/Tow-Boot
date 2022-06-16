@@ -56,6 +56,9 @@ in
             SPL_DM_SPI = yes;
             SPL_SPI_FLASH_TINY = no;
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
+            SPL_SPI_SUPPORT = yes;
+            SPL_SPI_FLASH_SUPPORT = yes;
+            SPL_SPI_LOAD = yes;
             SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
             SPL_DM_SEQ_ALIAS = yes;
           }))
