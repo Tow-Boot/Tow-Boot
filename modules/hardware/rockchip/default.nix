@@ -30,6 +30,7 @@ let
   anyRockchip = lib.any (soc: config.hardware.socs.${soc}.enable) rockchipSOCs;
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
   withSPI = config.hardware.SPISize != null;
+  useSpi2K4Kworkaround = cfg.rockchip-rk3399.enable;
   chipName =
          if cfg.rockchip-rk3328.enable then "rk3328"
     else if cfg.rockchip-rk3399.enable then "rk3399"
@@ -129,8 +130,8 @@ in
             ;
           };
           installPhase = mkMerge [
-            (mkIf (variant == "spi") ''
-              echo ":: Preparing image for SPI flash..."
+            (mkIf (variant == "spi" && useSpi2K4Kworkaround) ''
+              echo ":: Preparing image for SPI flash (2K/4K workaround)..."
               (PS4=" $ "; set -x
               tools/mkimage \
                 -n ${chipName} \
