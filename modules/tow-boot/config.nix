@@ -48,7 +48,6 @@ in
       BOOTDELAY = freeform "2";
 
       # 27 is ESCAPE
-      AUTOBOOT_MENUKEY = freeform "27";
 
       # So we'll fake that using CTRL+C is what we want...
       # It's only a side-effect.
@@ -63,7 +62,6 @@ in
       ;
 
       # And this ends up causing the menu to be used on ESCAPE (or CTRL+C)
-      AUTOBOOT_USE_MENUKEY = yes;
 
       # Additional commands
       CMD_BDI = yes;
@@ -105,21 +103,13 @@ in
       ENV_IS_IN_SPI_FLASH = mkDefault no;
       ENV_IS_IN_UBI = mkDefault no;
       ENV_IS_NOWHERE = mkDefault no;
-      SPL_ENV_SUPPORT = mkDefault no;
-      TPL_ENV_SUPPORT = mkDefault no;
-      TPL_ENV_IS_NOWHERE = mkDefault no;
-      SPL_ENV_IS_NOWHERE = mkDefault no;
     })
     (mkIf (variant == "noenv" || variant == "boot-installer") (helpers: with helpers; {
       ENV_IS_NOWHERE = yes;
-      TPL_ENV_IS_NOWHERE = option yes;
-      SPL_ENV_IS_NOWHERE = option yes;
     }))
     (mkIf (variant == "mmcboot") (helpers: with helpers; {
       # TODO: Explore options for storing env in mmcboot partition.
       ENV_IS_NOWHERE = yes;
-      TPL_ENV_IS_NOWHERE = option yes;
-      SPL_ENV_IS_NOWHERE = option yes;
     }))
     (mkIf (variant == "spi") (helpers: with helpers; {
       ENV_IS_IN_SPI_FLASH = yes;
@@ -134,15 +124,11 @@ in
     # -------------
 
     (mkIf withLogo (helpers: with helpers; {
-      CMD_BMP = yes;
       SPLASHIMAGE_GUARD = yes;
       SPLASH_SCREEN = yes;
       SPLASH_SCREEN_ALIGN = yes;
       VIDEO_BMP_GZIP = yes;
       VIDEO_BMP_RLE8 = no;
-      BMP_16BPP = yes;
-      BMP_24BPP = yes;
-      BMP_32BPP = yes;
       SPLASH_SOURCE = no;
     }))
   ];

@@ -15,6 +15,7 @@ in
       armv7l
       i686
       x86_64
+      riscv64
     ;
   in
   {
@@ -35,6 +36,7 @@ in
             else final.pkgsCross.gnu32
           ;
           x86_64-linux  = final.pkgsCross.gnu64;
+          riscv64-linux = final.pkgsCross.riscv64;
         };
 
         pkgsFor = wanted:
@@ -50,6 +52,7 @@ in
       armv7l  = applyOverlay  "armv7l-linux";
       i686    = applyOverlay    "i686-linux";
       x86_64  = applyOverlay  "x86_64-linux";
+      riscv64 = applyOverlay "riscv64-linux";
     };
 
     inherit (callPackage ./arm-trusted-firmware { })
@@ -72,6 +75,12 @@ in
     gxlimg = callPackage ./gxlimg { };
 
     meson64-tools = callPackage ./meson64-tools { };
+
+    jh7100-secondBoot = callPackage ./starfive-firmware/jh7100/secondBoot { };
+
+    jh7100-ddrinit = callPackage ./starfive-firmware/jh7100/ddrinit { };
+
+    jh7100-opensbi = callPackage ./starfive-firmware/jh7100/opensbi { };
 
     mkScript = file: final.runCommandNoCC "out.scr" {
       nativeBuildInputs = [

@@ -1,0 +1,13 @@
+diff --git a/build/Makefile b/build/Makefile
+index fc6a935..a9cb588 100755
+--- a/build/Makefile
++++ b/build/Makefile
+@@ -54,7 +54,7 @@ CFLAGS += -mcmodel=medany
+ CFLAGS += $(INCLUDE_DIR)
+ CCASFLAGS= -mcmodel=medany -mexplicit-relocs	
+ 					
+-LDFLAGS = -march=$(RISCV_ARCH) -mabi=$(RISCV_ABI)-T $(LINKER_SCRIPT) -nostartfiles --specs=nano.specs -Wl,-Map,$(MAP_FILE)
++LDFLAGS = -march=$(RISCV_ARCH) -mabi=$(RISCV_ABI)-T $(LINKER_SCRIPT) -nostartfiles -Wl,-Map,$(MAP_FILE)
+ 
+ # object list
+ OBJECTLIST=../boot/start.o \
