@@ -59,6 +59,13 @@ in
           internal = true;
         };
       };
+      withDisplay = mkOption{
+        type = types.bool;
+        default = true;
+        description = ''
+          When true, the build is made assuming the display drivers are available and work.
+        '';
+      };
     };
   };
   config = mkMerge [
