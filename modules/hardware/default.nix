@@ -58,6 +58,11 @@ in
           default = false;
           internal = true;
         };
+        generic-armv7l.enable = mkOption {
+          type = types.bool;
+          default = false;
+          internal = true;
+        };
       };
     };
   };
@@ -65,11 +70,15 @@ in
     {
       hardware.socList = [
         "generic-aarch64"
+        "generic-armv7l"
       ];
       hardware.socs."${cfg.soc}".enable = true;
     }
     (mkIf config.hardware.socs.generic-aarch64.enable {
       system.system = "aarch64-linux";
+    })
+    (mkIf config.hardware.socs.generic-armv7l.enable {
+      system.system = "armv7l-linux";
     })
   ];
 }
