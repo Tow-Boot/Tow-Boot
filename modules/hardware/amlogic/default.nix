@@ -18,6 +18,7 @@ let
   amlogicG12 = lib.any (soc: config.hardware.socs.${soc}.enable) [
     "amlogic-a311d"
     "amlogic-s922x"
+    "amlogic-s905x3" # technically an SM1 family member, but the boot process is identical to G12
   ];
   amlogicGXL = lib.any (soc: config.hardware.socs.${soc}.enable) [
     "amlogic-s805x"
@@ -54,6 +55,12 @@ in
         description = "Enable when SoC is Amlogic S905";
         internal = true;
       };
+      amlogic-s905x3.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Amlogic S905X3";
+        internal = true;
+      };
       amlogic-s922x.enable = mkOption {
         type = types.bool;
         default = false;
@@ -69,6 +76,7 @@ in
         "amlogic-a311d"
         "amlogic-s805x"
         "amlogic-s905"
+        "amlogic-s905x3"
         "amlogic-s922x"
       ];
     }
@@ -79,6 +87,9 @@ in
       system.system = "aarch64-linux";
     })
     (mkIf cfg.amlogic-s905.enable {
+      system.system = "aarch64-linux";
+    })
+    (mkIf cfg.amlogic-s905x3.enable {
       system.system = "aarch64-linux";
     })
     (mkIf cfg.amlogic-s922x.enable {
