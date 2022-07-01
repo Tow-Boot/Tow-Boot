@@ -1,0 +1,48 @@
+From df5c906043659276240e62ce003217ecea545bdb Mon Sep 17 00:00:00 2001
+From: Daniel Wagenknecht <dwagenk@mailbox.org>
+Date: Wed, 8 Dec 2021 23:05:42 +0100
+Subject: [PATCH 2/4] sunxi: configs: add defconfig for pine H64 model B
+
+It almost identical to the defconfig for pine H64 model A with only
+the CONFIG_DEFUALT_DEVICE_TREE adapted.
+
+The differences between the boards model A and model B are irrelevant
+inside u-boot, but the device-tree name is relevant as default for
+selecting the correct device-tree when booting linux.
+
+Signed-off-by: Daniel Wagenknecht <dwagenk@mailbox.org>
+---
+ configs/pine_h64-model-b_defconfig | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 configs/pine_h64-model-b_defconfig
+
+diff --git a/configs/pine_h64-model-b_defconfig b/configs/pine_h64-model-b_defconfig
+new file mode 100644
+index 0000000000..4645ceaa54
+--- /dev/null
++++ b/configs/pine_h64-model-b_defconfig
+@@ -0,0 +1,21 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_DEFAULT_DEVICE_TREE="sun50i-h6-pine-h64-model-b"
++CONFIG_SPL=y
++CONFIG_MACH_SUN50I_H6=y
++CONFIG_SUNXI_DRAM_H6_LPDDR3=y
++CONFIG_MACPWR="PC16"
++CONFIG_MMC0_CD_PIN="PF6"
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2
++CONFIG_USB3_VBUS_PIN="PL5"
++CONFIG_SPL_SPI_SUNXI=y
++# CONFIG_PSCI_RESET is not set
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_SUN8I_EMAC=y
++CONFIG_PHY_SUN50I_USB3=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_DWC3=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_OHCI_HCD=y
++CONFIG_USB_DWC3=y
++# CONFIG_USB_DWC3_GADGET is not set
+-- 
+2.33.1
+

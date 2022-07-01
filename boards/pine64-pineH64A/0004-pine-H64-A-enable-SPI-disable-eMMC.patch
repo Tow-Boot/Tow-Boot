@@ -1,0 +1,54 @@
+From 259ca24e9cc9a8502a9390292b84be6229a26490 Mon Sep 17 00:00:00 2001
+From: Daniel Wagenknecht <dwagenk@mailbox.org>
+Date: Sun, 12 Dec 2021 01:36:34 +0100
+Subject: [PATCH] pine H64 A: enable SPI, disable eMMC
+
+---
+ arch/arm/dts/sun50i-h6-pine-h64.dts | 6 ++----
+ configs/pine_h64_defconfig          | 5 +++++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/dts/sun50i-h6-pine-h64.dts b/arch/arm/dts/sun50i-h6-pine-h64.dts
+index b868ad17af..6ea2a8b291 100644
+--- a/arch/arm/dts/sun50i-h6-pine-h64.dts
++++ b/arch/arm/dts/sun50i-h6-pine-h64.dts
+@@ -144,7 +144,7 @@
+ 	cap-mmc-hw-reset;
+ 	mmc-hs200-1_8v;
+ 	bus-width = <8>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &ohci0 {
+@@ -301,13 +301,11 @@
+ /*
+  * The CS pin is shared with the MMC2 CMD pin, so we cannot have the SPI
+  * flash and eMMC at the same time, as one of them would fail probing.
+- * Disable SPI0 in here, to prefer the more useful eMMC. U-Boot can
+- * fix this up in no eMMC is connected.
+  */
+ &spi0 {
+ 	pinctrl-0 = <&spi0_pins>, <&spi0_cs_pin>;
+ 	pinctrl-names = "default";
+-	status = "disabled";
++	status = "okay";
+ 
+ 	flash@0 {
+ 		compatible = "winbond,w25q128", "jedec,spi-nor";
+diff --git a/configs/pine_h64_defconfig b/configs/pine_h64_defconfig
+index 1928509dd7..4a16c77e17 100644
+--- a/configs/pine_h64_defconfig
++++ b/configs/pine_h64_defconfig
+@@ -19,3 +19,8 @@ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
+ CONFIG_USB_DWC3=y
+ # CONFIG_USB_DWC3_GADGET is not set
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_SPI_SUNXI=y
++CONFIG_SPI_FLASH_WINBOND=y
+-- 
+2.33.1
+

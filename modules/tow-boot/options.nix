@@ -78,7 +78,7 @@ in
 
       withLogo = mkOption {
         type = types.bool;
-        default = true;
+        default = config.hardware.withDisplay;
         description = ''
           Build with support for the logo.
 

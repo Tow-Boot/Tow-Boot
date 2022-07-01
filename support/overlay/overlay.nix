@@ -54,6 +54,7 @@ in
 
     inherit (callPackage ./arm-trusted-firmware { })
       armTrustedFirmwareAllwinner
+      armTrustedFirmwareAllwinnerH6
       armTrustedFirmwareRK3399
       armTrustedFirmwareS905
     ;
