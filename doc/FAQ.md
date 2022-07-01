@@ -80,3 +80,7 @@ Why the *Tow-Boot* name?
 
 Because of the pun on towboats, and the upstream pun on
 [U-Boat](https://en.wikipedia.org/wiki/U-boat).
+
+Why isn't my phone booting and instead the LED is blinking (red) while the phone vibrates?
+------------------------
+This means there has been a boot error. This isn't an issue with Tow boot itself but an issue with the system it is trying to boot. Try debugging or reinstalling your system image to fix this.
