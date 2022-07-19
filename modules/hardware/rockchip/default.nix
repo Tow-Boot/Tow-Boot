@@ -22,10 +22,16 @@ let
   secondOffset = 16384; # in sectors
   sectorSize = 512;
 
-  rockchipSOCs = [
-    "rockchip-rk3328"
-    "rockchip-rk3399"
+  # Supported identifiers without the rockchip prefix.
+  # Used to automate some processes
+  SOCIdentifiers = [
+    "rk3328"
+    "rk3399"
   ];
+
+  # Supported identifiers with the rockchip prefix.
+  # Used as the exported supportd identifiers.
+  rockchipSOCs = map (identifier: "rockchip-${identifier}") SOCIdentifiers;
 
   anyRockchip = lib.any (soc: config.hardware.socs.${soc}.enable) rockchipSOCs;
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
