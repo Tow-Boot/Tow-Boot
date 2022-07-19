@@ -5,6 +5,7 @@ let
     fetchpatch
   ;
   inherit (lib)
+    concatMapStringsSep
     mkIf
     mkMerge
     mkOption
@@ -136,6 +137,23 @@ in
               sectorSize
             ;
           };
+          postPatch =
+            ''
+              echo ':: Patching rockchip baud rate'
+              (PS4=" $ "
+              for f in ${concatMapStringsSep " " (soc: "configs/*${soc}*") SOCIdentifiers}; do
+                (set -x
+                sed -i"" -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
+                )
+              done
+              for f in ${concatMapStringsSep " " (soc: "arch/arm/dts/*${soc}*.dts*") SOCIdentifiers}; do
+                (set -x
+                sed -i"" -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+                )
+              done
+              )
+            ''
+          ;
           installPhase = mkMerge [
             (mkIf (variant == "spi" && useSpi2K4Kworkaround) ''
               echo ":: Preparing image for SPI flash (2K/4K workaround)..."

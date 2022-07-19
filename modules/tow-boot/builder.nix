@@ -133,22 +133,6 @@ in
             patchShebangs scripts
             patchShebangs tools
             patchShebangs arch/arm/mach-rockchip
-          '' +
-            # FIXME: review how we patch this out... (I don't like it)
-          ''
-            echo ':: Patching baud rate'
-            (PS4=" $ "
-            for f in configs/*rk3399* configs/*rk3328*; do
-              (set -x
-              sed -i"" -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
-              )
-            done
-            for f in arch/arm/dts/*rk3399*.dts* arch/arm/dts/*rk3328*.dts*; do
-              (set -x
-              sed -i"" -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
-              )
-            done
-            )
           ''
           + (lib.optionalString (useDefaultPatches) ''
             substituteInPlace include/tow-boot_env.h \
