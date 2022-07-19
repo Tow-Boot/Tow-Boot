@@ -1,43 +1,25 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (config.helpers)
-    composeConfig
-  ;
-  raspberryPi-3 = composeConfig {
-    config = {
-      device.identifier = "raspberryPi-3";
-      Tow-Boot.defconfig = "rpi_3_defconfig";
-    };
-  };
-  raspberryPi-4 = composeConfig {
-    config = {
-      device.identifier = "raspberryPi-4";
-      Tow-Boot.defconfig = "rpi_4_defconfig";
-    };
-  };
-
   configTxt = pkgs.writeText "config.txt" ''
-    [pi3]
-    kernel=Tow-Boot.noenv.rpi3.bin
-
     [pi4]
-    kernel=Tow-Boot.noenv.rpi4.bin
     enable_gic=1
     armstub=armstub8-gic.bin
     disable_overscan=1
 
     [all]
+    kernel=Tow-Boot.noenv.bin
     arm_64bit=1
     enable_uart=1
     avoid_warnings=1
+    upstream_kernel=1
   '';
 in
 {
   device = {
     manufacturer = "Raspberry Pi";
     name = "Combined AArch64";
-    identifier = lib.mkDefault "raspberryPi-aarch64";
+    identifier = "raspberryPi-aarch64";
     productPageURL = "https://www.raspberrypi.com/products/";
   };
 
@@ -47,8 +29,7 @@ in
   };
 
   Tow-Boot = {
-    # FIXME: a small lie for now until we get the upcoming changes in.
-    defconfig = lib.mkDefault "rpi_arm64_defconfig";
+    defconfig = "rpi_arm64_defconfig";
 
     config = [
       (helpers: with helpers; {
@@ -59,29 +40,6 @@ in
       ./0001-configs-rpi-allow-for-bigger-kernels.patch
       ./0001-Tow-Boot-rpi-Increase-malloc-pool-up-to-64MiB-env.patch
     ];
-    outputs.firmware = lib.mkIf (config.device.identifier == "raspberryPi-aarch64") (
-      pkgs.callPackage (
-        { runCommandNoCC }:
-
-        runCommandNoCC "tow-boot-${config.device.identifier}" {
-          inherit (raspberryPi-3.config.Tow-Boot.outputs.firmware)
-            version
-            source
-          ;
-        } ''
-          (PS4=" $ "; set -x
-          mkdir -p $out/{binaries,config}
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware.source}/* $out/
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi3.config
-
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware.source}/* $out/
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi4.config
-          )
-        ''
-      ) { }
-    );
     builder.installPhase = ''
       cp -v u-boot.bin $out/binaries/Tow-Boot.$variant.bin
     '';
@@ -98,13 +56,14 @@ in
         filesystem = "fat32";
         populateCommands = ''
           cp -v ${configTxt} config.txt
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi3.bin
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi4.bin
+          cp -v ${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.bin
           cp -v ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin armstub8-gic.bin
           (
           target="$PWD"
           cd ${pkgs.raspberrypifw}/share/raspberrypi/boot
-          cp -v bcm2711-rpi-4-b.dtb "$target/"
+          mkdir "$target/overlays"
+          cp -v bcm2711-*.dtb bcm2710-*.dtb "$target/"
+          cp -v overlays/upstream.dtbo "$target/overlays/"
           cp -v bootcode.bin fixup*.dat start*.elf "$target/"
           )
         '';
