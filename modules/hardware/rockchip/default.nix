@@ -38,7 +38,7 @@ let
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
   withSPI = config.hardware.SPISize != null;
   useSpi2K4Kworkaround = cfg.rockchip-rk3399.enable;
-  useSpiSDLayout = cfg.rockchip-rk3328.enable;
+  useSpiSDLayout = !useSpi2K4Kworkaround;
   chipName =
          if cfg.rockchip-rk3328.enable then "rk3328"
     else if cfg.rockchip-rk3399.enable then "rk3399"
