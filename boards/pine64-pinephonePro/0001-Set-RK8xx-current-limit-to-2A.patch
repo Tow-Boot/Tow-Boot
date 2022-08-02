@@ -1,0 +1,27 @@
+From 16bc3396de37a0578252a70303892006085ece1d Mon Sep 17 00:00:00 2001
+From: Joe Todd <j.t0dd@protonmail.com>
+Date: Tue, 2 Aug 2022 18:03:45 +0100
+Subject: [PATCH] Set RK8xx current limit to 2A
+
+---
+ drivers/power/pmic/rk8xx.c | 2 ++
+ include/power/rk8xx_pmic.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/pmic/rk8xx.c b/drivers/power/pmic/rk8xx.c
+index 25ef621f8d..d348d3f40d 100644
+--- a/drivers/power/pmic/rk8xx.c
++++ b/drivers/power/pmic/rk8xx.c
+@@ -200,6 +200,8 @@ static int rk8xx_probe(struct udevice *dev)
+ 	case RK818_ID:
+ 		on_source = RK8XX_ON_SOURCE;
+ 		off_source = RK8XX_OFF_SOURCE;
++
++		pmic_reg_write(dev, REG_USB_CTRL, 0x77); /* 0x77 gives current limit of 2A */ 
+ 		break;
+ 	case RK809_ID:
+ 	case RK817_ID:
+ 
+-- 
+2.37.1
+

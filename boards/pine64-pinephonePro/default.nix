@@ -74,6 +74,7 @@
       #
 
       ./0001-pine64-pinephonepro-device-enablement.patch
+      ./0001-Set-RK8xx-current-limit-to-2A.patch
     ];
   };
   documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
