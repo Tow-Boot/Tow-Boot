@@ -69,6 +69,7 @@ in
       CMD_BDI = yes;
       CMD_CLS = yes;
       CMD_SETEXPR = yes;
+      CMD_PAUSE = yes;
       CMD_POWEROFF = lib.mkDefault yes;
 
       # Looks
