@@ -1,4 +1,4 @@
-From 5fe4f99d53d3833c86cf17a39ef65a9051d79172 Mon Sep 17 00:00:00 2001
+From 1f60fb11ef7a8bb07cdbb9005d15fe66d2625700 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sun, 9 May 2021 15:38:04 -0400
 Subject: [PATCH] cmd: Add pause command
@@ -9,24 +9,32 @@ situations.
 
 The main use case would be when a boot failure happens, to pause until
 the user has had time to acknowledge the current state.
+
+Tested using:
+
+    make && ./u-boot -v -T -c 'ut lib lib_test_hush_pause'
 ---
- cmd/Kconfig  |  7 +++++++
- cmd/Makefile |  1 +
- cmd/pause.c  | 35 +++++++++++++++++++++++++++++++++++
- 3 files changed, 43 insertions(+)
+ cmd/Kconfig                 |  7 +++++
+ cmd/Makefile                |  1 +
+ cmd/pause.c                 | 35 +++++++++++++++++++++
+ configs/sandbox64_defconfig |  1 +
+ configs/sandbox_defconfig   |  1 +
+ test/cmd/test_pause.c       | 62 +++++++++++++++++++++++++++++++++++++
+ 6 files changed, 107 insertions(+)
  create mode 100644 cmd/pause.c
+ create mode 100644 test/cmd/test_pause.c
 
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index 863b7f9fda..7a877efa38 100644
+index 3a857b3f6e2..d0c6a831b03 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
-@@ -1758,6 +1758,13 @@ config CMD_GETTIME
+@@ -1783,6 +1783,13 @@ config CMD_GETTIME
  	  milliseconds. See also the 'bootstage' command which provides more
  	  flexibility for boot timing.
  
 +config CMD_PAUSE
 +	bool "pause command"
-+	default y
++	default n
 +	help
 +	  Delay execution waiting for any user input.
 +	  Useful to allow the user to read a failure log.
@@ -35,10 +43,10 @@ index 863b7f9fda..7a877efa38 100644
  	bool "rng command"
  	depends on DM_RNG
 diff --git a/cmd/Makefile b/cmd/Makefile
-index 567e2b79d2..a5ef5d9c75 100644
+index ed3669411e6..e014fd10ec1 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
-@@ -97,6 +97,7 @@ obj-$(CONFIG_CMD_MFSL) += mfsl.o
+@@ -98,6 +98,7 @@ obj-$(CONFIG_CMD_MFSL) += mfsl.o
  obj-$(CONFIG_CMD_MII) += mii.o
  obj-$(CONFIG_CMD_MISC) += misc.o
  obj-$(CONFIG_CMD_MDIO) += mdio.o
@@ -48,7 +56,7 @@ index 567e2b79d2..a5ef5d9c75 100644
  obj-$(CONFIG_CMD_OPTEE_RPMB) += optee_rpmb.o
 diff --git a/cmd/pause.c b/cmd/pause.c
 new file mode 100644
-index 0000000000..0a7ea35ebe
+index 00000000000..07bf346f3d1
 --- /dev/null
 +++ b/cmd/pause.c
 @@ -0,0 +1,35 @@
@@ -71,7 +79,7 @@ index 0000000000..0a7ea35ebe
 +	if (argc == 2)
 +		message = argv[1];
 +
-+	/* No newilne, so it sticks to the bottom of the screen */
++	/* No newline, so it sticks to the bottom of the screen */
 +	printf("%s", message);
 +
 +	/* Wait on "any" key... */
@@ -87,6 +95,98 @@ index 0000000000..0a7ea35ebe
 +	"delay until user input",
 +	"pause [prompt] - Wait until users presses any key. [prompt] can be used to customize the message.\n"
 +);
+diff --git a/configs/sandbox64_defconfig b/configs/sandbox64_defconfig
+index f7098b49698..774149d2d77 100644
+--- a/configs/sandbox64_defconfig
++++ b/configs/sandbox64_defconfig
+@@ -66,6 +66,7 @@ CONFIG_CMD_BMP=y
+ CONFIG_CMD_EFIDEBUG=y
+ CONFIG_CMD_RTC=y
+ CONFIG_CMD_TIME=y
++CONFIG_CMD_PAUSE=y
+ CONFIG_CMD_TIMER=y
+ CONFIG_CMD_SOUND=y
+ CONFIG_CMD_QFW=y
+diff --git a/configs/sandbox_defconfig b/configs/sandbox_defconfig
+index ea08a9e5bd1..25326feeddb 100644
+--- a/configs/sandbox_defconfig
++++ b/configs/sandbox_defconfig
+@@ -88,6 +88,7 @@ CONFIG_CMD_BOOTCOUNT=y
+ CONFIG_CMD_EFIDEBUG=y
+ CONFIG_CMD_RTC=y
+ CONFIG_CMD_TIME=y
++CONFIG_CMD_PAUSE=y
+ CONFIG_CMD_TIMER=y
+ CONFIG_CMD_SOUND=y
+ CONFIG_CMD_QFW=y
+diff --git a/test/cmd/test_pause.c b/test/cmd/test_pause.c
+new file mode 100644
+index 00000000000..9c55c6302bc
+--- /dev/null
++++ b/test/cmd/test_pause.c
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Tests for pause command
++ *
++ * Copyright 2022, Samuel Dionne-Riel <samuel@dionne-riel.com>
++ *
++ * Based on tests for echo:
++ * Copyright 2020, Heinrich Schuchadt <xypron.glpk@gmx.de>
++ */
++
++#include <common.h>
++#include <command.h>
++#include <asm/global_data.h>
++#include <display_options.h>
++#include <test/lib.h>
++#include <test/test.h>
++#include <test/ut.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++struct test_data {
++	char *cmd;
++	char *expected;
++	int expected_ret;
++};
++
++static struct test_data pause_data[] = {
++	/* Test default message */
++	{"pause",
++	 "Press any key to continue...",
++	 0},
++	/* Test provided message */
++	{"pause 'Prompt for pause...'",
++	 "Prompt for pause...",
++	 0},
++	/* Test providing more than one params */
++	{"pause a b",
++	 "pause - delay until user input", /* start of help message */
++	 1},
++};
++
++static int lib_test_hush_pause(struct unit_test_state *uts)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(pause_data); ++i) {
++		ut_silence_console(uts);
++		console_record_reset_enable();
++		/* Only cook a newline when the command is expected to pause. */
++		if (pause_data[i].expected_ret == 0)
++			console_in_puts("\n");
++		ut_asserteq(pause_data[i].expected_ret, run_command(pause_data[i].cmd, 0));
++		ut_unsilence_console(uts);
++		console_record_readline(uts->actual_str,
++					sizeof(uts->actual_str));
++		ut_asserteq_str(pause_data[i].expected, uts->actual_str);
++		ut_asserteq(pause_data[i].expected_ret, ut_check_console_end(uts));
++	}
++	return 0;
++}
++
++LIB_TEST(lib_test_hush_pause, 0);
 -- 
-2.29.2
+2.35.1
 
