@@ -184,7 +184,7 @@ let
                 if sf update $new_firmware_addr_r 0x0 0x2000; then
 
                   echo ""
-                  echo "✅ Flashing seems to have been successful!"
+                  echo "[SUCCESS] Flashing seems to have been successful!"
                   echo ""
                   if pause 'Press any key to reboot...'; then
                     echo -n
@@ -197,48 +197,48 @@ let
                 # sf update head
                 else
                   ${error ''
-                  echo "❌ Error flashing new firmware head to SPI Flash."
-                  echo "   Rebooting now may fail."
+                  echo "[ERROR] Error flashing new firmware head to SPI Flash."
+                  echo "        Rebooting now may fail."
                   ''}
                 fi
 
               # sf update tail
               else
                 ${error ''
-                echo "⚠️ Error flashing new firmware tail to SPI Flash."
-                echo "  Rebooting now should be safe as the SPI was removed from the boot chain."
+                echo "[WARNING] Error flashing new firmware tail to SPI Flash."
+                echo "          Rebooting now should be safe as the SPI was removed from the boot chain."
                 ''}
               fi
 
             # sf erase 0x2000
             else
               ${error ''
-              echo "❌ Failed to harden against failures."
-              echo "   If is unknown whether rebooting is safe or not right now."
+              echo "[ERROR] Failed to harden against failures."
+              echo "        If is unknown whether rebooting is safe or not right now."
               ''}
             fi
 
           # load Tow-Boot.spi.bin
           else
             ${error ''
-            echo "⚠️ Error reading new firmware from storage."
-            echo "  Rebooting should be safe, nothing was done."
+            echo "[WARNING] Error reading new firmware from storage."
+            echo "          Rebooting should be safe, nothing was done."
             ''}
           fi
 
         # sf read
         else
           ${error ''
-          echo "⚠️ Error reading current firmware."
-          echo "  Rebooting should be safe, nothing was done."
+          echo "[WARNING] Error reading current firmware."
+          echo "          Rebooting should be safe, nothing was done."
           ''}
         fi
 
       # sf probe
       else
         ${error ''
-        echo "⚠️ Running `sf probe` failed unexpectedly."
-        echo "  Rebooting should be safe, nothing was done."
+        echo "[WARNING] Running `sf probe` failed unexpectedly."
+        echo "          Rebooting should be safe, nothing was done."
         ''}
       fi
     fi
@@ -331,7 +331,7 @@ let
                 ${config.Tow-Boot.installer.additionalMMCBootCommands}
 
                 echo ""
-                echo "✅ Flashing seems to have been successful!"
+                echo "[SUCCESS] Flashing seems to have been successful!"
                 echo ""
                 if pause 'Press any key to reboot...'; then
                   echo -n
@@ -344,40 +344,40 @@ let
               # mmc write head
               else
                 ${error ''
-                echo "❌ Error flashing new firmware head to eMMC Boot."
-                echo "   Rebooting now may fail."
+                echo "[ERROR] Error flashing new firmware head to eMMC Boot."
+                echo "        Rebooting now may fail."
                 ''}
               fi
 
             # mmc write tail
             else
               ${error ''
-              echo "⚠️ Error flashing new firmware tail to eMMC Boot."
-              echo "  Rebooting now should be safe as the eMMC Boot was removed from the boot chain."
+              echo "[WARNING] Error flashing new firmware tail to eMMC Boot."
+              echo "          Rebooting now should be safe as the eMMC Boot was removed from the boot chain."
               ''}
             fi
 
           # mmc erase 0 0x2000
           else
             ${error ''
-            echo "❌ Failed to harden against failures."
-            echo "   If is unknown whether rebooting is safe or not right now."
+            echo "[ERROR] Failed to harden against failures."
+            echo "        If is unknown whether rebooting is safe or not right now."
             ''}
           fi
 
         # load Tow-Boot.mmcboot.bin
         else
           ${error ''
-          echo "⚠️ Error reading new firmware from storage."
-          echo "  Rebooting should be safe, nothing was done."
+          echo "[WARNING] Error reading new firmware from storage."
+          echo "          Rebooting should be safe, nothing was done."
           ''}
         fi
 
       # sf probe
       else
         ${error ''
-        echo "⚠️ Running `mmc dev ${mmcBootIndex} 1` failed unexpectedly."
-        echo "  Rebooting should be safe, nothing was done."
+        echo "[WARNING] Running `mmc dev ${mmcBootIndex} 1` failed unexpectedly."
+        echo "          Rebooting should be safe, nothing was done."
         ''}
       fi
     fi
