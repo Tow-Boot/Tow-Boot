@@ -317,53 +317,58 @@ let
           # Erasing the first 8KiB of the eMMC Boot Flash
           # With all tested devices, this is sufficient to neuter.
           # This helps ensure a failure in the following steps does not brick the device.
-          if mmc erase 0 $neutersize; then
+          for _bootpart in 2 1; do
+            mmc dev ${mmcBootIndex} $_bootpart
             echo ""
-            echo "   A stray reboot should be safe now."
-
-            echo ""
-            echo "-> Writing new firmware tail to eMMC Boot..."
-            if mmc write $new_firmware_addr_r_tail $neutersize $new_firmware_size_tail_blocks; then
+            echo "Preparing eMMC Boot partition '$_bootpart'"
+            if mmc erase 0 $neutersize; then
+              echo ""
+              echo "   A stray reboot should be safe now."
 
               echo ""
-              echo "-> Writing new firmware head to eMMC Boot..."
-              if mmc write $new_firmware_addr_r 0x0 $neutersize; then
-                ${config.Tow-Boot.installer.additionalMMCBootCommands}
+              echo "-> Writing new firmware tail to eMMC Boot..."
+              if mmc write $new_firmware_addr_r_tail $neutersize $new_firmware_size_tail_blocks; then
 
                 echo ""
-                echo "[SUCCESS] Flashing seems to have been successful!"
-                echo ""
-                if pause 'Press any key to reboot...'; then
-                  echo -n
+                echo "-> Writing new firmware head to eMMC Boot..."
+                if mmc write $new_firmware_addr_r 0x0 $neutersize; then
+                  ${config.Tow-Boot.installer.additionalMMCBootCommands}
+
+                  echo ""
+                  echo "[SUCCESS] Flashing seems to have been successful!"
+                  echo ""
+                  if pause 'Press any key to reboot...'; then
+                    echo -n
+                  else
+                    echo "Resetting in 5 seconds"
+                    sleep 5
+                  fi
+                  reset
+
+                # mmc write head
                 else
-                  echo "Resetting in 5 seconds"
-                  sleep 5
+                  ${error ''
+                  echo "[ERROR] Error flashing new firmware head to eMMC Boot."
+                  echo "        Rebooting now may fail."
+                  ''}
                 fi
-                reset
 
-              # mmc write head
+              # mmc write tail
               else
                 ${error ''
-                echo "[ERROR] Error flashing new firmware head to eMMC Boot."
-                echo "        Rebooting now may fail."
+                echo "[WARNING] Error flashing new firmware tail to eMMC Boot."
+                echo "          Rebooting now should be safe as the eMMC Boot was removed from the boot chain."
                 ''}
               fi
 
-            # mmc write tail
+            # mmc erase 0 0x2000
             else
               ${error ''
-              echo "[WARNING] Error flashing new firmware tail to eMMC Boot."
-              echo "          Rebooting now should be safe as the eMMC Boot was removed from the boot chain."
+              echo "[ERROR] Failed to harden against failures."
+              echo "        If is unknown whether rebooting is safe or not right now."
               ''}
             fi
-
-          # mmc erase 0 0x2000
-          else
-            ${error ''
-            echo "[ERROR] Failed to harden against failures."
-            echo "        If is unknown whether rebooting is safe or not right now."
-            ''}
-          fi
+          done
 
         # load Tow-Boot.mmcboot.bin
         else
