@@ -18,7 +18,13 @@ let
   ;
 
   inherit (config.hardware)
+    mmcBootAccess
+    mmcBootAck
+    mmcBootBusWidth
+    mmcBootBusWidthReset
     mmcBootIndex
+    mmcBootMode
+    mmcBootPart
   ;
 
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
@@ -367,6 +373,19 @@ let
               echo "[ERROR] Failed to harden against failures."
               echo "        If is unknown whether rebooting is safe or not right now."
               ''}
+            fi
+
+            if [ ${mmcBootBusWidth} -ge 0 ] &&
+               [ ${mmcBootBusWidthReset} -ge 0 ] &&
+               [ ${mmcBootMode} -ge 0 ]; then
+              mmc bootbus ${mmcBootIndex} ${mmcBootBusWidth} ${mmcBootBusWidthReset} ${mmcBootMode}
+            fi
+            if [ ${mmcBootPart} ] &&
+               [ ${mmcBootAck} -ge 0 ]; then
+              if [ ${mmcBootPart} -eq 0 ] || [ ${mmcBootPart} -eq 7 ]; then
+                _bootpart = ${mmcBootPart}
+              fi
+              mmc partconf ${mmcBootIndex} ${mmcBootAck} $_bootpart ${mmcBootAccess}
             fi
           done
 
