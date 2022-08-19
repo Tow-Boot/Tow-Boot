@@ -372,8 +372,7 @@ let
           echo "          Rebooting should be safe, nothing was done."
           ''}
         fi
-
-      # sf probe
+      # mmc dev
       else
         ${error ''
         echo "[WARNING] Running `mmc dev ${mmcBootIndex} 1` failed unexpectedly."
