@@ -57,6 +57,8 @@ in
           ])
           ;
           "2022.07" = let base = ../../support/u-boot/2022.07/patches; in [
+            # Misc patches being upstreamed
+            (base + "/0001-cmd-Add-pause-command.patch")
           ]
           ;
         };
