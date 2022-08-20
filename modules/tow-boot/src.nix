@@ -59,6 +59,13 @@ in
           "2022.07" = let base = ../../support/u-boot/2022.07/patches; in [
             # Misc patches being upstreamed
             (base + "/0001-cmd-Add-pause-command.patch")
+
+            # Misc patches, not upstreamable as-is
+            (base + "/0001-bootmenu-improvements.patch")
+            (base + "/0001-autoboot-show-menu-only-on-menu-key.patch")
+            (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
+            (base + "/0001-splash-improvements.patch")
+            (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
           ]
           ;
         };
