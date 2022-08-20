@@ -66,6 +66,12 @@ in
             (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
             (base + "/0001-splash-improvements.patch")
             (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
+
+            # Tow-Boot specific patches, not upstreamable as-is
+            (base + "/0001-pdcurses.patch")
+            (base + "/0001-tow-boot-menu.patch")
+            (base + "/0001-Provide-opinionated-boot-flow.patch")
+            (base + "/0001-treewide-Identify-as-Tow-Boot.patch")
           ]
           ;
         };
