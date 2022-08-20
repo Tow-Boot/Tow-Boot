@@ -72,6 +72,9 @@ in
             (base + "/0001-tow-boot-menu.patch")
             (base + "/0001-Provide-opinionated-boot-flow.patch")
             (base + "/0001-treewide-Identify-as-Tow-Boot.patch")
+
+            # Intrusive non-upstreamable workarounds
+            (base + "/0001-HACK-video-sync-dirty.patch")
           ]
           ;
         };
