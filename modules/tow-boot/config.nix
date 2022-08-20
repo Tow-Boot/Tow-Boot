@@ -71,6 +71,9 @@ in
       CMD_SETEXPR = yes;
       CMD_PAUSE = yes;
       CMD_POWEROFF = lib.mkDefault yes;
+      CMD_NVEDIT_INDIRECT =
+        lib.mkIf (lib.versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
+      ;
 
       # Looks
       # -----
