@@ -34,4 +34,7 @@ in
     helpers = {
     };
   };
+  config = {
+    nixpkgs.config.allowUnfree = true;
+  };
 }
