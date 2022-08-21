@@ -1,6 +1,6 @@
-From 30da7f7745f15ead3a5bbc7e99a421bdb9009855 Mon Sep 17 00:00:00 2001
+From 20bcd34f731b7983f567930d82c75b51e61652ad Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
-Date: Tue, 22 Feb 2022 10:51:33 -0500
+Date: Sat, 20 Aug 2022 21:24:02 -0400
 Subject: [PATCH] sunxi: Use mmc_get_env_dev only if relevant
 
 When build is made with environment elsewhere than on MMC, the reference
@@ -10,10 +10,10 @@ to `CONFIG_SYS_MMC_ENV_DEV` will not exist, and thus this fails.
  1 file changed, 2 insertions(+)
 
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index 1a46100e408..689034355e8 100644
+index 21a2407e062..ddf6d86a46e 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
-@@ -637,6 +637,7 @@ int board_mmc_init(struct bd_info *bis)
+@@ -540,6 +540,7 @@ int board_mmc_init(struct bd_info *bis)
  	return 0;
  }
  
@@ -21,7 +21,7 @@ index 1a46100e408..689034355e8 100644
  #if CONFIG_MMC_SUNXI_SLOT_EXTRA != -1
  int mmc_get_env_dev(void)
  {
-@@ -651,6 +652,7 @@ int mmc_get_env_dev(void)
+@@ -554,6 +555,7 @@ int mmc_get_env_dev(void)
  }
  #endif
  #endif
@@ -30,5 +30,5 @@ index 1a46100e408..689034355e8 100644
  #ifdef CONFIG_SPL_BUILD
  
 -- 
-2.34.0
+2.35.1
 

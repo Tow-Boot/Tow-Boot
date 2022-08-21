@@ -1,0 +1,27 @@
+From b0067b709c5a6471547930c9ceb9ff27804e642c Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 18 Sep 2022 23:53:15 -0400
+Subject: [PATCH] sunxi: Prefer SD for operating system boot
+
+This is used in the special "installer" build of Tow-Boot to prefer
+booting from the SD card, which is expected to hold the installer.
+---
+ include/configs/sunxi-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 49ce16c6aeb..77e246d370b 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -257,7 +257,7 @@
+ 		"fi\0"
+ 
+ #define BOOTENV_DEV_NAME_MMC_AUTO(devtypeu, devtypel, instance) \
+-	"mmc1 mmc0 " /* eMMC, then SD */
++	"mmc0 mmc1 " /* SD, then eMMC */
+ 
+ #define BOOT_TARGET_DEVICES_MMC(func) func(MMC_AUTO, mmc_auto, na)
+ #else
+-- 
+2.35.1
+
