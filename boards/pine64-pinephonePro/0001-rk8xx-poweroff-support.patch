@@ -1,4 +1,4 @@
-From e69c4a3c2d1f6f68fb13c8837992afd0ffd91f90 Mon Sep 17 00:00:00 2001
+From 1346b26a7e54d8e3f84415f39ed14c1c3b232874 Mon Sep 17 00:00:00 2001
 From: Joseph Chen <chenjh@rock-chips.com>
 Date: Thu, 19 Sep 2019 16:09:12 +0800
 Subject: [PATCH 1/3] dm: pmic: add pmic_shutdown() interface
@@ -66,7 +66,7 @@ index 70f2709bd0b..4fee604252d 100644
 2.35.1
 
 
-From ae3dfe1d0c0b1aa1b947616eb81fd766d8eb4e27 Mon Sep 17 00:00:00 2001
+From ceddff49ea16e07a3a5d33e61bf8b0b56bc08a31 Mon Sep 17 00:00:00 2001
 From: Joseph Chen <chenjh@rock-chips.com>
 Date: Thu, 19 Sep 2019 16:09:27 +0800
 Subject: [PATCH 2/3] power: pmic: rk8xx: add pmic_shutdown() implement
@@ -81,10 +81,10 @@ Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
  1 file changed, 39 insertions(+)
 
 diff --git a/drivers/power/pmic/rk8xx.c b/drivers/power/pmic/rk8xx.c
-index 5f442fea689..f7450dd0c4c 100644
+index 25ef621f8df..34182f04647 100644
 --- a/drivers/power/pmic/rk8xx.c
 +++ b/drivers/power/pmic/rk8xx.c
-@@ -57,6 +57,44 @@ static int rk8xx_read(struct udevice *dev, uint reg, uint8_t *buff, int len)
+@@ -129,6 +129,44 @@ static int rk8xx_read(struct udevice *dev, uint reg, uint8_t *buff, int len)
  	return 0;
  }
  
@@ -129,7 +129,7 @@ index 5f442fea689..f7450dd0c4c 100644
  #if CONFIG_IS_ENABLED(PMIC_CHILDREN)
  static int rk8xx_bind(struct udevice *dev)
  {
-@@ -171,6 +209,7 @@ static struct dm_pmic_ops rk8xx_ops = {
+@@ -253,6 +291,7 @@ static struct dm_pmic_ops rk8xx_ops = {
  	.reg_count = rk8xx_reg_count,
  	.read = rk8xx_read,
  	.write = rk8xx_write,
@@ -141,7 +141,7 @@ index 5f442fea689..f7450dd0c4c 100644
 2.35.1
 
 
-From fa793c39c60cc2d52f6ac2305a98b8f95db39f42 Mon Sep 17 00:00:00 2001
+From 17ad99917ad5267171903b178e83989d49399d68 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sat, 18 Dec 2021 15:28:06 -0500
 Subject: [PATCH 3/3] =?UTF-8?q?=C2=A0implement=20`do=5Fpoweroff`=20for=20r?=
@@ -162,9 +162,9 @@ implementation.
 
 For the time being, this works.
 ---
- drivers/firmware/psci.c    |  2 ++
- drivers/power/pmic/rk8xx.c | 27 +++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ drivers/firmware/psci.c       |  2 ++
+ drivers/power/pmic/rk8xx.c    | 27 +++++++++++++++++++++++++++
+ 4 files changed, 40 insertions(+)
 
 diff --git a/drivers/firmware/psci.c b/drivers/firmware/psci.c
 index 657e7eb5aea..eec2f1f24da 100644
@@ -187,18 +187,18 @@ index 657e7eb5aea..eec2f1f24da 100644
  static const struct udevice_id psci_of_match[] = {
  	{ .compatible = "arm,psci" },
 diff --git a/drivers/power/pmic/rk8xx.c b/drivers/power/pmic/rk8xx.c
-index f7450dd0c4c..4b873a39baf 100644
+index 34182f04647..042a3e1d237 100644
 --- a/drivers/power/pmic/rk8xx.c
 +++ b/drivers/power/pmic/rk8xx.c
-@@ -10,6 +10,7 @@
+@@ -9,6 +9,7 @@
+ #include <dm/lists.h>
+ #include <errno.h>
  #include <log.h>
++#include <linux/delay.h>
  #include <power/rk8xx_pmic.h>
  #include <power/pmic.h>
-+#include <linux/delay.h>
- 
- static struct reg_data rk817_init_reg[] = {
- /* enable the under-voltage protection,
-@@ -235,3 +236,29 @@ U_BOOT_DRIVER(rockchip_rk805) = {
+ #include <sysreset.h>
+@@ -317,3 +318,29 @@ U_BOOT_DRIVER(rockchip_rk805) = {
  };
  
  DM_DRIVER_ALIAS(rockchip_rk805, rockchip_rk808)
