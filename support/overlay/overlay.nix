@@ -56,6 +56,7 @@ in
       armTrustedFirmwareAllwinner
       armTrustedFirmwareRK3399
       armTrustedFirmwareS905
+      armTrustedFirmwareTools
     ;
 
     crustFirmware = final.callPackage ./crust-firmware {
