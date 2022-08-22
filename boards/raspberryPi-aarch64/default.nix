@@ -116,7 +116,7 @@ in
         fat32 = {
           partitionID = "00F800F8";
         };
-        label = "TOW-BOOT-FIRM";
+        label = "TOW-BOOT-FW";
       };
     };
   };
