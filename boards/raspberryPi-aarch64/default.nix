@@ -52,12 +52,13 @@ in
 
     config = [
       (helpers: with helpers; {
+        # 64 MiB; the default unconfigured state is 4 MiB.
+        SYS_MALLOC_LEN = freeform ''0x4000000'';
         CMD_POWEROFF = no;
       })
     ];
     patches = [
       ./0001-configs-rpi-allow-for-bigger-kernels.patch
-      ./0001-Tow-Boot-rpi-Increase-malloc-pool-up-to-64MiB-env.patch
     ];
     outputs.firmware = lib.mkIf (config.device.identifier == "raspberryPi-aarch64") (
       pkgs.callPackage (
