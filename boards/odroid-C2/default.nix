@@ -32,7 +32,7 @@
         FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/odroid-c2";
       };
       nativeBuildInputs = [
-        pkgs.buildPackages.armTrustedFirmwareTools
+        pkgs.buildPackages.Tow-Boot.armTrustedFirmwareTools
         pkgs.buildPackages.meson-tools
       ];
       installPhase = ''
