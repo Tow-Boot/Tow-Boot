@@ -124,15 +124,15 @@ The author personally uses `picocom` to access the serial console.
 Examples to connect to the device while installing or booting Tow-Boot from another device:
 
 ```
-screen /dev/ttyUSB0 1500000
+screen /dev/ttyUSB0 115200
 ```
 
 ```
-picocom /dev/ttyUSB0 -b 1500000
+picocom /dev/ttyUSB0 -b 115200
 ```
 
 ```
-minicom -D /dev/ttyUSB0 -b 1500000 
+minicom -D /dev/ttyUSB0 -b 115200 
 ```
 
 To learn more, read the [*Differences from U-boot*](differences-from-u-boot.md) section.
