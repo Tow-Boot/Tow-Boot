@@ -106,6 +106,38 @@ Using the *shared storage* strategy, you can simulate *dedicated storage* by
 on.
 
 
+Serial 
+-----------------
+
+Many `AArch64` devices do not come with a display or can be used in headless mode (as an example - a small home server which doesn't need a display).
+
+In those cases, using serial to interact with the device can be required. Especially before your operating system of choice is loaded.
+
+Tow-Boot uses the same baud rate for all platforms and devices: `115200`
+Even platforms which generally default to another serial baud rate, have been configured to use the above for homogeneity.
+
+You can use the serial console of your preference - `screen` , `picocom` , `minicom` and others.\
+The author personally uses `picocom` to access the serial console.
+
+### Examples for connecting with serial
+
+Examples to connect to the device while installing or booting Tow-Boot from another device:
+
+```
+screen /dev/ttyUSB0 1500000
+```
+
+```
+picocom /dev/ttyUSB0 -b 1500000
+```
+
+```
+minicom -D /dev/ttyUSB0 -b 1500000 
+```
+
+To learn more, read the [*Differences from U-boot*](differences-from-u-boot.md) section.
+
+
 Building Tow-Boot
 -----------------
 
