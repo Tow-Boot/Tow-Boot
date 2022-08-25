@@ -113,11 +113,9 @@ Many `AArch64` devices do not come with a display or can be used in headless mod
 
 In those cases, using serial to interact with the device can be required. Especially before your operating system of choice is loaded.
 
-Tow-Boot uses the same baud rate for all platforms and devices: `115200`
-Even platforms which generally default to another serial baud rate, have been configured to use the above for homogeneity.
+Tow-Boot uses the same baud rate for all platforms and devices: `115200` , even platforms which generally default to another serial baud rate, have been configured to use the above for homogeneity.
 
-You can use the serial console of your preference - `screen` , `picocom` , `minicom` and others.\
-The author personally uses `picocom` to access the serial console.
+You can use the serial console of your preference - `screen` , `picocom` , `minicom` and others.
 
 ### Examples for connecting with serial
 
