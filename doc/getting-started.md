@@ -48,7 +48,7 @@ the storage media formatted in a specific manner.
 
 1. Write the `spi.installer.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
@@ -59,7 +59,7 @@ the storage media formatted in a specific manner.
 
 1. Write the `mmcboot.installer.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=mmcboot.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
@@ -82,7 +82,7 @@ but the size has been chosen to allow further expansion if needed.
 
 1. Write the `shared.disk-image.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 
@@ -90,7 +90,7 @@ but the size has been chosen to allow further expansion if needed.
    disk before attempting any operations. Grow the GPT partition to the physical
    size of the medium. (This operation is a no-op that forces a rewrite of the
    partition table.)
-   ```
+   ```shell-session
     # sfdisk --append /dev/XXX
    ```
 

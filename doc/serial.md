@@ -8,6 +8,6 @@ to another serial baud rate have been configured for homogeneity.
 
 The author personally uses `picocom` to access the serial console.
 
-```
+```shell-session
  $ picocom -b 115200
 ```
