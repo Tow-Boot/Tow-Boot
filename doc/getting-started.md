@@ -121,16 +121,23 @@ You can use the serial console of your preference - `screen` , `picocom` , `mini
 
 Examples to connect to the device while installing or booting Tow-Boot from another device:
 
-```
-screen /dev/ttyUSB0 115200
-```
-
-```
-picocom /dev/ttyUSB0 -b 115200
+```shell-session
+$ screen /dev/ttyUSB0 115200
+...
+Press Ctrl+a and K to exit
 ```
 
+```shell-session
+$ picocom /dev/ttyUSB0 -b 115200
+...
+Press Ctrl+a and Ctrl+x to exit
 ```
-minicom -D /dev/ttyUSB0 -b 115200 
+
+```shell-session
+$ minicom -D /dev/ttyUSB0 -b 115200
+...
+
+Press Ctrl+a and X to exit
 ```
 
 To learn more, read the [*Differences from U-boot*](differences-from-u-boot.md) section.
