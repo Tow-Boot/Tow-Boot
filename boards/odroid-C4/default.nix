@@ -2,8 +2,8 @@
 
 {
   device = {
-    manufacturer = "ODROID";
-    name = "C4";
+    manufacturer = "Hardkernel";
+    name = "ODROID-C4";
     identifier = "odroid-C4";
     productPageURL = "https://www.hardkernel.com/shop/odroid-c4/";
   };

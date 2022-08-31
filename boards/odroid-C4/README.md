@@ -1,4 +1,4 @@
-# ODROID-C4
+# Hardkernel ODROID-C4
 
 ## Device-specific notes
 
