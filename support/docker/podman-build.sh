@@ -30,18 +30,18 @@ stderr.printf() {
 }
 
 _nix_podman() {
-	checkImg=$(podman image exists; echo $?)
-	if (($checkImg == 0));
+	checkImg=$(podman image exists nix; echo $?)
+	if (( $checkImg == 0 ));
 	then
 		stderr.printf "\nNixOS image is present\n"
-	else
+	elif (( $checkImg == 1 ));
+	then
 		stderr.printf "\nCan\'t find NixOS image. Pulling...\n"
 		podman pull docker.io/nixos/nix
 	fi
 
 	local STORE_VOLUME
-	volumeExists=$(podman volume exists Tow-Boot--nix-store; echo $? )
-	#echo $result 
+	volumeExists=$(podman volume exists Tow-Boot--nix-store; echo $?)
 	if (( $volumeExists == 0 )); 
 	then
 		stderr.printf "\n(Using existing volume)\n"
