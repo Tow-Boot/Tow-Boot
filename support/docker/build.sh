@@ -196,7 +196,7 @@ if [ -e /Tow-Boot ]; then
 	done
 else
 	if [[ "$relative_dir" =~ ^/ ]]; then
-		stderr.printf "Error: the podman wrapper script needs to be executed in the Tow-Boot checkout.\n"
+		stderr.printf "Error: the docker/podman wrapper script needs to be executed in the Tow-Boot checkout.\n"
 		exit 1
 	fi
 
