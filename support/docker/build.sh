@@ -201,7 +201,7 @@ else
 	fi
 
 	# Outside the container environment, we're calling this script in the container.
-	_nix_container_manager /Tow-Boot/support/docker/podman-build.sh \
+	_nix_container_manager /Tow-Boot/support/docker/build.sh \
 		"$(id -u)" "$(id -g)" \
 		"$@"
 fi
