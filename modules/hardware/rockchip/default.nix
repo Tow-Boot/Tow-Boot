@@ -92,6 +92,9 @@ in
               sha256 = "sha256-gjHwZWIPUzWMUk2+7Mhd4XJuorBluVL9J9LaO9fUaKw=";
             })
           ])
+          (mkIf ((versionAtLeast config.Tow-Boot.uBootVersion "2022.07") && (!versionAtLeast config.Tow-Boot.uBootVersion "2022.10")) [
+            ./0001-BACKPORT-power-pmic-rk8xx-Workaround-pmic-failure-wh.patch
+          ])
         ];
         firmwarePartition = {
             offset = partitionOffset * 512; # 32KiB into the image, or 64 × 512 long sectors
