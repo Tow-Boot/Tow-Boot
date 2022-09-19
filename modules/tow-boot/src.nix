@@ -87,10 +87,13 @@ in
           ]
           # Patches to force eMMC OS boot to happen before SD OS boot
           ++ (optionals (variant != "boot-installer") [
+            (base + "/0001-meson-Prefer-internal-boot-methods-first.patch")
             (base + "/0001-sunxi-Predictable-boot-order.patch")
           ])
           # Patches to force SD OS boot to happen before OS boot
           ++ (optionals (variant == "boot-installer") [
+            # Amlogic already prefers SD to eMMC
+
             # We're applying the predictable boot order patch *and then editing it*.
             # This is because it fixes the boot order in place, which is needed here anyway.
             (base + "/0001-sunxi-Predictable-boot-order.patch")
