@@ -4,30 +4,21 @@ let
   inherit (config.helpers)
     composeConfig
   ;
-  raspberryPi-3 = composeConfig {
+  raspberryPi-arm64 = composeConfig {
     config = {
-      device.identifier = "raspberryPi-3";
-      Tow-Boot.defconfig = "rpi_3_defconfig";
-    };
-  };
-  raspberryPi-4 = composeConfig {
-    config = {
-      device.identifier = "raspberryPi-4";
-      Tow-Boot.defconfig = "rpi_4_defconfig";
+      device.identifier = "raspberryPi-arm64";
+      Tow-Boot.defconfig = "rpi_arm64_defconfig";
     };
   };
 
   configTxt = pkgs.writeText "config.txt" ''
-    [pi3]
-    kernel=Tow-Boot.noenv.rpi3.bin
-
     [pi4]
-    kernel=Tow-Boot.noenv.rpi4.bin
     enable_gic=1
     armstub=armstub8-gic.bin
     disable_overscan=1
 
     [all]
+    kernel=Tow-Boot.noenv.bin
     arm_64bit=1
     enable_uart=1
     avoid_warnings=1
@@ -76,20 +67,17 @@ in
         { runCommandNoCC }:
 
         runCommandNoCC "tow-boot-${config.device.identifier}" {
-          inherit (raspberryPi-3.config.Tow-Boot.outputs.firmware)
+          inherit (raspberryPi-arm64.config.Tow-Boot.outputs.firmware)
             version
             source
           ;
         } ''
           (PS4=" $ "; set -x
           mkdir -p $out/{binaries,config}
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware.source}/* $out/
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi3.bin
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi3.config
 
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware.source}/* $out/
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.rpi4.bin
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.rpi4.config
+          cp -v ${raspberryPi-arm64.config.Tow-Boot.outputs.firmware.source}/* $out/
+          cp -v ${raspberryPi-arm64.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin $out/binaries/Tow-Boot.noenv.bin
+          cp -v ${raspberryPi-arm64.config.Tow-Boot.outputs.firmware}/config/noenv.config $out/config/noenv.config
           )
         ''
       ) { }
@@ -110,14 +98,12 @@ in
         filesystem = "fat32";
         populateCommands = ''
           cp -v ${configTxt} config.txt
-          cp -v ${raspberryPi-3.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi3.bin
-          cp -v ${raspberryPi-4.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.rpi4.bin
+          cp -v ${raspberryPi-arm64.config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin Tow-Boot.noenv.bin
           cp -v ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin armstub8-gic.bin
           (
           target="$PWD"
-          cd ${pkgs.raspberrypifw}/share/raspberrypi/boot
-          cp -v bcm2711-rpi-4-b.dtb "$target/"
-          cp -v bootcode.bin fixup*.dat start*.elf "$target/"
+          cd ${pkgs.Tow-Boot.raspberrypiFirmware}/share/raspberrypi/boot
+          cp -vr * "$target/"
           )
         '';
 
