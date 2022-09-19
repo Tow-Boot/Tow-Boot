@@ -87,11 +87,13 @@ in
           ]
           # Patches to force eMMC OS boot to happen before SD OS boot
           ++ (optionals (variant != "boot-installer") [
+            (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
             (base + "/0001-meson-Prefer-internal-boot-methods-first.patch")
             (base + "/0001-sunxi-Predictable-boot-order.patch")
           ])
           # Patches to force SD OS boot to happen before OS boot
           ++ (optionals (variant == "boot-installer") [
+            # Rockchip already prefers SD to eMMC (since b212ad24a604b00b240add35516b7381965deb31)
             # Amlogic already prefers SD to eMMC
 
             # We're applying the predictable boot order patch *and then editing it*.
