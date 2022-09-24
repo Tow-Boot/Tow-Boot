@@ -176,6 +176,17 @@ in
               )
             '')
             (mkIf (variant != "spi") ''
+              if [ -n "$ram_init" ]; then
+                echo ":: Rebuilding idbloader with alternate RAM init"
+                rm -v idbloader.img
+                (PS4=" $ "; set -x
+                tools/mkimage \
+                  -n ${chipName} \
+                  -T "rksd" \
+                  -d "$ram_init:spl/u-boot-spl-dtb.bin" \
+                  idbloader.img
+                )
+              fi
               echo ":: Preparing single file firmware image for shared storage..."
               (PS4=" $ "; set -x
               dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
