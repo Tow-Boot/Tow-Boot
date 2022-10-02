@@ -1,0 +1,43 @@
+name: Cache nix store
+description: Cache nix store
+inputs:
+  key:
+    description: An explicit key for restoring and saving the cache.
+    required: true
+  restore-keys:
+    description: >
+      An ordered list of keys to use for restoring stale cache if no cache hit occurred for key.
+      Note `cache-hit` returns false in this case.
+    required: false
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v3
+      with:
+        key: ${{ inputs.key }}
+        restore-keys: ${{ inputs.restore-keys }}
+        path: .cache/nix
+
+    # actions/cache runs as an unprivileged user, so it's unable to write to /.
+    # Thus we move the cached paths to .cache/nix before saving the cache to be
+    # able to restore it later.
+    - run: |
+        if [ -d .cache/nix/store ]; then
+          rm -rf /nix/store /nix/var/nix/db/db.sqlite
+          mkdir -p /nix/var/nix/db
+          mv .cache/nix/store /nix/
+          mv .cache/nix/db.sqlite /nix/var/nix/db/
+          chmod 1775 /nix/store
+          chmod 0644 /nix/var/nix/db/db.sqlite
+          chown -R root:root /nix/store /nix/var/nix/db/db.sqlite
+        fi
+      shell: sudo sh {0}
+
+    - uses: webiny/action-post-run@3.0.0
+      with:
+        run: >
+          sh -ec "
+            sudo systemctl stop nix-daemon;
+            mkdir -p .cache/nix;
+            sudo mv /nix/store /nix/var/nix/db/db.sqlite .cache/nix/;
+            "

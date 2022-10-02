@@ -1,0 +1,116 @@
+name: CI
+on:
+  - push
+  - pull_request
+
+jobs:
+  prepare-cache:
+    name: Warm up nix cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache nix store
+        uses: ./.github/actions/cache-nix
+        with:
+          key: nix-${{ github.sha }}
+          restore-keys: nix-
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v17
+        with:
+          extra_nix_config: |
+            # Save space on disk and in cache.
+            auto-optimise-store = true
+            # Keep all store paths necessary to build the outputs.
+            keep-outputs = true
+            keep-derivations = true
+
+      # TODO: This should ideally just fetch and build dependencies.
+      - name: Build
+        run: nix-build --no-out-link -A pine64-pineA64
+
+  build:
+    name: Build for ${{ matrix.device }}
+    needs: prepare-cache
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        device:
+          - libreComputer-amlS805xAc
+          - libreComputer-rocRk3399Pc
+          - libreComputer-rocRk3399PcMezzanine
+          - odroid-C2
+          - odroid-C4
+          - odroid-N2
+          - olimex-teresI
+          - orangePi-pc
+          - orangePi-zeroPlus2H5
+          - pine64-pineA64
+          - pine64-pineA64LTS
+          - pine64-pinebookA64
+          - pine64-pinebookPro
+          - pine64-pinephoneA64
+          - pine64-pinephonePro
+          - pine64-rockpro64
+          - radxa-RockPi4
+          - radxa-RockPi4C
+          - radxa-zero2
+          - raspberryPi-aarch64
+    env:
+      # Some devices require unfree dependencies.
+      NIXPKGS_ALLOW_UNFREE: 1
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache nix store
+        uses: ./.github/actions/cache-nix
+        with:
+          key: nix-${{ github.sha }}
+          restore-keys: nix-
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v17
+
+      - name: Build images for ${{ matrix.device }}
+        run: nix-build -A ${{ matrix.device }}
+
+      # XXX: Artifacts are built for each push and pull request, so better to
+      # keep them small, otherwise we would run out of space on GitHub quickly.
+      - name: Remove unnecessary files
+        if: "!startsWith(github.ref, 'refs/tags/')"  # if not release
+        run: sudo rm -rf result/{binaries,config,source}
+
+      - name: Build archive
+        run: nix-build -A ${{ matrix.device }}.build.archive
+
+      - name: Rename archive
+        run: |
+          archive=$(readlink -f result)
+          cp -L "$archive" "${archive#*-}"
+
+      - name: Upload archive to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: '*.tar.xz'
+          if-no-files-found: error
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download archives from Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Generate checksums.txt
+        run: shasum -a 256 * > checksums.txt
+        working-directory: artifact
+
+      - name: Upload archives to Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
