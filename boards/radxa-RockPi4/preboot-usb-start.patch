@@ -1,0 +1,27 @@
+Patch-Source: https://www.mail-archive.com/u-boot@lists.denx.de/msg371891.html
+
+This patch fixes a problem with USB keyboard not working in the boot menu.
+I tested it on ROCK Pi 4 B+ and it works, but the keyboard must be connected
+to one of the *blue* USB ports.
+--
+From: Marcin Juszkiewicz <marcin@juszkiewicz.com.pl>
+Date: Wed, 3 Jan 2020 12:45:26 +0700
+Subject: [PATCH] rockchip: rockpro64: initialize USB in preboot
+
+With video output enabled and USB keyboard supported there is no need
+for serial console. So let initialize USB subsystem so keyboard connected to
+board (either directly or via hub) can be used to interrupt autoboot.
+
+diff --git a/configs/rock-pi-4-rk3399_defconfig b/configs/rock-pi-4-rk3399_defconfig
+index f01b6a3935..b2de4e4cfb 100644
+--- a/configs/rock-pi-4-rk3399_defconfig
++++ b/configs/rock-pi-4-rk3399_defconfig
+@@ -10,6 +10,8 @@ CONFIG_DEBUG_UART_BASE=0xFF1A0000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_DEBUG_UART=y
+ # CONFIG_ANDROID_BOOT_IMAGE is not set
++CONFIG_USE_PREBOOT=y
++CONFIG_PREBOOT="usb start"
+ CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-rock-pi-4b.dtb"
+ CONFIG_DISPLAY_BOARDINFO_LATE=y
+ CONFIG_MISC_INIT_R=y

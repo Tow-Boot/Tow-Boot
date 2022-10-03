@@ -20,6 +20,8 @@
       ./0001-rockpi4-rk3399-add-spi-support.patch
       # From https://github.com/armbian/build/blob/master/patch/u-boot/u-boot-rockchip64/general-add-xtx-spi-nor-chips.patch
       ./general-add-xtx-spi-nor-chips.patch
+      # From https://www.mail-archive.com/u-boot@lists.denx.de/msg371891.html
+      ./preboot-usb-start.patch
     ];
   };
 }
