@@ -17,6 +17,9 @@ in
       let
         patchSets = {
           "2021.10" = let base = ../../support/u-boot/2021.10/patches; in [
+            # Patches backported from upstream
+            (base + "/0001-usb-xhci-reset-endpoint-on-USB-stall.patch")
+
             # Misc patches to upstream
             (base + "/0001-cmd-Add-pause-command.patch")
             (base + "/0001-cmd-env-Add-indirect-to-indirectly-set-values.patch")
