@@ -1,0 +1,25 @@
+From 9f43491b4ba9fd25ba30c8a73b9228a0136c3302 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Wed, 2 Nov 2022 18:12:46 -0400
+Subject: [PATCH] roc-pc-rk3399: Apply USB fixes
+
+Other RK3399 systems were changed, not the ROC-PC.
+---
+ include/configs/roc-pc-rk3399.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/configs/roc-pc-rk3399.h b/include/configs/roc-pc-rk3399.h
+index 59fe22289cf..0ed014fbcd5 100644
+--- a/include/configs/roc-pc-rk3399.h
++++ b/include/configs/roc-pc-rk3399.h
+@@ -15,4 +15,7 @@
+ 
+ #define SDRAM_BANK_SIZE			(2UL << 30)
+ 
++#define CONFIG_USB_OHCI_NEW
++#define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS     2
++
+ #endif
+-- 
+2.38.0
+
