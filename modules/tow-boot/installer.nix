@@ -41,7 +41,7 @@ let
 
     # Commands used by either menu systems, or manually.
     ${optionalString (installerType == "spi") ''
-      setenv spi_erase '${concatStringsSep ";" [
+      setenv spi_erase '${concatStringsSep "&&" [
         ''sf probe''
         ''echo "Currently erasing..."''
         ''sf erase 0 0x${lib.toHexString config.hardware.SPISize}''
@@ -50,7 +50,7 @@ let
       ]}'
     ''}
     ${optionalString (installerType == "mmcboot") ''
-      setenv mmcboot_erase '${concatStringsSep ";" [
+      setenv mmcboot_erase '${concatStringsSep " && " [
         ''mmc dev ${mmcBootIndex} 1''
         ''mmc erase 0 2000''
         ''mmc dev ${mmcBootIndex} 2''

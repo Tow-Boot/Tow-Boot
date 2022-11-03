@@ -80,9 +80,6 @@ in
           mmc bootbus ${mmcBootIndex} 1 0 0
           mmc partconf ${mmcBootIndex} 1 1 1
         '';
-        patches = [
-          ./0001-sunxi-Use-mmc_get_env_dev-only-if-relevant.patch
-        ];
       };
     })
     (mkIf (anyAllwinner64) {

@@ -1,0 +1,37 @@
+From 00e8e33e73daa12b0c5779019bd3db49e898bcdc Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 15 May 2021 19:55:51 -0400
+Subject: [PATCH] autoboot: Prevent ^C from affecting menucmd
+
+`menucmd` is likely a bunch of instructions that shouldn't be
+half-interrupted.
+
+Currently, spamming ^C to get to the menu will break the loop setting
+initial boot targets in the menu. Though menucmd is still partially ran!
+
+Disabling ^C handling outright fixes any issues where `menucmd` would be
+ran partially.
+---
+ common/autoboot.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/common/autoboot.c b/common/autoboot.c
+index f4cedffdf9d..cad580a810f 100644
+--- a/common/autoboot.c
++++ b/common/autoboot.c
+@@ -504,7 +504,11 @@ void autoboot_command(const char *s)
+ 
+ 	if (IS_ENABLED(CONFIG_AUTOBOOT_USE_MENUKEY)){
+ 		s = env_get("menucmd");
+-		if (s)
++		if (s) {
++			int prev;
++			prev = disable_ctrlc(1); /* disable Ctrl-C checking */
+ 			run_command_list(s, -1, 0);
++			disable_ctrlc(prev);	/* restore Ctrl-C checking */
++		}
+ 	}
+ }
+-- 
+2.35.1
+

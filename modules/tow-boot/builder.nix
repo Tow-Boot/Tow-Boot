@@ -169,6 +169,8 @@ in
             buildPackages.flex
             buildPackages.openssl
             buildPackages.swig
+            buildPackages.gnutls  # For tools/mkeficapsule
+            buildPackages.libuuid # For tools/mkeficapsule
             (buildPackages.python3.withPackages (p: [
               p.libfdt
               p.setuptools # for pkg_resources
@@ -187,8 +189,6 @@ in
           # Inject defines for things lacking actual configuration options.
           NIX_CFLAGS_COMPILE = optionals withLogo [
             "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${toString (1920*1080*4)}"
-            "-DCONFIG_VIDEO_LOGO"
-            "-DCONFIG_VIDEO_BMP_LOGO"
           ];
 
           extraConfig = ''

@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   device = {
@@ -38,4 +38,6 @@
       '';
     };
   };
+
+  build.default = lib.mkForce config.Tow-Boot.outputs.firmware;
 }

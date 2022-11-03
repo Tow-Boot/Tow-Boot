@@ -50,14 +50,13 @@ in
 
   hardware = {
     soc = "amlogic-a311d";
-    mmcBootIndex = "1";
+    mmcBootIndex = "2";
   };
 
   Tow-Boot = {
     defconfig = "radxa-zero2_defconfig";
     patches = [
       ./0001-radxa-zero2-board-enablement.patch
-      ./0001-arch-arm-dts-Sync-amlogic-meson-DT-with-mainline.patch
     ];
     builder.additionalArguments = {
       FIPDIR = "${radxa-fip}/radxa-zero2";

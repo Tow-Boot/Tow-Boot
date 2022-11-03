@@ -71,6 +71,9 @@ in
       CMD_SETEXPR = yes;
       CMD_PAUSE = yes;
       CMD_POWEROFF = lib.mkDefault yes;
+      CMD_NVEDIT_INDIRECT =
+        lib.mkIf (lib.versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
+      ;
 
       # Looks
       # -----
@@ -135,12 +138,12 @@ in
     # -------------
 
     (mkIf withLogo (helpers: with helpers; {
+      VIDEO_LOGO = yes;
       CMD_BMP = yes;
       SPLASHIMAGE_GUARD = yes;
       SPLASH_SCREEN = yes;
       SPLASH_SCREEN_ALIGN = yes;
       VIDEO_BMP_GZIP = yes;
-      VIDEO_BMP_RLE8 = no;
       BMP_16BPP = yes;
       BMP_24BPP = yes;
       BMP_32BPP = yes;

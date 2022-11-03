@@ -1,0 +1,103 @@
+From 7efb493f77fe9b626dd2e9496bb15a3d0da55ff1 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 9 Apr 2021 17:38:16 -0400
+Subject: [PATCH] Provide opinionated boot flow
+
+It would be preferrable to read linux,default-trigger or u-boot,default-trigger
+instead of adding `setup_leds` to the env.
+---
+ include/config_distro_bootcmd.h |  6 +++-
+ include/tow-boot_env.h          | 58 +++++++++++++++++++++++++++++++++
+ 2 files changed, 63 insertions(+), 1 deletion(-)
+ create mode 100644 include/tow-boot_env.h
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index c55023889ca..79d1284de7b 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -9,6 +9,8 @@
+ #ifndef _CONFIG_CMD_DISTRO_BOOTCMD_H
+ #define _CONFIG_CMD_DISTRO_BOOTCMD_H
+ 
++#include <tow-boot_env.h>
++
+ /*
+  * A note on error handling: It is possible for BOOT_TARGET_DEVICES to
+  * reference a device that is not enabled in the U-Boot configuration, e.g.
+@@ -496,6 +498,8 @@
+ 		BOOTENV_SET_VIRTIO_NEED_INIT                              \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+-		"done\0"
++		"done\0" \
++	\
++	TOW_BOOT_ENV
+ 
+ #endif  /* _CONFIG_CMD_DISTRO_BOOTCMD_H */
+diff --git a/include/tow-boot_env.h b/include/tow-boot_env.h
+new file mode 100644
+index 00000000000..b08034a1dc3
+--- /dev/null
++++ b/include/tow-boot_env.h
+@@ -0,0 +1,58 @@
++#ifndef _TOW_BOOT_ENV_H
++#define _TOW_BOOT_ENV_H
++
++#ifdef CONFIG_CMD_POWEROFF
++#define TOW_BOOT_MAYBE_POWEROFF "tb_menu add 'Shutdown' 'Powers off the device' 'poweroff';"
++#else
++#define TOW_BOOT_MAYBE_POWEROFF
++#endif
++
++#ifdef CONFIG_CMD_USB
++#define TOW_BOOT_MAYBE_USB "tb_menu add 'Rescan USB' 'Look for new USB devices' \"usb reset; $menucmd\";"
++#else
++#define TOW_BOOT_MAYBE_USB
++#endif
++
++#define TOW_BOOT_ENV \
++	/* Used internally to check updater runs on the right board. */ \
++	"board_identifier=@boardIdentifier@\0" \
++	\
++	/* By default, no setup for LEDs */ \
++	"setup_leds=echo\0" \
++	"bootcmd=run setup_leds; run distro_bootcmd\0" \
++	"target_name_mmc0=" CONFIG_TOW_BOOT_MMC0_NAME "\0" \
++	"target_name_mmc1=" CONFIG_TOW_BOOT_MMC1_NAME "\0" \
++	"target_name_mmc2=" CONFIG_TOW_BOOT_MMC2_NAME "\0" \
++	"target_name_usb0=USB\0" \
++	"target_name_nvme0=NVME\0" \
++	"target_name_pxe=PXE\0" \
++	"target_name_dhcp=DHCP\0" \
++	\
++	\
++	"towboot_menu=" \
++	/* Builds the boot options in the same order distro_bootcmd uses. */ \
++	"tb_menu new;" \
++	"for target in ${boot_targets}; do" \
++	/*   # Skip fel as it has no value for end-users */ \
++	"    if test \"$target\" != fel; then" \
++	"        env indirect target_name target_name_${target} \"(${target})\";" \
++	"        tb_menu add \"Boot from ${target_name}\" '' \"run bootcmd_${target}; echo ${target_name} Boot failed.; pause; $menucmd\" ;" \
++	"    fi;" \
++	"done;" \
++	\
++	"tb_menu separator;" \
++	TOW_BOOT_MAYBE_USB \
++	/* In the future, this would be "Firmware Options". */ \
++	"tb_menu add 'Firmware Console' 'Go to the console' 'cls; echo; echo \"Use `run menucmd` to return to the menu.\" ; echo' ;" \
++	"tb_menu separator;" \
++	/* `reset` is universal. Power off is optional */ \
++	"tb_menu add 'Reboot' 'Reboots the device' 'reset';" \
++	TOW_BOOT_MAYBE_POWEROFF \
++	/* Show this menu! */ \
++	"tb_menu show" \
++	"\0" \
++	\
++	\
++	"menucmd=run towboot_menu\0" \
++
++#endif
+-- 
+2.35.1
+

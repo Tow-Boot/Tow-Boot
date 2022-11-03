@@ -1,7 +1,7 @@
-From d98ead879ae1d6bc168e59dab3ec53a649d5518e Mon Sep 17 00:00:00 2001
+From 22cfce955e5c3a3136543874aa2dc51e6c1fe659 Mon Sep 17 00:00:00 2001
 From: Yuntian Zhang <yt@radxa.com>
 Date: Fri, 14 Jan 2022 19:16:39 +0800
-Subject: [PATCH 1/3] boards: amlogic: add Radxa Zero 2 defconfig
+Subject: [PATCH 1/4] boards: amlogic: add Radxa Zero 2 defconfig
 
 Add a defconfig for the Radxa Zero 2 SBC, using Amlogic A311D SoC.
 This file is created manuall based on radxa-zero_defconfig and
@@ -114,13 +114,13 @@ index 00000000000..b4cbc5c37dc
 +# CONFIG_BMP_32BPP is not set
 +CONFIG_OF_LIBFDT_OVERLAY=y
 -- 
-2.34.0
+2.35.1
 
 
-From caf7d9fb9d81c8d812673573f7a92fbab7747379 Mon Sep 17 00:00:00 2001
+From 82d2fa17b5336a9a15c4dfc2f1f85547e2a7dbb8 Mon Sep 17 00:00:00 2001
 From: Yuntian Zhang <yt@radxa.com>
 Date: Mon, 17 Jan 2022 14:11:14 +0800
-Subject: [PATCH 2/3] ARM: dts: add support for Radxa Zero 2
+Subject: [PATCH 2/4] ARM: dts: add support for Radxa Zero 2
 
 Import the initial dts from RadxaYuntian/kernel/zero2-bringup repo.
 
@@ -135,17 +135,17 @@ Signed-off-by: Yuntian Zhang <yt@radxa.com>
  create mode 100644 arch/arm/dts/meson-g12b-radxa-zero2.dts
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index fc16a57e60b..330d6b49bee 100644
+index 3ca980aae08..43ca4e2b26d 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -180,6 +180,7 @@ dtb-$(CONFIG_ARCH_MESON) += \
+@@ -200,6 +200,7 @@ dtb-$(CONFIG_ARCH_MESON) += \
+ 	meson-g12b-gsking-x.dtb \
  	meson-g12b-odroid-n2.dtb \
  	meson-g12b-odroid-n2-plus.dtb \
- 	meson-g12b-a311d-khadas-vim3.dtb \
 +	meson-g12b-radxa-zero2.dtb \
+ 	meson-sm1-bananapi-m5.dtb \
  	meson-sm1-khadas-vim3l.dtb \
  	meson-sm1-odroid-c4.dtb \
- 	meson-sm1-sei610.dtb
 diff --git a/arch/arm/dts/meson-g12b-radxa-zero2-u-boot.dtsi b/arch/arm/dts/meson-g12b-radxa-zero2-u-boot.dtsi
 new file mode 100644
 index 00000000000..236f2468dc2
@@ -658,13 +658,13 @@ index 00000000000..be7a1685da0
 +	status = "okay";
 +};
 -- 
-2.34.0
+2.35.1
 
 
-From ff315b4b63ef6d7ffb3eea7c1996df23b3911937 Mon Sep 17 00:00:00 2001
+From b9178c018b4a4e3ef06904b19a0e75eae2ead51e Mon Sep 17 00:00:00 2001
 From: Yuntian Zhang <yt@radxa.com>
 Date: Thu, 20 Jan 2022 17:19:11 +0800
-Subject: [PATCH 3/3] boards: enable vidconsole and usbkbd for Radxa Zero 2
+Subject: [PATCH 3/4] boards: enable vidconsole and usbkbd for Radxa Zero 2
 
 Signed-off-by: Yuntian Zhang <yt@radxa.com>
 (cherry picked from commit f21fc0a44c33cc33df5beaa00f3093c36c975829)
@@ -686,5 +686,30 @@ index b4cbc5c37dc..010efbdc9a9 100644
  CONFIG_DEBUG_UART_BASE=0xff803000
  CONFIG_DEBUG_UART_CLOCK=24000000
 -- 
-2.34.0
+2.35.1
+
+
+From 02cec95ebdd24f4c8530803bc0ed5d094563d00e Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 2 Jun 2022 22:35:18 -0400
+Subject: [PATCH 4/4] radxa-zero2: Convert CONFIG_SYS_LOAD_ADDR to Kconfig
+
+---
+ configs/radxa-zero2_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/radxa-zero2_defconfig b/configs/radxa-zero2_defconfig
+index 010efbdc9a9..273a7437873 100644
+--- a/configs/radxa-zero2_defconfig
++++ b/configs/radxa-zero2_defconfig
+@@ -12,6 +12,7 @@ CONFIG_MESON_G12A=y
+ CONFIG_DEBUG_UART_BASE=0xff803000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_IDENT_STRING=" radxa-zero2"
++CONFIG_SYS_LOAD_ADDR=0x1000000
+ CONFIG_DEBUG_UART=y
+ CONFIG_OF_BOARD_SETUP=y
+ # CONFIG_DISPLAY_CPUINFO is not set
+-- 
+2.35.1
 

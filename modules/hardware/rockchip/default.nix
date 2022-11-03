@@ -84,13 +84,16 @@ in
               sha256 = "sha256-mDWlJQQjQykb9kzIKZYEBI2Ktdpgc7LZyWspvb2F62w=";
             })
           ])
-          (mkIf ((versionAtLeast config.Tow-Boot.uBootVersion "2021.10")) [
+          (mkIf ((!versionAtLeast config.Tow-Boot.uBootVersion "2022.07") && (versionAtLeast config.Tow-Boot.uBootVersion "2021.10")) [
             # Fix eMMC regressions.
             (fetchpatch {
               # https://patchwork.ozlabs.org/project/uboot/cover/20220116201814.11672-1-alpernebiyasak@gmail.com/
               url = "https://patchwork.ozlabs.org/series/281327/mbox/";
               sha256 = "sha256-gjHwZWIPUzWMUk2+7Mhd4XJuorBluVL9J9LaO9fUaKw=";
             })
+          ])
+          (mkIf ((versionAtLeast config.Tow-Boot.uBootVersion "2022.07") && (!versionAtLeast config.Tow-Boot.uBootVersion "2022.10")) [
+            ./0001-BACKPORT-power-pmic-rk8xx-Workaround-pmic-failure-wh.patch
           ])
         ];
         firmwarePartition = {

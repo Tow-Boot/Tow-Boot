@@ -15,6 +15,15 @@
 
   Tow-Boot = {
     defconfig = "libretech-ac_defconfig";
+    config = [
+      (helpers: with helpers; {
+        # Since this board has no SDIO or SD card slot, the index differs
+        # to the defaults set in the Tow-Boot Kconfig.
+        TOW_BOOT_MMC0_NAME = freeform ''"eMMC"'';
+        TOW_BOOT_MMC1_NAME = freeform ''"(unused)"'';
+        TOW_BOOT_MMC2_NAME = freeform ''"(unused)"'';
+      })
+    ];
     builder.additionalArguments = {
       FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/lafrite";
     };
