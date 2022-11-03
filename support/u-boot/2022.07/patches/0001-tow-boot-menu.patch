@@ -1,4 +1,4 @@
-From dcc8e81b6d4eea924cc243c8c970b152f2b842f5 Mon Sep 17 00:00:00 2001
+From 7229f56d7aa67ae0531d12149dddd8cc6f6b15c7 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Fri, 7 May 2021 16:33:53 -0400
 Subject: [PATCH 1/2] hush: Give a tip for `run menucmd` on use of exit
@@ -22,10 +22,10 @@ index 1467ff81b35..467ca2e8855 100644
  				}
  				break;
 -- 
-2.35.1
+2.38.0
 
 
-From 9530b930b1b1386777bc244122d1fafd961eff6b Mon Sep 17 00:00:00 2001
+From b4e7d983f72f693c4a8649743202f7b2df3cb3d1 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Fri, 7 May 2021 16:22:01 -0400
 Subject: [PATCH 2/2] Add tb_menu command
@@ -48,10 +48,10 @@ not the final form of the menu.
 ---
  cmd/Kconfig                  |   2 +
  cmd/Makefile                 |   3 +
- cmd/tow-boot/Kconfig         |  40 ++++
+ cmd/tow-boot/Kconfig         |  42 ++++
  cmd/tow-boot/Makefile        |  17 ++
  cmd/tow-boot/tow-boot_menu.c | 407 +++++++++++++++++++++++++++++++++++
- 5 files changed, 469 insertions(+)
+ 5 files changed, 471 insertions(+)
  create mode 100644 cmd/tow-boot/Kconfig
  create mode 100644 cmd/tow-boot/Makefile
  create mode 100644 cmd/tow-boot/tow-boot_menu.c
@@ -79,10 +79,10 @@ index 5e43a1e022e..a5ad76b5e6a 100644
 +obj-y += tow-boot/
 diff --git a/cmd/tow-boot/Kconfig b/cmd/tow-boot/Kconfig
 new file mode 100644
-index 00000000000..b8d69a3eb50
+index 00000000000..a8b4c5952d6
 --- /dev/null
 +++ b/cmd/tow-boot/Kconfig
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,42 @@
 +menu "Tow-Boot additional commands"
 +
 +config TOW_BOOT_MENU
@@ -104,20 +104,22 @@ index 00000000000..b8d69a3eb50
 +
 +config TOW_BOOT_MMC0_NAME
 +	string "MMC0 user-friendly name"
-+	default "SD" if ARCH_SUNXI || MESON_G12A
++	default "SD" if ARCH_SUNXI
++	default "(sdio)" if MESON_G12A || MESON_GXL
 +	default "eMMC"
 +	help
 +	  Name used in the interface for MMC0
 +
 +config TOW_BOOT_MMC1_NAME
 +	string "MMC1 user-friendly name"
-+	default "eMMC" if ARCH_SUNXI || MESON_G12A
++	default "eMMC" if ARCH_SUNXI
 +	default "SD"
 +	help
 +	  Name used in the interface for MMC1
 +
 +config TOW_BOOT_MMC2_NAME
 +	string "MMC2 user-friendly name"
++	default "eMMC" if MESON_G12A || MESON_GXL
 +	default "(Unused)"
 +	help
 +	  Name used in the interface for MMC2
@@ -560,5 +562,5 @@ index 00000000000..0e4ce577dcb
 +	"tb_menu separator                            - Add a separator\n"
 +)
 -- 
-2.35.1
+2.38.0
 
