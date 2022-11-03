@@ -11,8 +11,8 @@
 
 {
   device = {
-    manufacturer = "ODROID";
-    name = "C2";
+    manufacturer = "Hardkernel";
+    name = "ODROID-C2";
     identifier = "odroid-C2";
     productPageURL = "https://www.hardkernel.com/shop/odroid-c2/";
   };
