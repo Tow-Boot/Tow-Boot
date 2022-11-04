@@ -65,6 +65,7 @@ in
           "2022.07" = let base = ../../support/u-boot/2022.07/patches; in [
             # Misc patches to upstream
             (base + "/0001-sunxi-Use-mmc_get_env_dev-only-if-relevant.patch")
+            (base + "/0001-smbios-enclosure-support.patch")
 
             # Misc patches being upstreamed
             (base + "/0001-cmd-Add-pause-command.patch")
