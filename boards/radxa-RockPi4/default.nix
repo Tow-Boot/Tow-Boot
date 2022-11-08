@@ -15,6 +15,12 @@
 
   Tow-Boot = {
     defconfig = lib.mkDefault "rock-pi-4-rk3399_defconfig";
+    config = [
+      (helpers: with helpers; {
+        USE_PREBOOT = yes;
+        PREBOOT = freeform ''"usb start"'';
+      })
+    ];
     patches = [
       # Based on https://github.com/armbian/build/blob/master/patch/u-boot/u-boot-rockchip64/board-rock-pi-4-enable-spi-flash.patch
       ./0001-rockpi4-rk3399-add-spi-support.patch
