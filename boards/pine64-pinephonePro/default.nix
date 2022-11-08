@@ -74,6 +74,8 @@
 
       ./0001-pine64-pinephonepro-device-enablement.patch
       ./0001-rk3399-pinephone-pro-add-smbios-info.patch
+      ./0001-rk_gpio-Added-spl_gpio_input-method.patch
+      ./0009-Pinephone-Pro-Set-GPIO4_PD3-as-input.patch
 
       # pinephone-pro: Perform PMIC setup on boot (increase input current limit)
       # https://xff.cz/git/u-boot/commit/?h=ppp&id=7f8238fd608290152b143322178a5be21a447dc1

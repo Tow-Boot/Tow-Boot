@@ -1,0 +1,38 @@
+From 893c24bbe0f5d738641a19337df0ce29e65946b4 Mon Sep 17 00:00:00 2001
+From: Antoni Przybylik <antoni.przybylik@wp.pl>
+Date: Wed, 21 Sep 2022 22:20:49 +0200
+Subject: [PATCH 1/9] rk_gpio: Added spl_gpio_input method
+
+This patch adds spl_gpio_input method for rk_gpio.
+
+Signed-off-by: Antoni Przybylik <antoni.przybylik@wp.pl>
+---
+ drivers/gpio/rk_gpio.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/gpio/rk_gpio.c b/drivers/gpio/rk_gpio.c
+index 68f30157a9..8883fa14eb 100644
+--- a/drivers/gpio/rk_gpio.c
++++ b/drivers/gpio/rk_gpio.c
+@@ -125,6 +125,18 @@ int spl_gpio_set_pull(void *vregs, uint gpio, int pull)
+ 	return 0;
+ }
+ 
++int spl_gpio_input(void *vregs, uint gpio)
++{
++	struct rockchip_gpio_regs * const regs = vregs;
++
++	clrsetbits_le32(&regs->swport_dr, 1 << gpio, 0);
++
++	/* Set direction */
++	clrsetbits_le32(&regs->swport_ddr, 1 << gpio, 0);
++
++	return 0;
++}
++
+ int spl_gpio_output(void *vregs, uint gpio, int value)
+ {
+ 	struct rockchip_gpio_regs * const regs = vregs;
+-- 
+2.37.3
+
