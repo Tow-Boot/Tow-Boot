@@ -1,4 +1,4 @@
-From c23c8f5ab4826d6d85024313abca2d51fc14d3be Mon Sep 17 00:00:00 2001
+From 9b61a60fb8055fd8b3eb2feff0e2eeb298760dff Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sun, 4 Sep 2022 17:50:47 -0400
 Subject: [PATCH 1/2] smbios: Add more in-use enclosure types
@@ -34,17 +34,17 @@ index c9df2706f5a..17725bdbd16 100644
 2.38.0
 
 
-From a6a720b9e6c0e0b76c5819263a482a99fc74429f Mon Sep 17 00:00:00 2001
+From 64de7d19b1c0e4705580c0612643ee2f0f38ec2b Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Sun, 4 Sep 2022 17:54:12 -0400
 Subject: [PATCH 2/2] smbios: Use device tree /chassis-type as source of truth
 
 ---
- lib/smbios.c | 37 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+ lib/smbios.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
 diff --git a/lib/smbios.c b/lib/smbios.c
-index d7f4999e8b2..1e6497fa934 100644
+index d7f4999e8b2..f260fa44e73 100644
 --- a/lib/smbios.c
 +++ b/lib/smbios.c
 @@ -87,6 +87,31 @@ struct smbios_write_method {
@@ -79,7 +79,7 @@ index d7f4999e8b2..1e6497fa934 100644
  /**
   * smbios_add_string() - add a string to the string area
   *
-@@ -346,7 +371,17 @@ static int smbios_write_type3(ulong *current, int handle,
+@@ -346,7 +371,18 @@ static int smbios_write_type3(ulong *current, int handle,
  	t->manufacturer = smbios_add_prop(ctx, "manufacturer");
  	if (!t->manufacturer)
  		t->manufacturer = smbios_add_string(ctx, "Unknown");
@@ -92,7 +92,8 @@ index d7f4999e8b2..1e6497fa934 100644
 +
 +		if (ofnode_valid(node)) {
 +			chassis_type = ofnode_read_string(node, "chassis-type");
-+			t->chassis_type = smbios_enclosure_from_string(chassis_type);
++			if (chassis_type)
++				t->chassis_type = smbios_enclosure_from_string(chassis_type);
 +		}
 +	}
  	t->bootup_state = SMBIOS_STATE_SAFE;
