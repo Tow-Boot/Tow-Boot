@@ -74,6 +74,13 @@
 
       ./0001-pine64-pinephonepro-device-enablement.patch
       ./0001-rk3399-pinephone-pro-add-smbios-info.patch
+
+      # pinephone-pro: Perform PMIC setup on boot (increase input current limit)
+      # https://xff.cz/git/u-boot/commit/?h=ppp&id=7f8238fd608290152b143322178a5be21a447dc1
+      (pkgs.fetchpatch {
+        url = "https://xff.cz/git/u-boot/patch/?id=7f8238fd608290152b143322178a5be21a447dc1";
+        sha256 = "sha256-B3B6AQqiQ0NbdVZ4Xu1UOotCDJCZgJcYGJlQKrORb6U=";
+      })
     ];
   };
   documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
