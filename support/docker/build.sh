@@ -35,7 +35,13 @@ _nix_container_manager() {
 	# Ask if the user wants to proceed as root
 	if (($(id -u) == 0)); 
 	then
-		stderr.printf "\nYou don't need to run this script as root.\n\nLear more on how run docker/podman in rootless mode:\n Docker: https://docs.docker.com/engine/security/rootless/\n Podman: https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md\n\n"
+		stderr.printf ""
+		stderr.printf "You don't need to run this script as root."
+		stderr.printf ""
+		stderr.printf "Learn more on how run docker/podman in rootless mode:"
+		stderr.printf " Docker: https://docs.docker.com/engine/security/rootless/"
+		stderr.printf " Podman: https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md"
+		stderr.printf ""
 		PS3="Running as root. Do you want to continue?: "
 
 		select yn in "Yes" "No"; do
@@ -51,8 +57,6 @@ _nix_container_manager() {
 			esac
 		done
 	fi
-
-	# TODO: Add selection menu of available boards located in boards dir
 
 	# Find which container manager is available
 
@@ -118,7 +122,7 @@ _nix_container_manager() {
 			checkImg=$($selectedManager image exists nix; echo $?)
 			;;
 		*)
-			stderr.printf "\nSomething went wrong when checking if the image is available with the chosen container manager: $selectedManager\n"
+			stderr.printf "\nUnexpected value for selectedManager ($selectedManager) when checking image is present.\n"
 			exit 1
 			;;
 	esac
@@ -144,7 +148,7 @@ _nix_container_manager() {
 			volumeExists=$($selectedManager volume exists Tow-Boot--nix-store; echo $?)
 			;;
 		*)
-			stderr.printf "\nSomething went wrong when checking if the volume exists with the chosen container manager: $selectedManager\n"
+			stderr.printf "\nUnexpected value for selectedManager ($selectedManager) when checking volume exists.\n"
 			exit 1
 			;;
 	esac
