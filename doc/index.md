@@ -71,3 +71,16 @@ Boot order is unsurprising: on shared storage, the storage from which the
 currently running *Tow-Boot* is running is prioritized by default.
 
 Bootable targets are listed in the menu driven interface.
+
+<div class="homepage-acknowledgements">
+
+Acknowledgements
+----------------
+
+This project was funded in part through the NGI PET Fund.
+[Read more about it on NLnet's website](https://nlnet.nl/PET/).
+
+<a href="https://nlnet.nl/NGI0/">
+	<img src="images/NGI0_tag_black_mono.svg" alt="NGI0" />
+</a>
+</div>
