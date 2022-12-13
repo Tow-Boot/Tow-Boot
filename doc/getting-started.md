@@ -115,7 +115,7 @@ In those cases, using serial to interact with the device can be required. Especi
 
 Tow-Boot uses the same baud rate for all platforms and devices: `115200`. This applies to all platforms, even those which generally default to another serial baud rate.
 
-You can use the serial console of your preference - `screen` , `picocom` , `minicom` and others.
+You can use the serial console software of your preference - `screen` , `picocom` , `minicom` and others.
 
 ### Examples for connecting with serial
 
