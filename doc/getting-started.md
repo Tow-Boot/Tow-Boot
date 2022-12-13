@@ -136,7 +136,6 @@ Press Ctrl+a and Ctrl+x to exit
 ```shell-session
 $ minicom -D /dev/ttyUSB0 -b 115200
 ...
-
 Press Ctrl+a and X to exit
 ```
 
