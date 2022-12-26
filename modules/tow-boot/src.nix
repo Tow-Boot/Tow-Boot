@@ -103,6 +103,47 @@ in
             (base + "/0001-sunxi-Prefer-SD-for-operating-system-boot.patch")
           ])
           ;
+          "2022.10" = let base = ../../support/u-boot/2022.10/patches; in [
+            # Misc patches to upstream
+            (base + "/0001-sunxi-Use-mmc_get_env_dev-only-if-relevant.patch")
+            (base + "/0001-smbios-enclosure-support.patch")
+
+            # Misc patches being upstreamed
+            (base + "/0001-cmd-Add-pause-command.patch")
+
+            # Misc patches, not upstreamable as-is
+            (base + "/0001-bootmenu-improvements.patch")
+            (base + "/0001-autoboot-show-menu-only-on-menu-key.patch")
+            (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
+            (base + "/0001-splash-improvements.patch")
+            (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
+
+            # Tow-Boot specific patches, not upstreamable as-is
+            (base + "/0001-pdcurses.patch")
+            (base + "/0001-tow-boot-menu.patch")
+            (base + "/0001-Provide-opinionated-boot-flow.patch")
+            (base + "/0001-treewide-Identify-as-Tow-Boot.patch")
+
+            # Intrusive non-upstreamable workarounds
+            (base + "/0001-HACK-video-sync-dirty.patch")
+          ]
+          # Patches to force eMMC OS boot to happen before SD OS boot
+          ++ (optionals (variant != "boot-installer") [
+            (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
+            (base + "/0001-meson-Prefer-internal-boot-methods-first.patch")
+            (base + "/0001-sunxi-Predictable-boot-order.patch")
+          ])
+          # Patches to force SD OS boot to happen before OS boot
+          ++ (optionals (variant == "boot-installer") [
+            # Rockchip already prefers SD to eMMC (since b212ad24a604b00b240add35516b7381965deb31)
+            # Amlogic already prefers SD to eMMC
+
+            # We're applying the predictable boot order patch *and then editing it*.
+            # This is because it fixes the boot order in place, which is needed here anyway.
+            (base + "/0001-sunxi-Predictable-boot-order.patch")
+            (base + "/0001-sunxi-Prefer-SD-for-operating-system-boot.patch")
+          ])
+          ;
         };
       in
         if patchSets ? ${uBootVersion}
@@ -124,6 +165,7 @@ in
           "2022.01" = "sha256-gbRUMifbIowD+KG/XdvIE7C7j2VVzkYGTvchpvxoBBM=";
           "2022.04" = "sha256-aOBlQTkmd44nbsOr0ouzL6gquqSmiY1XDB9I+9sIvNA=";
           "2022.07" = "sha256-krCOtJwk2hTBrb9wpxro83zFPutCMOhZrYtnM9E9z14=";
+          "2022.10" = "sha256-ULRIKlBbwoG6hHDDmaPCbhReKbI1ALw1xQ3r1/pGvfg=";
         };
       in
       mkDefault (pkgs.fetchurl {

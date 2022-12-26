@@ -1,0 +1,35 @@
+From ba65875dc7311d251f2e4c12179c9a589e997477 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 6 Feb 2022 20:16:55 -0500
+Subject: [PATCH] Revert "rockchip: Fix MMC boot order"
+
+This reverts commit b212ad24a604b00b240add35516b7381965deb31.
+
+This "fix" goes against the preferred boot order for Tow-Boot, which
+prefers internal storage first.
+---
+ include/configs/rockchip-common.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/configs/rockchip-common.h b/include/configs/rockchip-common.h
+index ba7061a287c..0b9e24d1db4 100644
+--- a/include/configs/rockchip-common.h
++++ b/include/configs/rockchip-common.h
+@@ -14,11 +14,11 @@
+ 
+ #ifndef CONFIG_SPL_BUILD
+ 
+-/* First try to boot from SD (index 1), then eMMC (index 0) */
++/* First try to boot from eMMC (index 0), then SD (index 1) */
+ #if CONFIG_IS_ENABLED(CMD_MMC)
+ 	#define BOOT_TARGET_MMC(func) \
+-		func(MMC, mmc, 1) \
+-		func(MMC, mmc, 0)
++		func(MMC, mmc, 0) \
++		func(MMC, mmc, 1)
+ #else
+ 	#define BOOT_TARGET_MMC(func)
+ #endif
+-- 
+2.34.0
+

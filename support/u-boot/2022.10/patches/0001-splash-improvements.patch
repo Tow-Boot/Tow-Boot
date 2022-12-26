@@ -1,0 +1,372 @@
+From b00189a85634290c1aa1a844354821f7d5b68ea5 Mon Sep 17 00:00:00 2001
+From: Da Xue <da@libre.computer>
+Date: Tue, 7 Jul 2020 04:47:48 -0400
+Subject: [PATCH 1/3] bmp: Support gz compressed logo.h
+
+Origin: https://github.com/libre-computer-project/libretech-u-boot/commit/9f849b044b60cf9a05618ef7da13db3961120304
+---
+ tools/Makefile   |  6 +++++-
+ tools/bmp_logo.c | 29 +++++++++++++++++++++++++----
+ 2 files changed, 30 insertions(+), 5 deletions(-)
+
+diff --git a/tools/Makefile b/tools/Makefile
+index 9f2339666a7..19ec4abce21 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -285,7 +285,6 @@ ifneq ($(wildcard $(srctree)/$(src)/logos/$(VENDOR).bmp),)
+ LOGO_BMP= $(srctree)/$(src)/logos/$(VENDOR).bmp
+ endif
+ endif
+-
+ endif # !LOGO_BMP
+ 
+ #
+@@ -307,8 +306,13 @@ $(LOGO_H):	$(obj)/bmp_logo $(LOGO_BMP)
+ 	$(obj)/bmp_logo --gen-info $(LOGO_BMP) > $@
+ 
+ ifeq ($(CONFIG_DM_VIDEO),y)
++ifneq ($(wildcard $(LOGO_BMP).gz),)
++$(LOGO_DATA_H):	$(obj)/bmp_logo $(LOGO_BMP)
++	$(obj)/bmp_logo --gen-bmp-gz $(LOGO_BMP) $(LOGO_BMP).gz > $@
++else
+ $(LOGO_DATA_H):	$(obj)/bmp_logo $(LOGO_BMP)
+ 	$(obj)/bmp_logo --gen-bmp $(LOGO_BMP) > $@
++endif
+ else
+ $(LOGO_DATA_H):	$(obj)/bmp_logo $(LOGO_BMP)
+ 	$(obj)/bmp_logo --gen-data $(LOGO_BMP) > $@
+diff --git a/tools/bmp_logo.c b/tools/bmp_logo.c
+index 74fcadca63e..d8727c227fd 100644
+--- a/tools/bmp_logo.c
++++ b/tools/bmp_logo.c
+@@ -3,7 +3,8 @@
+ enum {
+ 	MODE_GEN_INFO,
+ 	MODE_GEN_DATA,
+-	MODE_GEN_BMP
++	MODE_GEN_BMP,
++	MODE_GEN_BMP_GZ
+ };
+ 
+ typedef struct bitmap_s {		/* bitmap description */
+@@ -17,7 +18,7 @@ typedef struct bitmap_s {		/* bitmap description */
+ 
+ void usage(const char *prog)
+ {
+-	fprintf(stderr, "Usage: %s [--gen-info|--gen-data|--gen-bmp] file\n",
++	fprintf(stderr, "Usage: %s [--gen-info|--gen-data|--gen-bmp|--gen-bmp-gz] file\n",
+ 		prog);
+ }
+ 
+@@ -76,7 +77,7 @@ int main (int argc, char *argv[])
+ {
+ 	int	mode, i, x;
+ 	int	size;
+-	FILE	*fp;
++	FILE	*fp, *gzfp;
+ 	bitmap_t bmp;
+ 	bitmap_t *b = &bmp;
+ 	uint16_t data_offset, n_colors, hdr_size;
+@@ -92,6 +93,8 @@ int main (int argc, char *argv[])
+ 		mode = MODE_GEN_DATA;
+ 	else if (!strcmp(argv[1], "--gen-bmp"))
+ 		mode = MODE_GEN_BMP;
++	else if (!strcmp(argv[1], "--gen-bmp-gz"))
++		mode = MODE_GEN_BMP_GZ;
+ 	else {
+ 		usage(argv[0]);
+ 		exit(EXIT_FAILURE);
+@@ -102,9 +105,17 @@ int main (int argc, char *argv[])
+ 		perror(argv[2]);
+ 		exit (EXIT_FAILURE);
+ 	}
+-
++	
+ 	if (fgetc (fp) != 'B' || fgetc (fp) != 'M')
+ 		error ("Input file is not a bitmap", fp);
++	
++	if (mode == MODE_GEN_BMP_GZ){
++		gzfp = fopen(argv[3], "rb");
++		if (!gzfp) {
++			perror(argv[3]);
++			exit (EXIT_FAILURE);
++		}
++	}
+ 
+ 	/*
+ 	 * read width and height of the image, and the number of colors used;
+@@ -182,6 +193,11 @@ int main (int argc, char *argv[])
+ 		fseek(fp, 0L, SEEK_END);
+ 		size = ftell(fp);
+ 		fseek(fp, 0L, SEEK_SET);
++	} else if (mode == MODE_GEN_BMP_GZ) {
++		/* copy full bmp file */
++		fseek(gzfp, 0L, SEEK_END);
++		size = ftell(gzfp);
++		fseek(gzfp, 0L, SEEK_SET);
+ 	} else {
+ 		fseek(fp, (long)data_offset, SEEK_SET);
+ 	}
+@@ -200,6 +216,10 @@ int main (int argc, char *argv[])
+ 		/* write full bmp */
+ 		for (i = 0; i < size; i++)
+ 			b->data[i] = (uint8_t)fgetc(fp);
++	} else if (mode == MODE_GEN_BMP_GZ) {
++		/* write full bmp */
++		for (i = 0; i < size; i++)
++			b->data[i] = (uint8_t)fgetc(gzfp);
+ 	} else {
+ 		for (i = (b->height - 1) * b->width; i >= 0; i -= b->width) {
+ 			for (x = 0; x < b->width; x++) {
+@@ -224,5 +244,6 @@ int main (int argc, char *argv[])
+ 
+ out:
+ 	fclose(fp);
++	if (mode == MODE_GEN_BMP_GZ) fclose(gzfp);
+ 	return 0;
+ }
+-- 
+2.35.1
+
+
+From 099688f9d8ff800835193fc0b27d0ca763c38058 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 8 May 2020 16:35:27 -0400
+Subject: [PATCH 2/3] force logo.h splash
+
+This is a scorched earth method. But it works.
+---
+ common/splash.c | 129 +++---------------------------------------------
+ 1 file changed, 8 insertions(+), 121 deletions(-)
+
+diff --git a/common/splash.c b/common/splash.c
+index 98f0089266d..03f53eb63dd 100644
+--- a/common/splash.c
++++ b/common/splash.c
+@@ -24,71 +24,12 @@
+ #include <env.h>
+ #include <splash.h>
+ #include <lcd.h>
+-
+-static struct splash_location default_splash_locations[] = {
+-	{
+-		.name = "sf",
+-		.storage = SPLASH_STORAGE_SF,
+-		.flags = SPLASH_STORAGE_RAW,
+-		.offset = 0x0,
+-	},
+-	{
+-		.name = "mmc_fs",
+-		.storage = SPLASH_STORAGE_MMC,
+-		.flags = SPLASH_STORAGE_FS,
+-		.devpart = "0:1",
+-	},
+-	{
+-		.name = "usb_fs",
+-		.storage = SPLASH_STORAGE_USB,
+-		.flags = SPLASH_STORAGE_FS,
+-		.devpart = "0:1",
+-	},
+-	{
+-		.name = "sata_fs",
+-		.storage = SPLASH_STORAGE_SATA,
+-		.flags = SPLASH_STORAGE_FS,
+-		.devpart = "0:1",
+-	},
+-};
+-
+-#ifdef CONFIG_VIDEO_LOGO
+-
++#include <mapmem.h>
++#if defined(CONFIG_SPLASH_SCREEN) && defined(CONFIG_CMD_BMP)
++#include <bmp_logo.h>
+ #include <bmp_logo_data.h>
+-
+-static int splash_video_logo_load(void)
+-{
+-	char *splashimage;
+-	ulong bmp_load_addr;
+-
+-	splashimage = env_get("splashimage");
+-	if (!splashimage)
+-		return -ENOENT;
+-
+-	bmp_load_addr = hextoul(splashimage, 0);
+-	if (!bmp_load_addr) {
+-		printf("Error: bad 'splashimage' address\n");
+-		return -EFAULT;
+-	}
+-
+-	memcpy((void *)bmp_load_addr, bmp_logo_bitmap,
+-	       ARRAY_SIZE(bmp_logo_bitmap));
+-
+-	return 0;
+-}
+-#else
+-static inline int splash_video_logo_load(void) { return -ENOSYS; }
+ #endif
+ 
+-__weak int splash_screen_prepare(void)
+-{
+-	if (CONFIG_IS_ENABLED(SPLASH_SOURCE))
+-		return splash_source_load(default_splash_locations,
+-					  ARRAY_SIZE(default_splash_locations));
+-
+-	return splash_video_logo_load();
+-}
+-
+ #ifdef CONFIG_SPLASH_SCREEN_ALIGN
+ void splash_get_pos(int *x, int *y)
+ {
+@@ -112,73 +53,19 @@ void splash_get_pos(int *x, int *y)
+ }
+ #endif /* CONFIG_SPLASH_SCREEN_ALIGN */
+ 
+-#if defined(CONFIG_DM_VIDEO) && !defined(CONFIG_HIDE_LOGO_VERSION)
+-
+-#ifdef CONFIG_VIDEO_LOGO
+-#include <bmp_logo.h>
+-#endif
+-#include <dm.h>
+-#include <video_console.h>
+-#include <video_font.h>
+-
+-void splash_display_banner(void)
+-{
+-	struct udevice *dev;
+-	char buf[DISPLAY_OPTIONS_BANNER_LENGTH];
+-	int col, row, ret;
+-
+-	ret = uclass_get_device(UCLASS_VIDEO_CONSOLE, 0, &dev);
+-	if (ret)
+-		return;
+-
+-#ifdef CONFIG_VIDEO_LOGO
+-	col = BMP_LOGO_WIDTH / VIDEO_FONT_WIDTH + 1;
+-	row = BMP_LOGO_HEIGHT / VIDEO_FONT_HEIGHT + 1;
+-#else
+-	col = 0;
+-	row = 0;
+-#endif
+-
+-	display_options_get_banner(false, buf, sizeof(buf));
+-	vidconsole_position_cursor(dev, col, 1);
+-	vidconsole_put_string(dev, buf);
+-	vidconsole_position_cursor(dev, 0, row);
+-}
+-#endif /* CONFIG_DM_VIDEO && !CONFIG_HIDE_LOGO_VERSION */
+-
+ /*
+  * Common function to show a splash image if env("splashimage") is set.
+  * Is used for both dm_video and lcd video stacks. For additional
+  * details please refer to doc/README.splashprepare.
++ *
++ * Note: this is used for the *initial logo*, which Tow-Boot *forces*
++ *       to be the embedded `logo.h` from LOGO_BMP, centered.
+  */
+ #if defined(CONFIG_SPLASH_SCREEN) && defined(CONFIG_CMD_BMP)
+ int splash_display(void)
+ {
+-	ulong addr;
+-	char *s;
+-	int x = 0, y = 0, ret;
+-
+-	s = env_get("splashimage");
+-	if (!s)
+-		return -EINVAL;
+-
+-	addr = hextoul(s, NULL);
+-	ret = splash_screen_prepare();
+-	if (ret)
+-		return ret;
++	int x = -1, y = -1;
+ 
+-	splash_get_pos(&x, &y);
+-
+-	ret = bmp_display(addr, x, y);
+-
+-	/* Skip banner output on video console if the logo is not at 0,0 */
+-	if (x || y)
+-		goto end;
+-
+-#if defined(CONFIG_DM_VIDEO) && !defined(CONFIG_HIDE_LOGO_VERSION)
+-	splash_display_banner();
+-#endif
+-end:
+-	return ret;
++	return bmp_display(map_to_sysmem(bmp_logo_bitmap), x, y);
+ }
+ #endif
+-- 
+2.35.1
+
+
+From 01019a080c8a5c02ee8335d4a19b123308564d05 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 8 Apr 2021 20:59:57 -0400
+Subject: [PATCH 3/3] autoboot: Beautify prompt with splash
+
+On vidconsole only, we're:
+
+ - clearing the text from the display
+ - forcing the text on the last line
+ - re-drawing the splash
+
+The splash *could* have been pushed off-screen by text scrolling if the
+previous stage was verbose.
+---
+ common/autoboot.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/common/autoboot.c b/common/autoboot.c
+index cad580a810f..f00f41522c2 100644
+--- a/common/autoboot.c
++++ b/common/autoboot.c
+@@ -19,6 +19,7 @@
+ #include <memalign.h>
+ #include <menu.h>
+ #include <post.h>
++#include <splash.h>
+ #include <time.h>
+ #include <asm/global_data.h>
+ #include <linux/delay.h>
+@@ -340,10 +341,20 @@ static int abortboot_key_sequence(int bootdelay)
+ 	if (IS_ENABLED(CONFIG_AUTOBOOT_FLUSH_STDIN))
+ 		flush_stdin();
+ #  ifdef CONFIG_AUTOBOOT_PROMPT
++	struct stdio_dev *vidconsole = console_search_dev(DEV_FLAGS_OUTPUT, "vidconsole");
++
+ 	/*
+ 	 * CONFIG_AUTOBOOT_PROMPT includes the %d for all boards.
+ 	 * To print the bootdelay value upon bootup.
+ 	 */
++
++	if (IS_ENABLED(CONFIG_SPLASH_SCREEN) && IS_ENABLED(CONFIG_CMD_BMP)) {
++		if (vidconsole) {
++			vidconsole->puts(vidconsole, ANSI_CLEAR_CONSOLE);
++			vidconsole->puts(vidconsole, "\e[99;0H");
++		}
++		splash_display();
++	}
+ 	printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ #  endif
+ 
+@@ -365,7 +376,15 @@ static int abortboot_single_key(int bootdelay)
+ {
+ 	int abort = 0;
+ 	unsigned long ts;
++	struct stdio_dev *vidconsole = console_search_dev(DEV_FLAGS_OUTPUT, "vidconsole");
+ 
++	if (IS_ENABLED(CONFIG_SPLASH_SCREEN) && IS_ENABLED(CONFIG_CMD_BMP)) {
++		if (vidconsole) {
++			vidconsole->puts(vidconsole, ANSI_CLEAR_CONSOLE);
++			vidconsole->puts(vidconsole, "\e[99;0H");
++		}
++		splash_display();
++	}
+ 	printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ 
+ 	/*
+-- 
+2.35.1
+
