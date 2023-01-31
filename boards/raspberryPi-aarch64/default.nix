@@ -17,6 +17,12 @@ let
     armstub=armstub8-gic.bin
     disable_overscan=1
 
+    [cm4]
+    dtoverlay=dwc2,dr_mode=host
+
+    [cm4s]
+    dtoverlay=dwc2,dr_mode=host
+
     [all]
     kernel=Tow-Boot.noenv.bin
     arm_64bit=1
