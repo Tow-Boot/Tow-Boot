@@ -74,6 +74,8 @@ in
 
     meson64-tools = callPackage ./meson64-tools { };
 
+    raspberrypiFirmware = callPackage ./raspberrypi-firmware { };
+
     mkScript = file: final.runCommandNoCC "out.scr" {
       nativeBuildInputs = [
         final.buildPackages.ubootTools
