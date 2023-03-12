@@ -36,6 +36,5 @@ in
   };
   config = {
     nixpkgs.config.allowUnfree = true;
-    nixpkgs.system = "aarch64-linux";
   };
 }
