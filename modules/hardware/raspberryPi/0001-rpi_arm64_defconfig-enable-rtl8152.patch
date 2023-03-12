@@ -1,0 +1,24 @@
+From 65c9a584ce1aeddbf5ec0d98b38fcea9050eba22 Mon Sep 17 00:00:00 2001
+From: Cole Mickens <cole.mickens@gmail.com>
+Date: Sat, 30 Jul 2022 13:30:23 -0700
+Subject: [PATCH] rpi_arm64_defconfig: enable rtl8152
+
+---
+ configs/rpi_arm64_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/rpi_arm64_defconfig b/configs/rpi_arm64_defconfig
+index 933e142206..4987b18998 100644
+--- a/configs/rpi_arm64_defconfig
++++ b/configs/rpi_arm64_defconfig
+@@ -47,6 +47,7 @@ CONFIG_USB_KEYBOARD=y
+ CONFIG_USB_HOST_ETHER=y
+ CONFIG_USB_ETHER_LAN78XX=y
+ CONFIG_USB_ETHER_SMSC95XX=y
++CONFIG_USB_ETHER_RTL8152=y
+ CONFIG_DM_VIDEO=y
+ # CONFIG_VIDEO_BPP8 is not set
+ # CONFIG_VIDEO_BPP16 is not set
+-- 
+2.37.0
+
