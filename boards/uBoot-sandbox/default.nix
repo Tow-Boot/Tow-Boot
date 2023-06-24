@@ -15,9 +15,6 @@
 
   Tow-Boot = {
     defconfig = "sandbox_defconfig";
-    patches = [
-      ./0001-sandbox-Force-window-size.patch
-    ];
     config = [
       (helpers: with helpers; {
         AUTOBOOT_MENUKEY = lib.mkForce (option no);
