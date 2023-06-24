@@ -14,8 +14,5 @@
 
   Tow-Boot = {
     defconfig = "orangepi_zero_plus2_defconfig";
-    patches = [
-      ./0001-sun50i-h5-orangepi-zero-plus2-Enable-USB.patch
-    ];
   };
 }
