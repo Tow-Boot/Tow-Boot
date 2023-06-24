@@ -119,6 +119,10 @@ in
       TPL_ENV_IS_NOWHERE = option yes;
       SPL_ENV_IS_NOWHERE = option yes;
     }))
+    (mkIf ((!config.Tow-Boot.buildUBoot) && variant == "boot-installer") (helpers: with helpers; {
+      TOW_BOOT_PREDICTABLE_BOOT_PREFER_EXTERNAL = yes;
+      TOW_BOOT_PREDICTABLE_BOOT_PREFER_INTERNAL = no;
+    }))
     (mkIf (variant == "mmcboot") (helpers: with helpers; {
       # TODO: Explore options for storing env in mmcboot partition.
       ENV_IS_NOWHERE = yes;
