@@ -68,9 +68,6 @@ in
         TOW_BOOT_MMC2_NAME = freeform ''"SD (2)"'';
       })
     ];
-    patches = [
-      ./0001-configs-rpi-allow-for-bigger-kernels.patch
-    ];
     outputs.firmware = lib.mkIf (config.device.identifier == "raspberryPi-aarch64") (
       pkgs.callPackage (
         { runCommandNoCC }:
