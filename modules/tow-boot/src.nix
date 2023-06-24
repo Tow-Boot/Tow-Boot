@@ -13,7 +13,7 @@ in
   Tow-Boot = {
     uBootVersion = mkDefault "2022.07";
 
-    patches = mkIf (config.Tow-Boot.useDefaultPatches) (
+    patches = mkIf (!config.Tow-Boot.buildUBoot) (
       let
         patchSets = {
           "2021.10" = let base = ../../support/u-boot/2021.10/patches; in [

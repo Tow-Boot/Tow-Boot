@@ -90,7 +90,8 @@ in
         , patches
         , variant
         , uBootVersion
-        , useDefaultPatches
+        , outputName
+        , buildUBoot
         , boardIdentifier
         , towBootIdentifier
         , additionalArguments
@@ -102,7 +103,7 @@ in
         }:
 
         stdenv.mkDerivation ({
-          pname = "tow-boot-${defconfig}-${variant}";
+          pname = "${config.Tow-Boot.outputName}-${defconfig}-${variant}";
           inherit variant;
           inherit boardIdentifier;
 
@@ -137,7 +138,7 @@ in
             done
             )
           ''
-          + (lib.optionalString (useDefaultPatches) ''
+          + (lib.optionalString (!buildUBoot) ''
             substituteInPlace include/tow-boot_env.h \
               --replace "@boardIdentifier@" "${boardIdentifier}"
           '')
@@ -221,7 +222,8 @@ in
           patches
           variant
           uBootVersion
-          useDefaultPatches
+          outputName
+          buildUBoot
         ;
         inherit (config.Tow-Boot.builder)
           additionalArguments
@@ -236,7 +238,7 @@ in
       });
 
       builder = {
-        postPatch = mkIf (config.Tow-Boot.useDefaultPatches && config.Tow-Boot.setup_leds != null) ''
+        postPatch = mkIf ((!config.Tow-Boot.buildUBoot) && config.Tow-Boot.setup_leds != null) ''
           substituteInPlace include/tow-boot_env.h \
             --replace 'setup_leds=echo\0' 'setup_leds=${config.Tow-Boot.setup_leds}\0'
         '';
