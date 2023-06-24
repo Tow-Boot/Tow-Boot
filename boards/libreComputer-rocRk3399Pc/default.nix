@@ -35,10 +35,5 @@
       })
     ];
     setup_leds = "led green:work on; led red:diy on";
-    patches = [
-      ./0001-rk3399-roc-pc-Configure-SPI-flash-boot-offset.patch
-      ./roc-pc-config.patch
-      ./0001-roc-pc-rk3399-Apply-USB-fixes.patch
-    ];
   };
 }
