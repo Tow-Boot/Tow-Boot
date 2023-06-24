@@ -54,9 +54,6 @@ in
 
   Tow-Boot = {
     defconfig = "radxa-zero2_defconfig";
-    patches = [
-      ./0001-radxa-zero2-board-enablement.patch
-    ];
     builder.additionalArguments = {
       FIPDIR = "${radxa-fip}/radxa-zero2";
     };
