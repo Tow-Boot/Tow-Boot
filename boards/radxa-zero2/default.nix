@@ -6,7 +6,6 @@ let
   radxa-fip = pkgs.callPackage (
     { stdenv
     , lib
-    , fetchpatch
     , fetchFromGitHub
     }:
 

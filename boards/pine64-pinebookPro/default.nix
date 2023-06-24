@@ -27,6 +27,5 @@
         sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
       })
     ];
-
   };
 }
