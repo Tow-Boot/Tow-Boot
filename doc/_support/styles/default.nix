@@ -54,7 +54,7 @@ let
   '';
 
   styles = stdenv.mkDerivation {
-    name = "tow-boot-styles";
+    name = "Tow-Boot-docs-styles";
 
     src = ./.;
 
