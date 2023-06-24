@@ -186,10 +186,6 @@ in
             CMD_USB_MASS_STORAGE = yes;
           })
         ];
-        patches = [
-          # Vibrator support
-          ./phone-ux/0001-add-vibrator-and-gpio-vibrator.patch
-        ];
       };
     })
     (mkIf (cfg.enable && cfg.blind) {
