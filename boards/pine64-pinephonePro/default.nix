@@ -49,48 +49,6 @@
         MMC_HS400_SUPPORT = yes;
       })
     ];
-    patches = [
-      #
-      # Generic changes, not device specific
-      #
-
-      # Upstreamable
-      ./0001-mtd-spi-nor-ids-Add-GigaDevice-GD25LQ128E-entry.patch
-
-      # Non-upstreamable
-      ./0001-HACK-Do-not-honor-Rockchip-download-mode.patch
-      ./0001-rk8xx-poweroff-support.patch
-
-      # Subject: [PATCH] phy: rockchip: inno-usb2: fix hang when multiple controllers exit
-      # https://patchwork.ozlabs.org/project/uboot/patch/20210406151059.1187379-1-icenowy@aosc.io/
-      (pkgs.fetchpatch {
-        url = "https://patchwork.ozlabs.org/series/237654/mbox/";
-        sha256 = "0aiw9zk8w4msd3v8nndhkspjify0yq6a5f0zdy6mhzs0ilq896c3";
-      })
-
-      #
-      # Device-specific changes
-      #
-
-      ./0001-pine64-pinephonepro-device-enablement.patch
-      ./0001-rk3399-pinephone-pro-add-smbios-info.patch
-      ./0001-rk_gpio-Added-spl_gpio_input-method.patch
-      ./0009-Pinephone-Pro-Set-GPIO4_PD3-as-input.patch
-
-      # pinephone-pro: Perform PMIC setup on boot (increase input current limit)
-      # https://xff.cz/git/u-boot/commit/?h=ppp&id=7f8238fd608290152b143322178a5be21a447dc1
-      (pkgs.fetchpatch {
-        url = "https://xff.cz/git/u-boot/patch/?id=7f8238fd608290152b143322178a5be21a447dc1";
-        sha256 = "sha256-B3B6AQqiQ0NbdVZ4Xu1UOotCDJCZgJcYGJlQKrORb6U=";
-      })
-
-      # i2c: rockchip: De-initialize the bus after start bit failure
-      # https://xff.cz/git/u-boot/commit/?h=ppp&id=ccb804db1753958a33e7a6e55c52b3b04e4754e9
-      (pkgs.fetchpatch {
-        url = "https://xff.cz/git/u-boot/patch/?id=ccb804db1753958a33e7a6e55c52b3b04e4754e9";
-        sha256 = "sha256-Gzl5QHlM2pITnFjHaPwn0T08R75V8oeAumoH+h1PMEo=";
-      })
-    ];
   };
   documentation.sections.installationInstructions = builtins.readFile ./INSTALLING.md;
 }
