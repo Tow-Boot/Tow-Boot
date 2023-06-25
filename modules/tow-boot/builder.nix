@@ -128,12 +128,20 @@ in
             (PS4=" $ "
             for f in configs/*rk3399* configs/*rk3328*; do
               (set -x
-              sed -i"" -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
+              sed -i -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
               )
             done
             for f in arch/arm/dts/*rk3399*.dts* arch/arm/dts/*rk3328*.dts*; do
               (set -x
-              sed -i"" -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+              sed -i -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+              )
+            done
+            )
+            echo ':: Patching Rockchip SPI SPL offset'
+            (PS4=" $ "
+            for f in arch/arm/dts/*rk3399*.dts*; do
+              (set -x
+              sed -i -e 's/u-boot,spl-payload-offset\s*=\s*<0x60000>/u-boot,spl-payload-offset = <0x80000>/' "$f"
               )
             done
             )
