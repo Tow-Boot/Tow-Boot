@@ -28,6 +28,9 @@
     };
     config = [
       (helpers: with helpers; {
+        TOW_BOOT_QUIRK_ROCKCHIP_DISABLE_DOWNLOAD_MODE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
+      })
+      (helpers: with helpers; {
         BUTTON_GPIO = yes;
         BUTTON_ADC = yes;
         LED_GPIO = yes;
