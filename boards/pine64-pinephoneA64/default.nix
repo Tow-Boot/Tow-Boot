@@ -38,11 +38,6 @@
         USB_GADGET_MANUFACTURER = freeform ''"Pine64"'';
       })
     ];
-    patches = [
-      ./0001-Enable-led-and-vibrate-on-boot-to-notify-user-of-boo.patch
-      ./0001-HACK-button-sun4i-lradc-Provide-UCLASS_BUTTON-driver.patch
-      ./0001-HACK-cmd-ums-Ensure-USB-gadget-is-probed-via-workaro.patch
-    ];
     touch-installer = {
       targetBlockDevice = "/dev/mmcblk2boot0";
     };
