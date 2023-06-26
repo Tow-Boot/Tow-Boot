@@ -55,7 +55,9 @@ in
         # 64 MiB; the default unconfigured state is 4 MiB.
         SYS_MALLOC_LEN = freeform ''0x4000000'';
         CMD_POWEROFF = no;
+      })
 
+      (lib.mkIf (!config.Tow-Boot.buildUBoot) (helpers: with helpers; {
         # As far as distro_bootcmd is aware, the raspberry pi can
         # have up to three mmc "devices"
         #   - https://source.denx.de/u-boot/u-boot/-/blob/v2022.07/include/configs/rpi.h#L134-137
@@ -66,7 +68,7 @@ in
         TOW_BOOT_MMC0_NAME = freeform ''"SD (0)"'';
         TOW_BOOT_MMC1_NAME = freeform ''"SD (1)"'';
         TOW_BOOT_MMC2_NAME = freeform ''"SD (2)"'';
-      })
+      }))
     ];
     outputs.firmware = lib.mkIf (config.device.identifier == "raspberryPi-aarch64") (
       pkgs.callPackage (
