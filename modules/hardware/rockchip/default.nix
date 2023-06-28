@@ -57,9 +57,6 @@ in
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
             SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
             SPL_DM_SEQ_ALIAS = yes;
-
-            # Not supported on this platform
-            CMD_POWEROFF = no;
           })
         ];
         firmwarePartition = {
