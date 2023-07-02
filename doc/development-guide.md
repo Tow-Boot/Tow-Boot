@@ -43,7 +43,7 @@ I just want to build
 You still should read a bit more past this section, but if you absolutely only
 want to build, here's how you can build the `uBoot-sandbox` board.
 
-```
+```shell-session
  $ nix-build -A uBoot-sandbox
 ```
 

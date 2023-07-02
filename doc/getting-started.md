@@ -48,7 +48,7 @@ the storage media formatted in a specific manner.
 
 1. Write the `spi.installer.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
@@ -59,7 +59,7 @@ the storage media formatted in a specific manner.
 
 1. Write the `mmcboot.installer.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=mmcboot.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 1. Boot the media on your board
@@ -82,7 +82,7 @@ but the size has been chosen to allow further expansion if needed.
 
 1. Write the `shared.disk-image.img` file to an SD card or another valid storage
    media for your particular board.
-   ```
+   ```shell-session
     # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
    ```
 
@@ -90,7 +90,7 @@ but the size has been chosen to allow further expansion if needed.
    disk before attempting any operations. Grow the GPT partition to the physical
    size of the medium. (This operation is a no-op that forces a rewrite of the
    partition table.)
-   ```
+   ```shell-session
     # sfdisk --append /dev/XXX
    ```
 
@@ -104,6 +104,42 @@ but the size has been chosen to allow further expansion if needed.
 Using the *shared storage* strategy, you can simulate *dedicated storage* by
 **not** installing and using the storage media the platform firmware lives
 on.
+
+
+Serial 
+------
+
+Many `AArch64` devices do not come with a display or can be used in headless mode (as an example - a small home server which doesn't need a display).
+
+In those cases, using serial to interact with the device can be required. Especially before your operating system of choice is loaded.
+
+Tow-Boot uses the same baud rate for all platforms and devices: `115200`. This applies to all platforms, even those which generally default to another serial baud rate.
+
+You can use the serial console software of your preference - `screen` , `picocom` , `minicom` and others.
+
+### Examples for connecting with serial
+
+Examples to connect to the device while installing or booting Tow-Boot from another device:
+
+```shell-session
+$ screen /dev/ttyUSB0 115200
+...
+Press Ctrl+a and K to exit
+```
+
+```shell-session
+$ picocom /dev/ttyUSB0 -b 115200
+...
+Press Ctrl+a and Ctrl+x to exit
+```
+
+```shell-session
+$ minicom -D /dev/ttyUSB0 -b 115200
+...
+Press Ctrl+a and X to exit
+```
+
+To learn more, read the [*Differences from U-boot*](differences-from-u-boot.md) section.
 
 
 Building Tow-Boot
