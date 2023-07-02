@@ -56,6 +56,21 @@ in
             # Amlogic already prefers SD to eMMC
           ])
           ;
+
+          "2022.04" = let base = ../../support/u-boot/2022.04/patches; in [
+            (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
+            (base + "/0002-autoboot-show-menu-only-on-menu-key.patch")
+            (base + "/0003-bootmenu-improvements.patch")
+            (base + "/0004-cmd-Add-pause-command.patch")
+            (base + "/0005-cmd-env-Add-indirect-to-indirectly-set-values.patch")
+            (base + "/0006-drivers-video-Add-dependency-on-GZIP.patch")
+            (base + "/0007-lib-export-vsscanf.patch")
+            (base + "/0008-pdcurses.patch")
+            (base + "/0009-splash-improvements.patch")
+            (base + "/0010-tow-boot-menu.patch")
+            (base + "/0011-Tow-Boot-Provide-opinionated-boot-flow.patch")
+            (base + "/0012-Tow-Boot-treewide-Identify-as-Tow-Boot.patch")
+          ];
         };
       in
         if patchSets ? ${uBootVersion}

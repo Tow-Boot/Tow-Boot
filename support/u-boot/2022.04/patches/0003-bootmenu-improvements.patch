@@ -1,0 +1,154 @@
+From 91a1f14e5009eb3926592d6ab17d011c285d02bf Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 7 Jul 2020 00:59:45 -0400
+Subject: [PATCH 1/4] bootmenu: Replace reverse for truetype console
+
+The truetype console doesn't support many ANSI escape sequences, among
+those the reverse sequence is *broken*. It reverses the text, but does
+not change the background color.
+
+This, instead, uses characters to show which option is currently active.
+---
+ cmd/bootmenu.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+Index: uboot-imx/cmd/bootmenu.c
+===================================================================
+--- uboot-imx.orig/cmd/bootmenu.c
++++ uboot-imx/cmd/bootmenu.c
+@@ -62,23 +62,24 @@ static char *bootmenu_getoption(unsigned
+ static void bootmenu_print_entry(void *data)
+ {
+ 	struct bootmenu_entry *entry = data;
+-	int reverse = (entry->menu->active == entry->num);
++	int active = (entry->menu->active == entry->num);
+ 
+ 	/*
+ 	 * Move cursor to line where the entry will be drown (entry->num)
+ 	 * First 3 lines contain bootmenu header + 1 empty line
+ 	 */
+ 	printf(ANSI_CURSOR_POSITION, entry->num + 4, 1);
++	puts(ANSI_CLEAR_LINE);
+ 
+-	puts("     ");
+-
+-	if (reverse)
+-		puts(ANSI_COLOR_REVERSE);
++	if (active)
++		puts("  => [");
++	else
++		puts("     ");
+ 
+ 	puts(entry->title);
+ 
+-	if (reverse)
+-		puts(ANSI_COLOR_RESET);
++	if (active)
++		puts("]");
+ }
+ 
+ static void bootmenu_autoboot_loop(struct bootmenu_data *menu,
+Index: uboot-imx/drivers/video/vidconsole-uclass.c
+===================================================================
+--- uboot-imx.orig/drivers/video/vidconsole-uclass.c
++++ uboot-imx/drivers/video/vidconsole-uclass.c
+@@ -317,6 +317,18 @@ static void vidconsole_escape_char(struc
+ 		set_cursor_position(priv, row, col);
+ 		break;
+ 	}
++	case 'G': {
++		int row, col;
++		get_cursor_position(priv, &row, &col);
++		char *s = priv->escape_buf;
++		s++;    /* [ */
++		s = parsenum(s, &col);
++		col = col-1;
++		if (col < 0)
++			col = 0;
++		set_cursor_position(priv, row, col);
++		break;
++	}
+ 	case 'H':
+ 	case 'f': {
+ 		int row, col;
+Index: uboot-imx/common/autoboot.c
+===================================================================
+--- uboot-imx.orig/common/autoboot.c
++++ uboot-imx/common/autoboot.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <common.h>
++#include <ansi.h>
+ #include <autoboot.h>
+ #include <bootretry.h>
+ #include <cli.h>
+@@ -368,7 +369,7 @@ static int abortboot_single_key(int boot
+ 	int abort = 0;
+ 	unsigned long ts;
+ 
+-	printf("Hit any key to stop autoboot: %2d ", bootdelay);
++	printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ 
+ 	/*
+ 	 * Check if key already pressed
+@@ -399,7 +400,9 @@ static int abortboot_single_key(int boot
+ 			udelay(10000);
+ 		} while (!abort && get_timer(ts) < 1000);
+ 
+-		printf("\b\b\b%2d ", bootdelay);
++		puts(ANSI_CLEAR_LINE);
++		printf(ANSI_CURSOR_COLUMN, 1);
++		printf(CONFIG_AUTOBOOT_PROMPT, bootdelay);
+ 	}
+ 
+ 	putc('\n');
+Index: uboot-imx/common/cli.c
+===================================================================
+--- uboot-imx.orig/common/cli.c
++++ uboot-imx/common/cli.c
+@@ -45,6 +45,9 @@ int run_command(const char *cmd, int fla
+ 
+ 	if (flag & CMD_FLAG_ENV)
+ 		hush_flags |= FLAG_CONT_ON_NEWLINE;
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	return parse_string_outer(cmd, hush_flags);
+ #endif
+ }
+@@ -65,6 +68,9 @@ int run_command_repeatable(const char *c
+ 	 * parse_string_outer() returns 1 for failure, so clean up
+ 	 * its result.
+ 	 */
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	if (parse_string_outer(cmd,
+ 			       FLAG_PARSE_SEMICOLON | FLAG_EXIT_FROM_LOOP))
+ 		return -1;
+@@ -105,6 +111,9 @@ int run_command_list(const char *cmd, in
+ 		buff[len] = '\0';
+ 	}
+ #ifdef CONFIG_HUSH_PARSER
++
++	clear_ctrlc();		/* forget any previous Control C */
++
+ 	rcode = parse_string_outer(buff, FLAG_PARSE_SEMICOLON);
+ #else
+ 	/*
+Index: uboot-imx/boot/Kconfig
+===================================================================
+--- uboot-imx.orig/boot/Kconfig
++++ uboot-imx/boot/Kconfig
+@@ -850,8 +850,8 @@ config AUTOBOOT_FLUSH_STDIN
+ 
+ config AUTOBOOT_PROMPT
+ 	string "Autoboot stop prompt"
+-	depends on AUTOBOOT_KEYED
+-	default "Autoboot in %d seconds\\n"
++	default "Autoboot in %d seconds\\n" if AUTOBOOT_KEYED
++	default "Hit any key to stop autoboot: %2d \\n"
+ 	help
+ 	  This string is displayed before the boot delay selected by
+ 	  CONFIG_BOOTDELAY starts. If it is not defined	there is no

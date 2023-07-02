@@ -1,0 +1,80 @@
+Index: uboot-imx/include/config_distro_bootcmd.h
+===================================================================
+--- uboot-imx.orig/include/config_distro_bootcmd.h
++++ uboot-imx/include/config_distro_bootcmd.h
+@@ -113,10 +113,10 @@
+ /*
+  * On 32bit ARM systems there is a reasonable number of systems that follow
+  * the $soc-$board$boardver.dtb name scheme for their device trees. Use that
+- * scheme if we don't have an explicit fdtfile variable.
++ * scheme if we don't have an explicit fdt_file variable.
+  */
+ #define BOOTENV_EFI_SET_FDTFILE_FALLBACK                                  \
+-	"if test -z \"${fdtfile}\" -a -n \"${soc}\"; then "               \
++	"if test -z \"${fdt_file}\" -a -n \"${soc}\"; then "               \
+ 	  "setenv efi_fdtfile ${soc}-${board}${boardver}.dtb; "           \
+ 	"fi; "
+ #else
+@@ -128,8 +128,8 @@
+ #ifdef CONFIG_CMD_BOOTEFI_BOOTMGR
+ #define BOOTENV_EFI_BOOTMGR                                               \
+ 	"boot_efi_bootmgr="                                               \
+-		"if fdt addr ${fdt_addr_r}; then "                        \
+-			"bootefi bootmgr ${fdt_addr_r};"                  \
++		"if fdt addr ${fdt_addr}; then "                        \
++			"bootefi bootmgr ${fdt_addr};"                  \
+ 		"else "                                                   \
+ 			"bootefi bootmgr;"                                \
+ 		"fi\0"
+@@ -142,20 +142,20 @@
+ 	\
+ 	"boot_efi_binary="                                                \
+ 		"load ${devtype} ${devnum}:${distro_bootpart} "           \
+-			"${kernel_addr_r} efi/boot/"BOOTEFI_NAME"; "      \
+-		"if fdt addr ${fdt_addr_r}; then "                        \
+-			"bootefi ${kernel_addr_r} ${fdt_addr_r};"         \
++			"${loadaddr} efi/boot/"BOOTEFI_NAME"; "      \
++		"if fdt addr ${fdt_addr}; then "                        \
++			"bootefi ${loadaddr} ${fdt_addr};"         \
+ 		"else "                                                   \
+-			"bootefi ${kernel_addr_r} ${fdtcontroladdr};"     \
++			"bootefi ${loadaddr} ${fdtcontroladdr};"     \
+ 		"fi\0"                                                    \
+ 	\
+ 	"load_efi_dtb="                                                   \
+ 		"load ${devtype} ${devnum}:${distro_bootpart} "           \
+-			"${fdt_addr_r} ${prefix}${efi_fdtfile}\0"         \
++			"${fdt_addr} ${prefix}${efi_fdtfile}\0"         \
+ 	\
+ 	"efi_dtb_prefixes=/ /dtb/ /dtb/current/\0"                        \
+ 	"scan_dev_for_efi="                                               \
+-		"setenv efi_fdtfile ${fdtfile}; "                         \
++		"setenv efi_fdtfile ${fdt_file}; "                         \
+ 		BOOTENV_EFI_SET_FDTFILE_FALLBACK                          \
+ 		"for prefix in ${efi_dtb_prefixes}; do "                  \
+ 			"if test -e ${devtype} "                          \
+@@ -354,18 +354,18 @@
+  * not an EFI binary, we just return from the bootefi command and continue.
+  */
+ #define BOOTENV_EFI_RUN_DHCP \
+-	"setenv efi_fdtfile ${fdtfile}; "                                 \
++	"setenv efi_fdtfile ${fdt_file}; "                                 \
+ 	BOOTENV_EFI_SET_FDTFILE_FALLBACK                                  \
+ 	"setenv efi_old_vci ${bootp_vci};"                                \
+ 	"setenv efi_old_arch ${bootp_arch};"                              \
+ 	"setenv bootp_vci " BOOTENV_EFI_PXE_VCI ";"                       \
+ 	"setenv bootp_arch " BOOTENV_EFI_PXE_ARCH ";"                     \
+-	"if dhcp ${kernel_addr_r}; then "                                 \
+-		"tftpboot ${fdt_addr_r} dtb/${efi_fdtfile};"              \
+-		"if fdt addr ${fdt_addr_r}; then "                        \
+-			"bootefi ${kernel_addr_r} ${fdt_addr_r}; "        \
++	"if dhcp ${loadaddr}; then "                                 \
++		"tftpboot ${fdt_addr} dtb/${efi_fdtfile};"              \
++		"if fdt addr ${fdt_addr}; then "                        \
++			"bootefi ${loadaddr} ${fdt_addr}; "        \
+ 		"else "                                                   \
+-			"bootefi ${kernel_addr_r} ${fdtcontroladdr};"     \
++			"bootefi ${loadaddr} ${fdtcontroladdr};"     \
+ 		"fi;"                                                     \
+ 	"fi;"                                                             \
+ 	"setenv bootp_vci ${efi_old_vci};"                                \
