@@ -74,6 +74,14 @@ class SitePage
     File.dirname(@output_name).sub(/^\.$/, "").sub(%r{[^/]+}, "..")
   end
 
+  def relative_output()
+   @output_name.sub(%r{#{".md"}$}, ".html")
+  end
+
+  def output_name()
+    File.join($output, relative_output)
+  end
+
   # Use in `<title>` or anywhere else relevant.
   def title()
     @markdown_document.title()
@@ -86,14 +94,14 @@ class SitePage
   end
 
   # Writes the HTML document to the given filename.
-  def write(output_name)
+  def write()
     template = ERB.new(File.read(File.join(@@support_location, "template.erb")))
     file_contents = template.result(self.binding())
     File.write(output_name, file_contents)
   end
 end
 
-def generate_sitemap(sitemap, output_name)
+def generate_sitemap(sitemap)
   list = sitemap.sort{ |a, b| a.first <=> b.first }.map do |pair|
     filename, page = pair
     " | `#{filename}` | [#{page.title}](#{filename}) |"
@@ -114,7 +122,7 @@ def generate_sitemap(sitemap, output_name)
   markdown_document = MarkdownDocument.new(document)
 
   page = SitePage.new(markdown_document, "sitemap.md")
-  page.write(output_name)
+  page.write()
 end
 
 # }}}
@@ -136,18 +144,15 @@ sitemap = []
 
 files.each do |filename|
   relative_name = filename.sub(%r{^#{$source}}, "")
-  relative_output = relative_name.sub(%r{#{".md"}$}, ".html")
-  output_name = File.join($output, relative_output)
-
   $stderr.puts "\n⇒ processing #{relative_name}"
 
   markdown_document = MarkdownDocument.from_filename(filename)
   page = SitePage.new(markdown_document, relative_name)
-  FileUtils.mkdir_p(File.dirname(output_name))
-  page.write(output_name)
-  sitemap << [relative_output, page]
+  FileUtils.mkdir_p(File.dirname(page.output_name))
+  page.write()
+  sitemap << [page.relative_output, page]
 end
 
-generate_sitemap(sitemap, File.join($output, "sitemap.html"))
+generate_sitemap(sitemap)
 
 $stderr.puts("\n\n\nDone!\n\n")
