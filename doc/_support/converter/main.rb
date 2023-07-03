@@ -23,11 +23,13 @@ class MarkdownDocument
     self.new(File.read(filename))
   end
 
+  # HTML output from markdown.
   def to_html()
     @html ||= cmark("--to", "html")
     @html
   end
 
+  # XML representation of the raw markdown, unrelated to the HTML output.
   def to_xml()
     @xml ||= Nokogiri::XML(cmark("--to", "xml"))
     @xml
@@ -89,8 +91,29 @@ class SitePage
 
   # Use where the contents should be displayed.
   def contents()
-    @markdown_document.to_html()
-      .gsub(%r{href="([^"]+)\.md"}, %q{href="\\1.html"})
+    html = Nokogiri::HTML(@markdown_document.to_html())
+
+    # Fixup refs to other markdown documents
+    html.css("a").each do |anchor|
+      anchor["href"] = anchor["href"].sub(%r{\.md$}, ".html")
+    end
+
+    # Since we transform device-specific $device/README.md pages into
+    # discrete $device.html, we need to fixup cross-linking into its namespace
+    # This could be generalized some more, to be fixed once we have other internal links to mismatched README.md/index.html locations.
+    if File.dirname(relative_output) == "devices"
+      html.css("a").each do |anchor|
+        if anchor["href"].match(%r{\.\./[^\.]+$})
+          anchor["href"] = anchor["href"].sub(%r{\.\./}, "devices/") + ".html"
+        end
+      end
+    end
+
+    # Since Nokogiri produces a complete document from our fragment, we
+    # have to pick only what's in the body; so strip the body added tags and higher-up tags.
+    html
+      .at_css("body").to_s()
+      .sub(%r{^<body>}, "").sub(%r{</body>$}, "")
   end
 
   # Writes the HTML document to the given filename.
