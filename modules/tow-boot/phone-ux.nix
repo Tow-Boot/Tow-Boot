@@ -173,6 +173,8 @@ in
           (helpers: with helpers; {
             LED = yes;
             CMD_LED = yes;
+            # Conflicts with `led` command by claiming the device.
+            LED_STATUS = no;
           })
           (helpers: with helpers; {
             VIBRATOR = yes;
