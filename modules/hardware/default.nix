@@ -15,6 +15,7 @@ in
     ./allwinner
     ./amlogic
     ./rockchip
+    ./raspberryPi
     ./generic.nix
   ];
 
