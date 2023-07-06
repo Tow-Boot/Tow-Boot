@@ -33,8 +33,6 @@ let
 
   outputs = builtins.listToAttrs (builtins.map (device: { name = device; value = evalFor device; }) allDevices);
   outputsCount = builtins.length (builtins.attrNames outputs);
-
-  pkgs = import ./nixpkgs.nix {};
 in
 
 outputs // {
