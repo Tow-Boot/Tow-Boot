@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Libre Computer La Frite | Tow-Boot</title>
+  <base href=".." />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<section class="device-sidebar">
+<h1>Libre Computer La Frite</h1>
+  <dl>
+    <dt>Manufacturer</dt>
+      <dd>Libre Computer</dd>
+    <dt>Name</dt>
+      <dd>La Frite</dd>
+    <dt>Identifier</dt>
+      <dd>libreComputer-amlS805xAc</dd>
+    <dt>SoC</dt>
+      <dd>amlogic-s805x</dd>
+    <dt>Dedicated firmware storage</dt>
+      <dd>yes</dd>
+    <dt>Architecture</dt>
+      <dd>aarch64-linux</dd>
+    <dt>Source</dt>
+      <dd><a href="https://github.com/Tow-Boot/Tow-Boot/tree/released/boards/libreComputer-amlS805xAc">Tow-Boot repository</a></dd>
+    <dt>Links</dt>
+  <dd><a href="https://libre.computer/products/s805x/">Product page</a></dd>
+  </dl>
+</section>
+<h2>Installation instructions</h2>
+<p>This board does not have an SD card slot.</p>
+<p>This makes initial install relatively tricky.</p>
+<h3>Installing to SPI (recommended)</h3>
+<p>For now, this is left undocumented as this requires either doing it from
+an operating system, writing it from the vendor's U-Boot build, or using
+the tethered USB boot protocol.</p>
+<p>In the future, a tethered USB boot install method will be made available.</p>
+<h3>Installing to shared storage (not supported)</h3>
+<p>There is no reason to install to shared storage. This board was designed
+to work with firmware installed to dedicated storage.</p>
+<p>To install, you will need to figure out a way to write the shared disk
+image to the eMMC.</p>
+<h2>Device-specific notes</h2>
+<p><em>(No device-specific notes available)</em></p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

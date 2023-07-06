@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Glossary | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Glossary</h1>
+<p>Terminology as used in the project.</p>
+<hr>
+<h2>Platform Firmware</h2>
+<p>The <em>Platform Firmware</em> is a generic term used to describe the first thing
+the CPU starts at boot time. On your typical <code>x86_64</code> system, it would be what
+was previously called the <em>BIOS</em>. Now often diminutively called by the name
+<em>EFI</em>. This is what initializes enough of the hardware so that the <em>operating
+system</em> can start. Additionally, it often provides facilities for the user to
+do basic configuration, and manage boot options.</p>
+<p>In the ARM with SBCs landscape, <strong>U-Boot</strong> is the de facto solution for the
+<em>Platform Firmware</em>. Though <em>U-Boot</em> is confusingly, but rightly, often
+referred to as a <em>Boot Loader</em>. <em>U-Boot</em> plays double duties often. It is
+tasked with <em>initializing the hardware</em>, and often also used to handle <em>loading
+and booting</em> the operating system.</p>
+<h2>Boot Loader</h2>
+<p>The <em>Boot loader</em> is a program which may or may not be distinct from the
+<em>Platform Firmware</em>, which is meant to load and boot an <em>Operating System</em>.</p>
+<p><em>Boot loaders</em> are now commonly written following the <em>UEFI</em> spec. <em>GRUB</em>,
+<em>rEFInd</em> and <em>systemd-boot</em> are examples of UEFI <em>boot loaders</em>.</p>
+<h2>Dedicated storage</h2>
+<p><strong>Dedicated storage</strong> is used when the <em>Tow-Boot</em> installation lives on a
+location where it is not expected the target booted system would live.</p>
+<p>Generally speaking, an SPI flash chip <strong>is</strong> <em>dedicated storage</em>.</p>
+<p>A built-in eMMC, even if small, would be considered <em>shared storage</em>. Note that
+the eMMC may have <em>hardware boot partitions</em>, these are considered <em>dedicated
+storage</em>, but may not be usable on all platforms.</p>
+<h2>Shared storage</h2>
+<p><strong>Shared storage</strong> is used when the <em>Tow-Boot</em> installation lives on the same
+storage as the booted system.</p>
+<p>While technically some say it wouldn't be <em>shared storage</em>, if the storage
+where <em>Tow-Boot</em> is installed is also a bootable target, it is <em>shared storage</em>.
+Even if the actually booted system lives entirely on another storage.</p>
+<p>E.g. on a <em>Raspberry Pi</em>, reserving the whole SD card for the FAT32 partition
+for the <em>Raspberry Pi</em> firmware files and for the <em>Tow-Boot</em> install, and
+booting a GPT-formatted USB drive, <em>Tow-Boot</em> is considered to be installed as
+<strong>shared storage</strong>.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

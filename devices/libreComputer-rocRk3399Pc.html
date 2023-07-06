@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Libre Computer Renegade Elite | Tow-Boot</title>
+  <base href=".." />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<section class="device-sidebar">
+<h1>Libre Computer Renegade Elite</h1>
+  <dl>
+    <dt>Manufacturer</dt>
+      <dd>Libre Computer</dd>
+    <dt>Name</dt>
+      <dd>Renegade Elite</dd>
+    <dt>Identifier</dt>
+      <dd>libreComputer-rocRk3399Pc</dd>
+    <dt>SoC</dt>
+      <dd>rockchip-rk3399</dd>
+    <dt>Dedicated firmware storage</dt>
+      <dd>yes</dd>
+    <dt>Architecture</dt>
+      <dd>aarch64-linux</dd>
+    <dt>Source</dt>
+      <dd><a href="https://github.com/Tow-Boot/Tow-Boot/tree/released/boards/libreComputer-rocRk3399Pc">Tow-Boot repository</a></dd>
+    <dt>Links</dt>
+  <dd><a href="https://libre.computer/products/rk3399/">Product page</a></dd>
+  </dl>
+</section>
+<h2>Installation instructions</h2>
+<h3>Installing to SPI (recommended)</h3>
+<blockquote>
+<p><strong>NOTE</strong>: The SoC startup order for Rockchip systems will
+prefer <em>SPI</em>, then <em>eMMC</em>, followed by <em>SD</em> last.</p>
+<p>You may need to prevent default startup sources from being used
+to install using the Tow-Boot installer image.</p>
+</blockquote>
+<p>By installing Tow-Boot to SPI, your <em>Libre Computer Renegade Elite</em> will be able to
+start using standards-based booting without conflicting with the
+operating system storage.</p>
+<p>To do so, you will need to write the SPI installer image to an SD card.</p>
+<pre><code> # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+<p>Once done, start the system, and in the boot menu, select
+<em>“Flash firmware to SPI”</em>.</p>
+<p>Once this is done, remove the installation media, and verify Tow-Boot
+starts from power-on.</p>
+<h3>Installing to shared storage</h3>
+<p>Using the shared storage strategy on the <em>Libre Computer Renegade Elite</em> can be done by
+writing the <code>shared.disk-image.img</code> to an SD card or eMMC.</p>
+<pre><code> # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+<h2>Device-specific notes</h2>
+<p><em>(No device-specific notes available)</em></p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

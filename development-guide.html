@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Development Guide | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Development Guide</h1>
+<h2>Required setup</h2>
+<p>A Linux host and Nix are the two requirements for this project. Knowledge about
+using <code>git</code> will help, but fetching a tarball or zip from GitHub could do in a
+pinch.</p>
+<h3>Nix</h3>
+<p>The author uses NixOS, but NixOS is not a requirement.</p>
+<p>Only <em>Nix</em> the package manager is required to build this project. It can be
+installed on any Linux distribution.</p>
+<p>It is preferred to install from the official Nix installer. Using the
+distribution-packaged Nix may not work.</p>
+<h4>I don't want to or can't install <code>Nix</code> on my system</h4>
+<p>Sorry.</p>
+<p>Though you can use a build shim that uses a Docker container.</p>
+<p>Using Nix through Docker is not ideal, but should work when working under
+specific conditions.</p>
+<p>When using the build shim, replace <code>nix-build</code> invocations with the path to
+the shim (e.g.<code>./support/docker/build.sh</code>). Note that this only works if the
+command does not reference a nix file directly.</p>
+<h4>I'm not on a Linux system</h4>
+<p>While Nix works on macOS, this project require a Linux builder to work.
+Using the Docker build shim may work, testing is needed, contributions welcome.</p>
+<h2>I just want to build</h2>
+<p>You still should read a bit more past this section, but if you absolutely only
+want to build, here's how you can build the <code>uBoot-sandbox</code> board.</p>
+<pre><code class="language-shell-session"> $ nix-build -A uBoot-sandbox
+</code></pre>
+<p>After the build is finished successfully, a <code>result</code> symlink will refer to the
+build output. The build output by default is the content of the archive.</p>
+<hr>
+<h2>A primer on Nix</h2>
+<p>First, read more about Nix elsewhere. Nix here is used as a glue to configure
+the builds.</p>
+<p>Knowing Nix will help you better understand what you are looking at.</p>
+<p>Look at the following resources.</p>
+<ul>
+<li>
+<a href="https://github.com/tazjin/nix-1p">nix-1p</a> probably is the best condensed primer on Nix.</li>
+</ul>
+<p>The upstream manuals of the NixOS project are good, but mainly <em>when you already
+have knowledge about Nix</em>. They are more of a reference than a learning resource.</p>
+<ul>
+<li><a href="https://nixos.org/manual/nix/stable/">Nix Manual</a></li>
+<li><a href="https://nixos.org/manual/nixpkgs/stable/">Nixpkgs Manual</a></li>
+<li><a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a></li>
+</ul>
+<h2>Important concepts</h2>
+<h3>What's <code>callPackage</code>?</h3>
+<p><code>callPackage</code> is a sort of dependency injection that is borrowed from <em>Nixpkgs</em>.</p>
+<ul>
+<li>Allows dependency injection</li>
+<li>Makes the derivations "overridable"</li>
+</ul>
+<p>The dependency injection makes it so we don't have to really care about where
+the dependencies are in the codebase. As long as it's in the scope <code>callPackage</code>
+is working with, we can "ask" for a dependency.</p>
+<p>Making derivations "overridable" allows us to customize the derivations. This
+can be used for dependencies coming from Nixpkgs, or to make one-off
+customizations of our own derivations.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

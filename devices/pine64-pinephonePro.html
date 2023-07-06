@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>PINE64 Pinephone Pro | Tow-Boot</title>
+  <base href=".." />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<section class="device-sidebar">
+<h1>PINE64 Pinephone Pro</h1>
+  <dl>
+    <dt>Manufacturer</dt>
+      <dd>PINE64</dd>
+    <dt>Name</dt>
+      <dd>Pinephone Pro</dd>
+    <dt>Identifier</dt>
+      <dd>pine64-pinephonePro</dd>
+    <dt>SoC</dt>
+      <dd>rockchip-rk3399</dd>
+    <dt>Dedicated firmware storage</dt>
+      <dd>yes</dd>
+    <dt>Architecture</dt>
+      <dd>aarch64-linux</dd>
+    <dt>Source</dt>
+      <dd><a href="https://github.com/Tow-Boot/Tow-Boot/tree/released/boards/pine64-pinephonePro">Tow-Boot repository</a></dd>
+    <dt>Links</dt>
+  <dd><a href="https://www.pine64.org/pinephonepro/">Product page</a></dd>
+  </dl>
+</section>
+<h2>Installation instructions</h2>
+<blockquote>
+<p><strong>NOTE</strong>: The SoC startup order for Rockchip systems will
+prefer <em>SPI</em>, then <em>eMMC</em>, followed by <em>SD</em> last.</p>
+<p>You may need to prevent default startup sources from being used
+to install using the Tow-Boot installer image.</p>
+<p>With the <em>Pinephone Pro</em>, starting with the <em>Explorer Edition</em>, this
+can be done by holding the <em>RE</em> button.</p>
+<p>For previous editions, read the vendor documentation for test points to use,
+or neuter installed <em>platform firmware</em> from eMMC and SPI in any other way.</p>
+</blockquote>
+<h3>Installing to SPI (recommended)</h3>
+<p>By installing Tow-Boot to SPI, your <em>PINE64 Pinephone Pro</em> will be able
+to start using standards-based booting without conflicting with the
+operating system storage.</p>
+<p>To do so, you will need to write the SPI installer image to a suitable
+SD card.</p>
+<pre><code># dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+<p>Once done, power-off your <em>Pinephone Pro</em>, remove its battery, and insert the
+SD card in the SD card slot.</p>
+<p>Put back the battery in the <em>Pinephone Pro</em>, and power it on.</p>
+<blockquote>
+<p><strong>NOTE</strong>: Reminder that at this point you should be holding the RE button
+until the phone vibrates and the LED lights up red.</p>
+</blockquote>
+<blockquote>
+<p><strong>TIP</strong>: It may be easier to connect the phone to a power source via USB
+instead of pressing the power button.</p>
+</blockquote>
+<blockquote>
+<p><strong>WARNING</strong>: Make sure you are holding the <em>RE</em> button <strong>before</strong> either
+powering-on using the power button or by connecting to a power source.</p>
+</blockquote>
+<p>When starting up with Tow-Boot, which the installer image use, the phone will
+vibrate slightly and the LED will turn red. After a short moment, the LED
+should turn yellow.</p>
+<p>A few moments later the display will turn on with a blue colour, or will
+directly boot to the installer GUI.</p>
+<blockquote>
+<p>Unless you know the battery is completely charged, it is recommended to
+connect the phone to a power source. Just in case.</p>
+</blockquote>
+<p>In the installer GUI, select <em>“Install Tow-Boot to SPI”</em>. It is not
+necessary to erase the storage before installing. Erasing the storage can be
+used to uninstall Tow-Boot (or any other platform firmware installed to the
+SPI partition).</p>
+<p>Once installed, remove the installation media, and verify Tow-Boot starts from
+power-on.</p>
+<h3>Installing to shared storage</h3>
+<blockquote>
+<p><strong>NOTE</strong>: If a <em>platform firmware</em> (e.g. U-Boot) is installed to eMMC or to
+SPI, you will need to either hold the <em>RE</em> button, or uninstall them.</p>
+</blockquote>
+<p>Using the shared storage strategy on the <em>Pinephone Pro</em> can be done by
+writing the <code>shared.disk-image.img</code> to an SD card or directly to eMMC.</p>
+<pre><code> # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+<h2>Device-specific notes</h2>
+<p>There is no display output for this device.</p>
+<h2>Additional features</h2>
+<p>The phone can be started in <em>USB Mass Storage</em> mode by holding the <em>volume up</em>
+button at startup before and during the second vibration. The LED will turn
+blue if done successfully. In this mode, the phone will work like a USB drive
+when connected to a host computer.</p>
+<p>Booting an operating system from an SD card will require holding the <em>volume
+down</em> button before and during the second vibration. When done successfully,
+the LED will turn aqua.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

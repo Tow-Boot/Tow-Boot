@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Olimex TERES-I | Tow-Boot</title>
+  <base href=".." />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<section class="device-sidebar">
+<h1>Olimex TERES-I</h1>
+  <dl>
+    <dt>Manufacturer</dt>
+      <dd>Olimex</dd>
+    <dt>Name</dt>
+      <dd>TERES-I</dd>
+    <dt>Identifier</dt>
+      <dd>olimex-teresI</dd>
+    <dt>SoC</dt>
+      <dd>allwinner-a64</dd>
+    <dt>Dedicated firmware storage</dt>
+      <dd>no</dd>
+    <dt>Architecture</dt>
+      <dd>aarch64-linux</dd>
+    <dt>Source</dt>
+      <dd><a href="https://github.com/Tow-Boot/Tow-Boot/tree/released/boards/olimex-teresI">Tow-Boot repository</a></dd>
+    <dt>Links</dt>
+  <dd><a href="https://www.olimex.com/Products/DIY-Laptop/KITS/TERES-A64-BLACK/open-source-hardware">Product page</a></dd>
+  </dl>
+</section>
+<h2>Installation instructions</h2>
+<h3>Installing to shared storage</h3>
+<p>Using the shared storage strategy on the <em>Olimex TERES-I</em> can be done by
+writing the <code>shared.disk-image.img</code> to an SD card or eMMC.</p>
+<pre><code> # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+<h2>Device-specific notes</h2>
+<p><em>(No device-specific notes available)</em></p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
