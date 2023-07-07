@@ -9,8 +9,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build for ${{ matrix.device }}
+  build-all-devices:
+    name: "Build: ${{ matrix.device }}"
+    needs: generate-devices-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -51,7 +52,7 @@ jobs:
       - name: Rename archive
         run: |
           archive=$(readlink -f result)
-          cp -L "$archive" "${archive#*-}"
+          cp --dereference "$archive" "${archive#*-}"
       - name: Upload archive to Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -61,7 +62,7 @@ jobs:
   release:
     name: Release
     if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request'
-    needs: build
+    needs: build-all-devices
     runs-on: ubuntu-22.04
     steps:
       - name: Download archives from Artifacts
