@@ -32,27 +32,21 @@ jobs:
           - raspberryPi-aarch64
     steps:
       - uses: actions/checkout@v3
-
       - name: Install nix
         uses: cachix/install-nix-action@v17
-
       - name: Build images for ${{ matrix.device }}
         run: nix-build -A ${{ matrix.device }}
-
       # XXX: Artifacts are built for each push and pull request, so better to
       # keep them small, otherwise we would run out of space on GitHub quickly.
       - name: Remove unnecessary files
         if: "!startsWith(github.ref, 'refs/tags/')"  # if not release
         run: sudo rm -rf result/{binaries,config,source}
-
       - name: Build archive
         run: nix-build -A ${{ matrix.device }}.build.archive
-
       - name: Rename archive
         run: |
           archive=$(readlink -f result)
           cp -L "$archive" "${archive#*-}"
-
       - name: Upload archive to Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -67,11 +61,9 @@ jobs:
     steps:
       - name: Download archives from Artifacts
         uses: actions/download-artifact@v3
-
       - name: Generate checksums.txt
         run: shasum -a 256 * > checksums.txt
         working-directory: artifact
-
       - name: Upload archives to Releases
         uses: softprops/action-gh-release@v1
         with:
