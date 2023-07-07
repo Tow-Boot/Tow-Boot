@@ -30,9 +30,6 @@ jobs:
           - radxa-RockPi4C
           - radxa-zero2
           - raspberryPi-aarch64
-    env:
-      # Some devices require unfree dependencies.
-      NIXPKGS_ALLOW_UNFREE: 1
     steps:
       - uses: actions/checkout@v3
 
