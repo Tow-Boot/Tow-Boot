@@ -9,33 +9,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  generate-devices-matrix:
+    name: Generate devices matrix
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: DeterminateSystems/nix-installer-action@v4
+      - id: devices-matrix
+        run: printf "matrix=%s" "$(nix-instantiate --json --eval .ci/devices-list.nix)" >> $GITHUB_OUTPUT
+    outputs:
+      matrix: ${{ steps.devices-matrix.outputs.matrix }}
+
   build-all-devices:
     name: "Build: ${{ matrix.device }}"
     needs: generate-devices-matrix
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        device:
-          - libreComputer-amlS805xAc
-          - libreComputer-rocRk3399Pc
-          - libreComputer-rocRk3399PcMezzanine
-          - odroid-C2
-          - odroid-C4
-          - odroid-N2
-          - olimex-teresI
-          - orangePi-pc
-          - orangePi-zeroPlus2H5
-          - pine64-pineA64
-          - pine64-pineA64LTS
-          - pine64-pinebookA64
-          - pine64-pinebookPro
-          - pine64-pinephoneA64
-          - pine64-pinephonePro
-          - pine64-rockpro64
-          - radxa-RockPi4
-          - radxa-RockPi4C
-          - radxa-zero2
-          - raspberryPi-aarch64
+        device: ${{ fromJson(needs.generate-devices-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
         with:
