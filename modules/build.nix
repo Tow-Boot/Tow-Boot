@@ -92,21 +92,18 @@ in
         runCommandNoCC "Tow-Boot.${config.device.identifier}.${config.build.default.version}" {
           inherit (firmware) version;
         } ''
-          mkdir -p $out/{binaries,config,source}
+          mkdir -p $out/{binaries,config}
           cp -rt $out/binaries/ ${firmware}/binaries/*
           cp -rt $out/config/ ${firmware}/config/*
-          cp -rt $out/source/ ${firmware.source}/*
           cp ${sharedDiskImage} $out/shared.disk-image.img
           ${optionalString (firmwareMMCBoot != null) ''
             cp -rt $out/binaries/ ${firmwareMMCBoot}/binaries/*
             cp -rt $out/config/ ${firmwareMMCBoot}/config/*
-            cp -rt $out/source/ ${firmwareMMCBoot.source}/*
             cp ${mmcBootInstallerImage} $out/mmcboot.installer.img
           ''}
           ${optionalString (firmwareSPI != null) ''
             cp -rt $out/binaries/ ${firmwareSPI}/binaries/*
             cp -rt $out/config/ ${firmwareSPI}/config/*
-            cp -rt $out/source/ ${firmwareSPI.source}/*
             cp ${spiInstallerImage} $out/spi.installer.img
           ''}
         ''
