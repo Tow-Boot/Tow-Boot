@@ -4,35 +4,8 @@ on:
   - pull_request
 
 jobs:
-  prepare-cache:
-    name: Warm up nix cache
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Cache nix store
-        uses: ./.github/actions/cache-nix
-        with:
-          key: nix-${{ github.sha }}
-          restore-keys: nix-
-
-      - name: Install nix
-        uses: cachix/install-nix-action@v17
-        with:
-          extra_nix_config: |
-            # Save space on disk and in cache.
-            auto-optimise-store = true
-            # Keep all store paths necessary to build the outputs.
-            keep-outputs = true
-            keep-derivations = true
-
-      # TODO: This should ideally just fetch and build dependencies.
-      - name: Build
-        run: nix-build --no-out-link -A pine64-pineA64
-
   build:
     name: Build for ${{ matrix.device }}
-    needs: prepare-cache
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -62,12 +35,6 @@ jobs:
       NIXPKGS_ALLOW_UNFREE: 1
     steps:
       - uses: actions/checkout@v3
-
-      - name: Cache nix store
-        uses: ./.github/actions/cache-nix
-        with:
-          key: nix-${{ github.sha }}
-          restore-keys: nix-
 
       - name: Install nix
         uses: cachix/install-nix-action@v17
