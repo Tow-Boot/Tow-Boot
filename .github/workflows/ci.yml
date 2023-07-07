@@ -62,12 +62,12 @@ jobs:
     name: Release
     if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Download archives from Artifacts
         uses: actions/download-artifact@v3
-      - name: Generate checksums.txt
-        run: shasum -a 256 * > checksums.txt
+      - name: Generate _checksums.txt
+        run: shasum -a 256 * | sort --key 2 --stable > _checksums.txt
         working-directory: artifact
       - name: Upload archives to Releases
         uses: softprops/action-gh-release@v1
