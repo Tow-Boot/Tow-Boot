@@ -2,6 +2,7 @@
 , configuration ? { }
 , silent ? false
 , pkgs ? import ./nixpkgs.nix { }
+, src ? null
 }:
 
 let
@@ -24,6 +25,7 @@ let
             {
               # Special configs for imperative use only here
               system.automaticCross = true;
+              Tow-Boot.src = lib.mkIf (src != null) src;
             }
           )
         ];
