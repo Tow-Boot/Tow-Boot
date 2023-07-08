@@ -180,9 +180,11 @@ in
           ] ++ makeFlags;
 
           # Inject defines for things lacking actual configuration options.
-          NIX_CFLAGS_COMPILE = optionals withLogo [
-            "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${toString (1920*1080*4)}"
-          ];
+          NIX_CFLAGS_COMPILE =
+            (optionals withLogo (
+              lib.optional (lib.versionOlder uBootVersion "2023.01") "-DCONFIG_SYS_VIDEO_LOGO_MAX_SIZE=${config.Tow-Boot.VIDEO_LOGO_MAX_SIZE}"
+            ))
+          ;
 
           extraConfig = ''
             #
