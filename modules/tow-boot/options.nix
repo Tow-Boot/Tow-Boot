@@ -16,7 +16,7 @@ in
         '';
       };
       src = mkOption {
-        type = types.package;
+        type = with types; oneOf [path package];
         description = ''
           Source archive for U-Boot.
         '';
