@@ -6,6 +6,7 @@ let
     mkIf
     toHexString
     versionAtLeast
+    versionOlder
   ;
 
   inherit (config.Tow-Boot)
@@ -145,7 +146,7 @@ in
     (mkIf withLogo (helpers: with helpers; {
       VIDEO_LOGO = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.04") yes;
       CMD_BMP = yes;
-      SPLASHIMAGE_GUARD = yes;
+      SPLASHIMAGE_GUARD = mkIf (versionOlder config.Tow-Boot.uBootVersion "2023.01") yes;
       SPLASH_SCREEN = yes;
       SPLASH_SCREEN_ALIGN = yes;
       VIDEO_BMP_GZIP = yes;
