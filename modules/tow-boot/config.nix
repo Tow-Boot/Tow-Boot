@@ -5,6 +5,7 @@ let
     mkDefault
     mkIf
     toHexString
+    versionAtLeast
   ;
 
   inherit (config.Tow-Boot)
@@ -72,7 +73,7 @@ in
       CMD_PAUSE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
       CMD_POWEROFF = lib.mkDefault yes;
       CMD_NVEDIT_INDIRECT =
-        lib.mkIf (lib.versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
+        mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
       ;
 
       # Looks
