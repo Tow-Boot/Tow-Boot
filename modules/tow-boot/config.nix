@@ -70,7 +70,7 @@ in
       CMD_BDI = yes;
       CMD_CLS = yes;
       CMD_SETEXPR = yes;
-      CMD_PAUSE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
+      CMD_PAUSE = mkIf (!config.Tow-Boot.buildUBoot || versionAtLeast config.Tow-Boot.uBootVersion "2023.01") yes;
       CMD_POWEROFF = lib.mkDefault yes;
       CMD_NVEDIT_INDIRECT =
         mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
