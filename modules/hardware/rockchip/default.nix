@@ -22,12 +22,32 @@ let
   secondOffset = 16384; # in sectors
   sectorSize = 512;
 
-  anyRockchip = lib.any (v: v) [cfg.rockchip-rk3399.enable];
+  rockchipSOCs = [
+    "rockchip-rk3328"
+    "rockchip-rk3399"
+  ];
+
+  anyRockchip = lib.any (soc: config.hardware.socs.${soc}.enable) rockchipSOCs;
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
+  withSPI = config.hardware.SPISize != null;
+  useSpi2K4Kworkaround = cfg.rockchip-rk3399.enable;
+  useSpiSDLayout = cfg.rockchip-rk3328.enable;
+  chipName =
+         if cfg.rockchip-rk3328.enable then "rk3328"
+    else if cfg.rockchip-rk3399.enable then "rk3399"
+    else throw "chipName needs to be defined for SoC."
+  ;
 in
 {
   options = {
     hardware.socs = {
+      rockchip-rk3328.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Rockchip RK3328";
+        internal = true;
+      };
+
       rockchip-rk3399.enable = mkOption {
         type = types.bool;
         default = false;
@@ -39,15 +59,13 @@ in
 
   config = mkMerge [
     {
-      hardware.socList = [
-        "rockchip-rk3399"
-      ];
+      hardware.socList = rockchipSOCs;
     }
-    (mkIf cfg.rockchip-rk3399.enable {
+    (mkIf anyRockchip {
       system.system = "aarch64-linux";
       Tow-Boot = {
         config = [
-          (helpers: with helpers; {
+          (mkIf withSPI (helpers: with helpers; {
             # SPI boot Support
             MTD = yes;
             DM_MTD = yes;
@@ -55,9 +73,14 @@ in
             SPL_DM_SPI = yes;
             SPL_SPI_FLASH_TINY = no;
             SPL_SPI_FLASH_SFDP_SUPPORT = yes;
+            SPL_SPI_SUPPORT = yes;
+            SPL_SPI_FLASH_SUPPORT = yes;
+            SPL_SPI_LOAD = yes;
             SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
             SPL_DM_SEQ_ALIAS = yes;
+          }))
 
+          (helpers: with helpers; {
             # Not supported on this platform
             CMD_POWEROFF = no;
           })
@@ -97,13 +120,12 @@ in
           ])
         ];
         firmwarePartition = {
-            offset = partitionOffset * 512; # 32KiB into the image, or 64 × 512 long sectors
+            offset = partitionOffset * sectorSize; # 32KiB into the image, or 64 × 512 long sectors
             length = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
           }
         ;
         builder = {
           additionalArguments = {
-            BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareRK3399}/bl31.elf";
             inherit
               firmwareMaxSize
               partitionOffset
@@ -112,12 +134,24 @@ in
             ;
           };
           installPhase = mkMerge [
-            (mkIf (variant == "spi") ''
-              echo ":: Preparing image for SPI flash..."
+            (mkIf (variant == "spi" && useSpi2K4Kworkaround) ''
+              echo ":: Preparing image for SPI flash (2K/4K workaround)..."
               (PS4=" $ "; set -x
-              tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin spl.bin
+              tools/mkimage \
+                -n ${chipName} \
+                -T "rkspi" \
+                -d "tpl/u-boot-tpl-dtb.bin:spl/u-boot-spl-dtb.bin" spl.bin
               # 512K here is 0x80000 CONFIG_SYS_SPI_U_BOOT_OFFS
               cat <(dd if=spl.bin bs=512K conv=sync) u-boot.itb > $out/binaries/Tow-Boot.$variant.bin
+              )
+            '')
+            (mkIf (variant == "spi" && useSpiSDLayout) ''
+              echo ":: Preparing image for SPI flash (SD layout)..."
+              (PS4=" $ "; set -x
+              dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=0
+              # 0x80000 here is CONFIG_SYS_SPI_U_BOOT_OFFS
+              dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((0x80000 / sectorSize))
+              cp -v Tow-Boot.$variant.bin $out/binaries/
               )
             '')
             (mkIf (variant != "spi") ''
@@ -131,6 +165,14 @@ in
           ];
         };
       };
+    })
+
+    (mkIf cfg.rockchip-rk3328.enable {
+      Tow-Boot.builder.additionalArguments.BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareRK3328}/bl31.elf";
+    })
+
+    (mkIf cfg.rockchip-rk3399.enable {
+      Tow-Boot.builder.additionalArguments.BL31 = "${pkgs.Tow-Boot.armTrustedFirmwareRK3399}/bl31.elf";
     })
 
     # Documentation fragments
