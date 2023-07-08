@@ -2,7 +2,7 @@
 , configuration ? { }
 , silent ? false
 , pkgs ? import ./nixpkgs.nix { }
-}@args:
+}:
 
 let
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
@@ -12,7 +12,7 @@ let
   ;
 
   evalFor = device:
-    import ./support/nix/eval-with-configuration.nix (args // {
+    import ./support/nix/eval-with-configuration.nix ({
       inherit device;
       inherit pkgs;
       verbose = true;
