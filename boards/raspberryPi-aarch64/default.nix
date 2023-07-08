@@ -72,9 +72,9 @@ in
     ];
     outputs.firmware = lib.mkIf (config.device.identifier == "raspberryPi-aarch64") (
       pkgs.callPackage (
-        { runCommandNoCC }:
+        { runCommand }:
 
-        runCommandNoCC "tow-boot-${config.device.identifier}" {
+        runCommand "tow-boot-${config.device.identifier}" {
           inherit (raspberryPi-3.config.Tow-Boot.outputs.firmware)
             version
           ;

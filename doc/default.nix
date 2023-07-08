@@ -6,9 +6,9 @@ let
   output = 
     pkgs.callPackage (
 
-    { runCommandNoCC, cmark-gfm, ruby }:
+    { runCommand, cmark-gfm, ruby }:
 
-    runCommandNoCC "Tow-Boot-documentation" {
+    runCommand "Tow-Boot-documentation" {
       src = (builtins.fetchGit ../.) + "/doc";
       nativeBuildInputs = [
         cmark-gfm

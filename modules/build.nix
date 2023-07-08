@@ -67,8 +67,8 @@ in
   config = {
     build = {
       archive = pkgs.callPackage (
-        { runCommandNoCC, Tow-Boot, name }:
-          runCommandNoCC "${name}.tar.xz" {
+        { runCommand, Tow-Boot, name }:
+          runCommand "${name}.tar.xz" {
             dir = name;
           } ''
             PS4=" $ "
@@ -85,11 +85,11 @@ in
       };
 
       default = pkgs.callPackage (
-        { lib, runCommandNoCC, firmware, firmwareMMCBoot, firmwareSPI, sharedDiskImage, mmcBootInstallerImage, spiInstallerImage }:
+        { lib, runCommand, firmware, firmwareMMCBoot, firmwareSPI, sharedDiskImage, mmcBootInstallerImage, spiInstallerImage }:
         let
           inherit (lib) optionalString;
         in
-        runCommandNoCC "Tow-Boot.${config.device.identifier}.${config.build.default.version}" {
+        runCommand "Tow-Boot.${config.device.identifier}.${config.build.default.version}" {
           inherit (firmware) version;
         } ''
           mkdir -p $out/{binaries,config}
