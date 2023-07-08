@@ -3,7 +3,7 @@
 , fetchpatch
 , gptfdisk
 , buildPackages
-#, utillinux
+, utillinux
 , config
 }:
 
@@ -22,19 +22,6 @@ let
   inherit (config.gpt)
     hybridMBR
   ;
-
-  # Until we get 2.37 in Nixpkgs
-  patched-utillinux = buildPackages.utillinux.overrideAttrs({patches ? [], ...}: {
-    patches = patches ++ [
-      (fetchpatch {
-        # Same as the following commit, but for 2.36
-        # https://github.com/karelzak/util-linux/commit/60f2d1f0a7902b351195418f2116d7ea39a35369
-        url = "https://raw.githubusercontent.com/Tow-Boot/Tow-Boot/4a39ca8f6706d8262f0317f815cbcec587e1e0fa/support/image-builder/patches/0001-2.36-libfdisk-Include-table-length-in-first-lba-chec.patch";
-        sha256 = "1j4yndlblak4gq09hqmy6fxhh3b7qky102cl6ynjwrfz16ymqk67";
-      })
-    ];
-  });
-
 in
 stdenvNoCC.mkDerivation rec {
   inherit (config)
@@ -52,7 +39,7 @@ stdenvNoCC.mkDerivation rec {
 
   nativeBuildInputs = [
     gptfdisk
-    patched-utillinux
+    utillinux
   ];
 
   buildCommand = let
