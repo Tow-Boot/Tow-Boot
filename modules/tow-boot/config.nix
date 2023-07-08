@@ -143,7 +143,7 @@ in
     # -------------
 
     (mkIf withLogo (helpers: with helpers; {
-      VIDEO_LOGO = yes;
+      VIDEO_LOGO = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.04") yes;
       CMD_BMP = yes;
       SPLASHIMAGE_GUARD = yes;
       SPLASH_SCREEN = yes;
