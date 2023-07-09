@@ -70,12 +70,11 @@ in {
   armTrustedFirmwareTools = buildArmTrustedFirmware rec {
     extraMakeFlags = [
       "HOSTCC=${stdenv.cc.targetPrefix}gcc"
-      "fiptool" "certtool" "sptool"
+      "fiptool" "certtool"
     ];
     filesToInstall = [
       "tools/fiptool/fiptool"
       "tools/cert_create/cert_create"
-      "tools/sptool/sptool"
     ];
     postInstall = ''
       mkdir -p "$out/bin"
