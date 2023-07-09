@@ -1,9 +1,12 @@
 # This is used to check all stock U-Boot versions don't have unexpected default options regressions.
 # E.g. configuration options not properly gated behind a version.
 # Again, not a guarantee of usefulness, used to keep us more honest.
+{ device ? "uBoot-sandbox"
+}:
+
 let
   eval = configuration:
-    (import ../. { inherit configuration; }).uBoot-sandbox
+    (import ../. { inherit configuration; })."${device}"
   ;
 
   # Used to extract known versions.
