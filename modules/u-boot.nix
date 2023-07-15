@@ -35,5 +35,13 @@ mkIf config.Tow-Boot.buildUBoot
     # sunxi: Use mmc_get_env_dev only if relevant
     (tbPatch "eb193c32c471a829a0b81c6a94f9bb9b9e392fb3" "sha256-K7p8gDJwoaTMdVgvfXC2l/u6dxnIoEBrD+yoXpvY3EY=")
   ]
+  ++ optionals (uBootVersion == "2023.07") [
+    # New regression in 2023.07, will be fixed by 2023.10
+    # common: Kconfig: Fix CMD_BMP/BMP dependency
+    (fetchpatch {
+      url = "https://patchwork.ozlabs.org/project/uboot/patch/20230709231810.633044-1-samuel@dionne-riel.com/raw/";
+      sha256 = "sha256-hBv2BeLjyUr4ydTieNv8AZ0FGXqwKHo+2+GyLGgodUQ=";
+    })
+  ]
   ;
 }
