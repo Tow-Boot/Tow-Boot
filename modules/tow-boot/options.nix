@@ -16,7 +16,7 @@ in
         '';
       };
       src = mkOption {
-        type = types.package;
+        type = with types; oneOf [path package];
         description = ''
           Source archive for U-Boot.
         '';
@@ -30,13 +30,26 @@ in
           This includes base feature patches, and board-specific patches alike.
         '';
       };
-      useDefaultPatches = mkOption {
-        type = types.bool;
-        default = true;
-        description = ''
-          Enables inclusion of the default Tow-Boot patch set.
 
-          It is unlikely you want to disable this outright.
+      outputName = mkOption {
+        type = types.str;
+        default = if config.Tow-Boot.buildUBoot then "U-Boot" else "Tow-Boot";
+        description = ''
+          Base name of the output, depending on what is being built.
+        '';
+        internal = true;
+      };
+
+      buildUBoot = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          When false, Tow-Boot is built, which is the default.
+
+          When true, the tooling is used to built U-Boot.
+
+          This can be used to validate the tooling itself builds correct images
+          when facing issues, and to more easily check upstream regressions.
         '';
       };
 

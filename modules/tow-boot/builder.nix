@@ -90,7 +90,8 @@ in
         , patches
         , variant
         , uBootVersion
-        , useDefaultPatches
+        , outputName
+        , buildUBoot
         , boardIdentifier
         , towBootIdentifier
         , additionalArguments
@@ -102,7 +103,7 @@ in
         }:
 
         stdenv.mkDerivation ({
-          pname = "tow-boot-${defconfig}-${variant}";
+          pname = "${config.Tow-Boot.outputName}-${defconfig}-${variant}";
           inherit variant;
           inherit boardIdentifier;
 
@@ -127,17 +128,25 @@ in
             (PS4=" $ "
             for f in configs/*rk3399* configs/*rk3328*; do
               (set -x
-              sed -i"" -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
+              sed -i -e 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' "$f"
               )
             done
             for f in arch/arm/dts/*rk3399*.dts* arch/arm/dts/*rk3328*.dts*; do
               (set -x
-              sed -i"" -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+              sed -i -e 's/serial2:1500000n8/serial2:115200n8/' "$f"
+              )
+            done
+            )
+            echo ':: Patching Rockchip SPI SPL offset'
+            (PS4=" $ "
+            for f in arch/arm/dts/*rk3399*.dts*; do
+              (set -x
+              sed -i -e 's/u-boot,spl-payload-offset\s*=\s*<0x60000>/u-boot,spl-payload-offset = <0x80000>/' "$f"
               )
             done
             )
           ''
-          + (lib.optionalString (useDefaultPatches) ''
+          + (lib.optionalString (!buildUBoot) ''
             substituteInPlace include/tow-boot_env.h \
               --replace "@boardIdentifier@" "${boardIdentifier}"
           '')
@@ -221,7 +230,8 @@ in
           patches
           variant
           uBootVersion
-          useDefaultPatches
+          outputName
+          buildUBoot
         ;
         inherit (config.Tow-Boot.builder)
           additionalArguments
@@ -236,7 +246,7 @@ in
       });
 
       builder = {
-        postPatch = mkIf (config.Tow-Boot.useDefaultPatches && config.Tow-Boot.setup_leds != null) ''
+        postPatch = mkIf ((!config.Tow-Boot.buildUBoot) && config.Tow-Boot.setup_leds != null) ''
           substituteInPlace include/tow-boot_env.h \
             --replace 'setup_leds=echo\0' 'setup_leds=${config.Tow-Boot.setup_leds}\0'
         '';

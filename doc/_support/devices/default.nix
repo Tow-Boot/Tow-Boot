@@ -10,7 +10,7 @@ let
   release-tools = import (src + "/support/nix/release-tools.nix") { inherit pkgs; };
   devicesDir = src + "/boards";
   devicesInfo = symlinkJoin {
-    name = "Tow-Boot-devices-metadata";
+    name = "Tow-Boot-docs-devices-metadata";
     paths = (map (device: device.config.build.device-metadata) release-tools.releasedDevicesEvaluations);
   };
 in

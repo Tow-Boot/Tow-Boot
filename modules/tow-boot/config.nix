@@ -5,6 +5,7 @@ let
     mkDefault
     mkIf
     toHexString
+    versionAtLeast
   ;
 
   inherit (config.Tow-Boot)
@@ -37,7 +38,7 @@ in
 
       # Boot menu and default boot configuration
 
-      TOW_BOOT_MENU = lib.mkIf config.Tow-Boot.useDefaultPatches yes;
+      TOW_BOOT_MENU = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
 
       # Gives *some* time for the user to act.
       # Though an already-knowledgeable user will know they can use the key
@@ -57,7 +58,7 @@ in
           reset = "\\e[0m";
           bright = "\\e[1m";
         in
-        lib.mkIf config.Tow-Boot.useDefaultPatches (
+        lib.mkIf (!config.Tow-Boot.buildUBoot) (
           freeform ''"${reset}Please press [${bright}ESCAPE${reset}] or [${bright}CTRL+C${reset}] to enter the boot menu."''
         )
       ;
@@ -69,10 +70,10 @@ in
       CMD_BDI = yes;
       CMD_CLS = yes;
       CMD_SETEXPR = yes;
-      CMD_PAUSE = yes;
+      CMD_PAUSE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
       CMD_POWEROFF = lib.mkDefault yes;
       CMD_NVEDIT_INDIRECT =
-        lib.mkIf (lib.versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
+        mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
       ;
 
       # Looks
@@ -119,6 +120,10 @@ in
       TPL_ENV_IS_NOWHERE = option yes;
       SPL_ENV_IS_NOWHERE = option yes;
     }))
+    (mkIf ((!config.Tow-Boot.buildUBoot) && variant == "boot-installer") (helpers: with helpers; {
+      TOW_BOOT_PREDICTABLE_BOOT_PREFER_EXTERNAL = yes;
+      TOW_BOOT_PREDICTABLE_BOOT_PREFER_INTERNAL = no;
+    }))
     (mkIf (variant == "mmcboot") (helpers: with helpers; {
       # TODO: Explore options for storing env in mmcboot partition.
       ENV_IS_NOWHERE = yes;
@@ -138,7 +143,7 @@ in
     # -------------
 
     (mkIf withLogo (helpers: with helpers; {
-      VIDEO_LOGO = yes;
+      VIDEO_LOGO = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.04") yes;
       CMD_BMP = yes;
       SPLASHIMAGE_GUARD = yes;
       SPLASH_SCREEN = yes;

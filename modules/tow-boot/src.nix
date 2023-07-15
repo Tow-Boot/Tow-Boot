@@ -4,120 +4,55 @@ let
   inherit (lib)
     mkDefault
     mkIf
+    mkOption
     optionals
+    types
   ;
   inherit (config.Tow-Boot) uBootVersion variant;
 in
 
 {
-  Tow-Boot = {
-    uBootVersion = mkDefault "2022.07";
+  options = {
+    Tow-Boot = {
+      knownHashes = {
+        U-Boot = mkOption {
+          type = with types; attrsOf str;
+          default = {};
+          description = ''
+            Attrset of known hases for upstream U-Boot release tarballs.
 
-    patches = mkIf (config.Tow-Boot.useDefaultPatches) (
-      let
-        patchSets = {
-          "2021.10" = let base = ../../support/u-boot/2021.10/patches; in [
-            # Misc patches to upstream
-            (base + "/0001-cmd-Add-pause-command.patch")
-            (base + "/0001-cmd-env-Add-indirect-to-indirectly-set-values.patch")
-            (base + "/0001-lib-export-vsscanf.patch")
+            Known versions of stock U-Boot.
+            This attrset prevents accidental misuse of `uBootVersion`.
+            It will break the build if changed to an unknown version, and src has not been overriden.
 
-            # Misc patches, not upstreamable as-is
-            (base + "/0001-bootmenu-improvements.patch")
-            (base + "/0001-autoboot-show-menu-only-on-menu-key.patch")
-            (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
-            (base + "/0001-splash-improvements.patch")
-            (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
-
-            # Tow-Boot specific patches, not upstreamable as-is
-            (base + "/0001-pdcurses.patch")
-            (base + "/0001-tow-boot-menu.patch")
-            (base + "/0001-Tow-Boot-Provide-opinionated-boot-flow.patch")
-            (base + "/0001-Tow-Boot-treewide-Identify-as-Tow-Boot.patch")
-
-            # Intrusive non-upstreamable workarounds
-            (base + "/0001-HACK-video-sync-dirty.patch")
-          ]
-
-          #
-          # Intrusive opinionated patches
-          #
-
-          # Patches to force eMMC OS boot to happen before SD OS boot
-          ++ (optionals (variant != "boot-installer") [
-            (base + "/0001-Tow-Boot-sunxi-ignore-mmc_auto-force-SD-then-eMMC.patch")
-            (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
-            (base + "/0001-meson-Prefer-eMMC-to-SD-card-boot.patch")
-            (base + "/0001-sunxi-Predictable-boot-order.patch")
-          ])
-          # Patches to force SD OS boot to happen before OS boot
-          ++ (optionals (variant == "boot-installer") [
-            # Allwinner detects the platform firmware location and prefers it first
-            # Rockchip already prefers SD to eMMC (since b212ad24a604b00b240add35516b7381965deb31)
-            # Amlogic already prefers SD to eMMC
-
-            # We're applying the predictable boot order patch *and then editing it*.
-            # This is because it fixes the boot order in place, which is needed here anyway.
-            (base + "/0001-sunxi-Predictable-boot-order.patch")
-            (base + "/0001-sunxi-Prefer-SD-for-operating-system-boot.patch")
-          ])
-          ;
-          "2022.07" = let base = ../../support/u-boot/2022.07/patches; in [
-            # Misc patches to upstream
-            (base + "/0001-sunxi-Use-mmc_get_env_dev-only-if-relevant.patch")
-            (base + "/0001-smbios-enclosure-support.patch")
-
-            # Misc patches being upstreamed
-            (base + "/0001-cmd-Add-pause-command.patch")
-
-            # Misc patches, not upstreamable as-is
-            (base + "/0001-bootmenu-improvements.patch")
-            (base + "/0001-autoboot-show-menu-only-on-menu-key.patch")
-            (base + "/0001-autoboot-Prevent-C-from-affecting-menucmd.patch")
-            (base + "/0001-splash-improvements.patch")
-            (base + "/0001-drivers-video-Add-dependency-on-GZIP.patch")
-
-            # Tow-Boot specific patches, not upstreamable as-is
-            (base + "/0001-pdcurses.patch")
-            (base + "/0001-tow-boot-menu.patch")
-            (base + "/0001-Provide-opinionated-boot-flow.patch")
-            (base + "/0001-treewide-Identify-as-Tow-Boot.patch")
-
-            # Intrusive non-upstreamable workarounds
-            (base + "/0001-HACK-video-sync-dirty.patch")
-          ]
-          # Patches to force eMMC OS boot to happen before SD OS boot
-          ++ (optionals (variant != "boot-installer") [
-            (base + "/0001-Revert-rockchip-Fix-MMC-boot-order.patch")
-            (base + "/0001-meson-Prefer-internal-boot-methods-first.patch")
-            (base + "/0001-sunxi-Predictable-boot-order.patch")
-          ])
-          # Patches to force SD OS boot to happen before OS boot
-          ++ (optionals (variant == "boot-installer") [
-            # Rockchip already prefers SD to eMMC (since b212ad24a604b00b240add35516b7381965deb31)
-            # Amlogic already prefers SD to eMMC
-
-            # We're applying the predictable boot order patch *and then editing it*.
-            # This is because it fixes the boot order in place, which is needed here anyway.
-            (base + "/0001-sunxi-Predictable-boot-order.patch")
-            (base + "/0001-sunxi-Prefer-SD-for-operating-system-boot.patch")
-          ])
-          ;
+            > **NOTE**: Presence of a U-Boot version in this attrset does not guarantee it will build and work.
+          '';
+          internal = true;
         };
-      in
-        if patchSets ? ${uBootVersion}
-        then patchSets.${uBootVersion}
-        else builtins.trace "Warning: No patch set for U-Boot version ${uBootVersion}"
-    );
+        Tow-Boot = mkOption {
+          type = with types; attrsOf str;
+          default = {};
+          description = ''
+            Attrset of known hases for Tow-Boot tags release tags.
 
-    src =
-      let
-        # This attrset prevents accidental misuse of `uBootVersion`.
-        # It will break the build if changed to an unknown version, and src has not been overriden.
-        # NOTE: Presence of a U-Boot version in this attrset does not guarantee it will build and work.
-        #       Furthermore, building older versions may require disabling the Tow-Boot patch set.
-        #       This is made available as a feature to help diagnose issues against "mostly stock" U-Boot.
-        knownHashes = {
+            This attrset is used to document known Tow-Boot-flavoured U-Boot source trees.
+            This prevents uBootVersion being set to a version for which there is no Tow-Boot tree.
+
+            > **NOTE**: Presence of a U-Boot version in this attrset does not guarantee it will build
+            >       and work past the releases in which it was used.
+          '';
+          internal = true;
+        };
+      };
+    };
+  };
+  config = {
+    Tow-Boot = {
+      uBootVersion = mkDefault "2022.07";
+
+      knownHashes = {
+        U-Boot = {
+          "2021.01" = "sha256-tAfhUQp06GO4tctCokYlNE8ODC/HWC2MhmvYmTZ9BFQ=";
           "2021.04" = "sha256-DUOLG7XM61ehjqLeSg1R975bBbmHF98Fk4Y24Krf4Ro=";
           "2021.07" = "sha256-MSt+6uRFgdE2LDo/AsKNgGZHdWyCuoxyJBx82+aLp34=";
           "2021.10" = "1m0bvwv8r62s4wk4w3cmvs888dhv9gnfa98dczr4drk2jbhj7ryd";
@@ -125,15 +60,34 @@ in
           "2022.04" = "sha256-aOBlQTkmd44nbsOr0ouzL6gquqSmiY1XDB9I+9sIvNA=";
           "2022.07" = "sha256-krCOtJwk2hTBrb9wpxro83zFPutCMOhZrYtnM9E9z14=";
         };
-      in
-      mkDefault (pkgs.fetchurl {
-        url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
-        sha256 =
-          if knownHashes ? ${uBootVersion}
-          then knownHashes.${uBootVersion}
-          else builtins.throw "No known hashes for upstream release U-Boot version ${uBootVersion}"
-        ;
-      })
-    ;
+        Tow-Boot = {
+          "2022.07" = "sha256-AMnY5gzvN66vVJAIlJNzEreNxi0NeVStD55F8u+sm1Q=";
+        };
+      };
+
+      src = if config.Tow-Boot.buildUBoot then
+        let knownHashes = config.Tow-Boot.knownHashes.U-Boot; in
+        mkDefault (pkgs.fetchurl {
+          url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
+          sha256 =
+            if knownHashes ? ${uBootVersion}
+            then knownHashes.${uBootVersion}
+            else builtins.throw "No known hashes for upstream release U-Boot version ${uBootVersion}"
+          ;
+        })
+      else
+        let knownHashes = config.Tow-Boot.knownHashes.Tow-Boot; in
+        mkDefault (pkgs.fetchFromGitHub {
+          repo = "U-Boot";
+          owner = "Tow-Boot";
+          rev = "tow-boot/${uBootVersion}/_all";
+          sha256 =
+            if knownHashes ? ${uBootVersion}
+            then knownHashes.${uBootVersion}
+            else builtins.throw "No known hashes for Tow-Boot-flavoured U-Boot matching U-Boot version ${uBootVersion}"
+          ;
+        })
+      ;
+    };
   };
 }

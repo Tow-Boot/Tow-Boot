@@ -18,6 +18,7 @@ in
     ./metadata.nix
     ./overlays.nix
     ./system.nix
+    ./u-boot.nix
   ];
 
   options = {

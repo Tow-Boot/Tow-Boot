@@ -2,7 +2,8 @@
 , configuration ? { }
 , silent ? false
 , pkgs ? import ./nixpkgs.nix { }
-}@args:
+, src ? null
+}:
 
 let
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
@@ -12,7 +13,7 @@ let
   ;
 
   evalFor = device:
-    import ./support/nix/eval-with-configuration.nix (args // {
+    import ./support/nix/eval-with-configuration.nix ({
       inherit device;
       inherit pkgs;
       verbose = true;
@@ -24,6 +25,7 @@ let
             {
               # Special configs for imperative use only here
               system.automaticCross = true;
+              Tow-Boot.src = lib.mkIf (src != null) src;
             }
           )
         ];

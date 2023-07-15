@@ -50,6 +50,33 @@ want to build, here's how you can build the `uBoot-sandbox` board.
 After the build is finished successfully, a `result` symlink will refer to the
 build output. The build output by default is the content of the archive.
 
+
+I want to build my WIP fork of the Tow-Boot-flavoured U-Boot
+------------------------------------------------------------
+
+Building from the previous example, we can provide a path on the CLI.
+
+```shell-session
+ $ time nix-build \
+     --arg src ~/Projects/u-boot/Tow-Boot \
+    -A uBoot-sandbox
+```
+
+Note that it may be preferable to instead use a Nix expression with
+`builtins.fetchGit`, as it will use the files from the repo as seen
+by git, without copying the whole `.git` files (if applicable) to
+the Nix store.
+
+```shell-session
+ $ time nix-build \
+     --arg src 'builtins.fetchGit ~/tmp/u-boot/Tow-Boot' \
+     -A uBoot-sandbox
+```
+
+> Fun fact: the first example also uses a Nix expression, it simply
+> turns out that bare paths are valid Nix syntax, and useful to
+> represent paths!
+
 * * *
 
 A primer on Nix

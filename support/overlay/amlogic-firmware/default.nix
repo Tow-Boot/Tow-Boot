@@ -1,6 +1,5 @@
 { stdenv
 , lib
-, fetchpatch
 , fetchFromGitHub
 }:
 

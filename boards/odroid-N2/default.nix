@@ -22,11 +22,6 @@
         SF_DEFAULT_SPEED = freeform ''52000000'';
       })
     ];
-    patches = [
-      # ODROID N2 SPI support
-      ./0001-Enable-the-SPI-on-the-ODROID-N2-by-default.patch
-      ./0002-Add-support-for-XTX-SPI-XT25Q64D.patch
-    ];
     builder.additionalArguments = {
       FIPDIR = "${pkgs.Tow-Boot.amlogicFirmware}/odroid-n2";
     };

@@ -44,7 +44,7 @@ in
   config = {
     Tow-Boot = {
       diskImage = {
-        name = "Tow-Boot.${config.device.identifier}.${config.Tow-Boot.variant}.img";
+        name = "${config.Tow-Boot.outputName}.${config.device.identifier}.${config.Tow-Boot.variant}.img";
         gpt = {
           # In theory this shouldn't be static, every partition should have a
           # unique identifier, but that's not really possible here.
@@ -62,7 +62,7 @@ in
       };
 
       firmwarePartition = {
-        name = "Tow-Boot.${config.device.identifier}.bin";
+        name = "${config.Tow-Boot.outputName}.${config.device.identifier}.bin";
         partitionLabel = "Firmware (Tow-Boot)";
         # > Protective partitions are entries in the partition table that cover
         # > the LBA region occupied by firmware and have the ‘Required Partition’

@@ -15,13 +15,14 @@
 
   Tow-Boot = {
     defconfig = "sandbox_defconfig";
-    patches = [
-      ./0001-sandbox-Force-window-size.patch
-    ];
     config = [
       (helpers: with helpers; {
         AUTOBOOT_MENUKEY = lib.mkForce (option no);
         AUTOBOOT_USE_MENUKEY = lib.mkForce (option no);
+      })
+      (helpers: with helpers; {
+        VIDEO_SANDBOX_SDL = yes;
+        SANDBOX_RAM_SIZE_MB = freeform "512";
       })
     ];
     builder = {
@@ -32,9 +33,28 @@
       # TODO: Add helper bin to start with dtb file
       installPhase = ''
         rmdir $out/binaries
-        mkdir -p $out/libexec
-        cp -v u-boot $out/libexec/tow-boot
-        cp -v u-boot.dtb $out/tow-boot.dtb
+        mkdir -p $out/u-boot
+        cp -vt $out/u-boot u-boot u-boot.dtb
+
+        mkdir -p $out/bin
+        # NOTE: script is meant to run on any OS
+        cat <<EOF > $out/bin/tow-boot-sandbox
+        #!/usr/bin/env bash
+        set -e
+        set -u
+        PS4=" \$ "
+
+        dir="\''${BASH_SOURCE[0]%/*}"
+
+        set -x
+
+        ARGS=(
+          --fdt "\$dir/../u-boot/u-boot.dtb"
+        )
+
+        exec "\$dir/../u-boot/u-boot" "\''${ARGS[@]}" "\$@"
+        EOF
+        chmod +x $out/bin/*
       '';
     };
   };
