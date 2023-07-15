@@ -41,6 +41,11 @@ in
 
       TOW_BOOT_MENU = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
 
+      # Enable all the new bootstd features
+      BOOTSTD_FULL = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes;
+      BOOTSTD_DEFAULTS = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes;
+      BOOTSTD_BOOTCOMMAND = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes;
+
       # Gives *some* time for the user to act.
       # Though an already-knowledgeable user will know they can use the key
       # before the message is shown.
