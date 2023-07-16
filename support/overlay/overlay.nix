@@ -74,7 +74,7 @@ in
 
     meson64-tools = callPackage ./meson64-tools { };
 
-    mkScript = file: final.runCommandNoCC "out.scr" {
+    mkScript = file: final.runCommand "out.scr" {
       nativeBuildInputs = [
         final.buildPackages.ubootTools
       ];

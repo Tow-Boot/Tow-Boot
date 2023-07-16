@@ -1,6 +1,6 @@
 { pkgs
 , glibcLocales
-, runCommandNoCC
+, runCommand
 , symlinkJoin
 , ruby
 }:
@@ -15,7 +15,7 @@ let
   };
 in
 
-runCommandNoCC "Tow-Boot-docs-devices" {
+runCommand "Tow-Boot-docs-devices" {
   nativeBuildInputs = [
     ruby
     glibcLocales

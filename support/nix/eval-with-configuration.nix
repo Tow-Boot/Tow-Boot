@@ -82,7 +82,7 @@ in
 eval.config.build.default.overrideAttrs({ passthru ? {}, ... }: {
   passthru = passthru // {
     inherit eval;
-    inherit (eval) config pkgs;
+    inherit (eval) config pkgs options;
     inherit (eval.config) build;
   };
 })

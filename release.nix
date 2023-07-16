@@ -19,7 +19,7 @@ let
 
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
 in
-  pkgs.runCommandNoCC "Tow-Boot.release.${version}" {
+  pkgs.runCommand "Tow-Boot.release.${version}" {
     inherit version;
   } ''
     mkdir -p $out

@@ -1,5 +1,5 @@
 { stdenv
-, runCommandNoCCLocal
+, runCommandLocal
 , writeShellScriptBin
 , nodePackages
 }:
@@ -40,7 +40,7 @@ let
     rm -rf $in.tmp
   '';
 
-  stylesAssets = runCommandNoCCLocal "tow-boot-styles-assets" {
+  stylesAssets = runCommandLocal "tow-boot-styles-assets" {
     nativeBuildInputs = [
       embedSVG
     ];

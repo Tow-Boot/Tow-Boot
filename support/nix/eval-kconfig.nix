@@ -59,7 +59,7 @@
             ${lib.concatMapStringsSep "\n" ({key, item}:
             let
               line = lib.escapeShellArg (mkConfigLine key item);
-              escapedLinePattern = lib.replaceChars ["[" "]" ''\''] [ ''\['' ''\]'' ''\\''] line;
+              escapedLinePattern = lib.replaceStrings ["[" "]" ''\''] [ ''\['' ''\]'' ''\\''] line;
               lineNotSet = "# CONFIG_${key} is not set";
               linePattern = "^CONFIG_${key}=";
               presencePattern = "CONFIG_${key}[ =]";

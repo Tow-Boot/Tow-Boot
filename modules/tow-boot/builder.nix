@@ -258,7 +258,7 @@ in
               # To produce the bitmap image:
               #     convert input.png -depth 8 -colors 256 -compress none output.bmp
               # This tiny build produces the `.gz` file that will actually be used.
-              compressedLogo = pkgs.buildPackages.runCommandNoCC "uboot-logo" {} ''
+              compressedLogo = pkgs.buildPackages.runCommand "uboot-logo" {} ''
                 mkdir -p $out
                 cp ${../../assets/splash.bmp} $out/logo.bmp
                 (cd $out; gzip -n -9 -k logo.bmp)
