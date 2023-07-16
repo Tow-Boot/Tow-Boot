@@ -166,6 +166,7 @@ in
             buildPackages.libuuid # For tools/mkeficapsule
             (buildPackages.python3.withPackages (p: [
               p.libfdt
+              p.pyelftools
               p.setuptools # for pkg_resources
             ]))
           ] ++ nativeBuildInputs;
