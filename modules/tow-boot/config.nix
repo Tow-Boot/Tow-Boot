@@ -6,6 +6,7 @@ let
     mkIf
     toHexString
     versionAtLeast
+    versionOlder
   ;
 
   inherit (config.Tow-Boot)
@@ -70,7 +71,7 @@ in
       CMD_BDI = yes;
       CMD_CLS = yes;
       CMD_SETEXPR = yes;
-      CMD_PAUSE = lib.mkIf (!config.Tow-Boot.buildUBoot) yes;
+      CMD_PAUSE = mkIf (!config.Tow-Boot.buildUBoot || versionAtLeast config.Tow-Boot.uBootVersion "2023.01") yes;
       CMD_POWEROFF = lib.mkDefault yes;
       CMD_NVEDIT_INDIRECT =
         mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.07") yes
@@ -145,7 +146,7 @@ in
     (mkIf withLogo (helpers: with helpers; {
       VIDEO_LOGO = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2022.04") yes;
       CMD_BMP = yes;
-      SPLASHIMAGE_GUARD = yes;
+      SPLASHIMAGE_GUARD = mkIf (versionOlder config.Tow-Boot.uBootVersion "2023.01") yes;
       SPLASH_SCREEN = yes;
       SPLASH_SCREEN_ALIGN = yes;
       VIDEO_BMP_GZIP = yes;
@@ -153,6 +154,7 @@ in
       BMP_24BPP = yes;
       BMP_32BPP = yes;
       SPLASH_SOURCE = no;
+      VIDEO_LOGO_MAX_SIZE = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2023.01") (freeform config.Tow-Boot.VIDEO_LOGO_MAX_SIZE);
     }))
   ];
 }

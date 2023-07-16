@@ -104,6 +104,12 @@ in
         type = with types; nullOr str;
         default = null;
       };
+
+      VIDEO_LOGO_MAX_SIZE = mkOption {
+        type = types.str;
+        default = toString (1920*1080*4);
+        internal = true;
+      };
     };
   };
 }
