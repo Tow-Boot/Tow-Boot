@@ -48,7 +48,7 @@ in
   };
   config = {
     Tow-Boot = {
-      uBootVersion = mkDefault "2022.07";
+      uBootVersion = mkDefault "2023.07";
 
       knownHashes = {
         U-Boot = {
