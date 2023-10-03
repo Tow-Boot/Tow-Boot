@@ -17,12 +17,13 @@ let
   ;
   cfg = config.hardware.socs;
 
+  # TODO are these values correct also for rk3588?
   firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
   partitionOffset = 64; # in sectors
   secondOffset = 16384; # in sectors
   sectorSize = 512;
 
-  anyRockchip = lib.any (v: v) [cfg.rockchip-rk3399.enable];
+  anyRockchip = lib.any (v: v) [cfg.rockchip-rk3399.enable cfg.rockchip-rk3588.enable];
   isPhoneUX = config.Tow-Boot.phone-ux.enable;
 in
 {
@@ -34,6 +35,12 @@ in
         description = "Enable when SoC is Rockchip RK3399";
         internal = true;
       };
+      rockchip-rk3588.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Rockchip RK3588";
+        internal = true;
+      };
     };
   };
 
@@ -41,6 +48,7 @@ in
     {
       hardware.socList = [
         "rockchip-rk3399"
+	"rockchip-rk3588"
       ];
     }
     (mkIf cfg.rockchip-rk3399.enable {
@@ -92,6 +100,59 @@ in
               )
             '')
           ];
+        };
+      };
+    })
+    (mkIf cfg.rockchip-rk3588.enable {
+      system.system = "aarch64-linux";
+      Tow-Boot = {
+        config = [
+          (helpers: with helpers; {
+	  # TODO do we need these when implementing the spi variant?
+          #   # SPI boot Support
+          #   MTD = yes;
+          #   DM_MTD = yes;
+          #   SPI_FLASH_SFDP_SUPPORT = yes;
+          #   SPL_DM_SPI = yes;
+          #   SPL_SPI_FLASH_TINY = no;
+          #   SPL_SPI_FLASH_SFDP_SUPPORT = yes;
+          #   SYS_SPI_U_BOOT_OFFS = freeform ''0x80000''; # 512K
+          #   SPL_DM_SEQ_ALIAS = yes;
+	    SYS_WHITE_ON_BLACK = lib.mkForce no;
+          })
+        ];
+	# TODO does it make sense also for rk3588?
+        firmwarePartition = {
+            offset = partitionOffset * 512; # 32KiB into the image, or 64 × 512 long sectors
+            length = firmwareMaxSize + (secondOffset * sectorSize); # in bytes
+          }
+        ;
+        builder = {
+          additionalArguments = let
+	    # FIXME not the best place to put this
+	    rkbin = builtins.fetchTarball {
+	      url = "https://gitlab.collabora.com/hardware-enablement/rockchip-3588/rkbin/-/archive/master/rkbin-master.tar.gz";
+	      sha256 = "0bckv8xv2m4hg5djyv0xbxj96lryvhbyac5qx2m1v0617m15rd2p";
+	    };
+	  in {
+            BL31 = "${rkbin}/bin/rk35/rk3588_bl31_v1.27.elf";
+	    ROCKCHIP_TPL = "${rkbin}/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin";
+            inherit
+              firmwareMaxSize
+              partitionOffset
+              secondOffset
+              sectorSize
+            ;
+          };
+	  # TODO add "spi" variant
+          installPhase = ''
+              echo ":: Preparing single file firmware image for shared storage..."
+              (PS4=" $ "; set -x
+              dd if=idbloader.img of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((partitionOffset - partitionOffset))
+              dd if=u-boot.itb    of=Tow-Boot.$variant.bin conv=fsync,notrunc bs=$sectorSize seek=$((secondOffset - partitionOffset))
+              cp -v Tow-Boot.$variant.bin $out/binaries/
+              )
+            '';
         };
       };
     })
