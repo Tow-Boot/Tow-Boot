@@ -155,6 +155,7 @@ in
       BMP_32BPP = yes;
       SPLASH_SOURCE = no;
       VIDEO_LOGO_MAX_SIZE = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2023.01") (freeform config.Tow-Boot.VIDEO_LOGO_MAX_SIZE);
+      HIDE_LOGO_VERSION = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2023.01") yes;
     }))
   ];
 }
