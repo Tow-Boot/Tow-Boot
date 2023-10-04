@@ -122,6 +122,11 @@ in
             patchShebangs tools
             patchShebangs arch/arm/mach-rockchip
           '' +
+          ''
+            # Drop that from the exposed version, always.
+            # We use releases, any extra qualifier is owned by us.
+            sed -i -e 's/^EXTRAVERSION =.*/EXTRAVERSION =/' Makefile
+          '' +
             # FIXME: review how we patch this out... (I don't like it)
           ''
             echo ':: Patching baud rate'
