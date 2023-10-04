@@ -140,6 +140,18 @@ in
       ENV_OFFSET =  freeform "0x${toHexString envSPIOffset}";
     }))
 
+    # Partial `bootstd` migration temporary measures
+    (helpers: with helpers; {
+      # For now, it's outright disabled, we will need to re-evaluate our
+      # infra to work with bootstd, but only after a larger proportion of
+      # the devices default to `bootstd`.
+      BOOTSTD = no;
+      BOOTSTD_DEFAULTS = no;
+      DISTRO_DEFAULTS = yes;
+      USE_BOOTCOMMAND = yes;
+      BOOTCOMMAND = freeform ''"run distro_bootcmd"'';
+    })
+
     # Logo handling
     # -------------
 
