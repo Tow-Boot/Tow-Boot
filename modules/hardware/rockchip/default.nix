@@ -16,6 +16,7 @@ let
     variant
   ;
   cfg = config.hardware.socs;
+  withSPI = config.hardware.SPISize != null;
 
   firmwareMaxSize = 4 * 1024 * 1024; # MiB in bytes
   partitionOffset = 64; # in sectors
@@ -46,7 +47,7 @@ in
     (mkIf cfg.rockchip-rk3399.enable {
       system.system = "aarch64-linux";
       Tow-Boot = {
-        config = [
+        config = mkIf withSPI [
           (helpers: with helpers; {
             # SPI boot Support
             MTD = yes;

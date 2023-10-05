@@ -15,6 +15,13 @@ in
           Version of the underlying U-Boot version.
         '';
       };
+      tag = mkOption {
+        type = types.str;
+        internal = true;
+        description = ''
+          Tag used for the Tow-Boot source code.
+        '';
+      };
       src = mkOption {
         type = with types; oneOf [path package];
         description = ''
@@ -76,6 +83,15 @@ in
           Must be `-pre` for builds other than ones coming from the clean tagged version commit.
         '';
       };
+      releaseRC = mkOption {
+        type = types.str;
+        default = "";
+        internal = true;
+        example = "-rc1";
+        description = ''
+          RC part of the tag, for pre-release management.
+        '';
+      };
 
       defconfig = mkOption {
         type = types.str;
@@ -107,7 +123,7 @@ in
 
       VIDEO_LOGO_MAX_SIZE = mkOption {
         type = types.str;
-        default = toString (1920*1080*4);
+        default = ''0x${lib.toHexString (1920*1080*4)}'';
         internal = true;
       };
     };

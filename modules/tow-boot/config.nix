@@ -12,11 +12,12 @@ let
   inherit (config.Tow-Boot)
     variant
     releaseNumber
+    releaseRC
     releaseIdentifier
     withLogo
   ;
 
-  towBootIdentifier = "${releaseNumber}${releaseIdentifier}";
+  towBootIdentifier = "${releaseNumber}${releaseRC}${releaseIdentifier}";
 
   # Not actually configurable. This is a constant in Tow-Boot.
   # Changing this will require handling the migration to a larger size.
@@ -140,6 +141,18 @@ in
       ENV_OFFSET =  freeform "0x${toHexString envSPIOffset}";
     }))
 
+    # Partial `bootstd` migration temporary measures
+    (helpers: with helpers; {
+      # For now, it's outright disabled, we will need to re-evaluate our
+      # infra to work with bootstd, but only after a larger proportion of
+      # the devices default to `bootstd`.
+      BOOTSTD = no;
+      BOOTSTD_DEFAULTS = no;
+      DISTRO_DEFAULTS = yes;
+      USE_BOOTCOMMAND = yes;
+      BOOTCOMMAND = freeform ''"run distro_bootcmd"'';
+    })
+
     # Logo handling
     # -------------
 
@@ -155,6 +168,7 @@ in
       BMP_32BPP = yes;
       SPLASH_SOURCE = no;
       VIDEO_LOGO_MAX_SIZE = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2023.01") (freeform config.Tow-Boot.VIDEO_LOGO_MAX_SIZE);
+      HIDE_LOGO_VERSION = mkIf (versionAtLeast config.Tow-Boot.uBootVersion "2023.01") yes;
     }))
   ];
 }

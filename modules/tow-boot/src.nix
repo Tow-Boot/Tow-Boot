@@ -8,7 +8,13 @@ let
     optionals
     types
   ;
-  inherit (config.Tow-Boot) uBootVersion variant;
+  inherit (config.Tow-Boot)
+    releaseRC
+    releaseNumber
+    tag
+    uBootVersion
+    variant
+  ;
 in
 
 {
@@ -48,7 +54,8 @@ in
   };
   config = {
     Tow-Boot = {
-      uBootVersion = mkDefault "2022.07";
+      uBootVersion = mkDefault "2023.07";
+      tag = mkDefault "tb-${uBootVersion}-${releaseNumber}${releaseRC}";
 
       knownHashes = {
         U-Boot = {
@@ -65,7 +72,7 @@ in
           "2023.07" = "sha256-EukhtGaucxzbw1Xmgyt/IryQsBrs7vmIb5iquns5QwA=";
         };
         Tow-Boot = {
-          "2022.07" = "sha256-AMnY5gzvN66vVJAIlJNzEreNxi0NeVStD55F8u+sm1Q=";
+          "tb-2023.07-007-rc1" = "sha256-vAB7MHn5VZEo3fPR7zWADpUMJ14Una90JrXRSPI9T9U=";
         };
       };
 
@@ -84,11 +91,11 @@ in
         mkDefault (pkgs.fetchFromGitHub {
           repo = "U-Boot";
           owner = "Tow-Boot";
-          rev = "tow-boot/${uBootVersion}/_all";
+          rev = "${tag}";
           sha256 =
-            if knownHashes ? ${uBootVersion}
-            then knownHashes.${uBootVersion}
-            else builtins.throw "No known hashes for Tow-Boot-flavoured U-Boot matching U-Boot version ${uBootVersion}"
+            if knownHashes ? ${tag}
+            then knownHashes.${tag}
+            else builtins.throw "No known hashes for Tow-Boot-flavoured U-Boot matching tag ${tag}"
           ;
         })
       ;
