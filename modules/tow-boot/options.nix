@@ -15,6 +15,13 @@ in
           Version of the underlying U-Boot version.
         '';
       };
+      tag = mkOption {
+        type = types.str;
+        internal = true;
+        description = ''
+          Tag used for the Tow-Boot source code.
+        '';
+      };
       src = mkOption {
         type = with types; oneOf [path package];
         description = ''
@@ -74,6 +81,15 @@ in
         type = types.str;
         description = ''
           Must be `-pre` for builds other than ones coming from the clean tagged version commit.
+        '';
+      };
+      releaseRC = mkOption {
+        type = types.str;
+        default = "";
+        internal = true;
+        example = "-rc1";
+        description = ''
+          RC part of the tag, for pre-release management.
         '';
       };
 

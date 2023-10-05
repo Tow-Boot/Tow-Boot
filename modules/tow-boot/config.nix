@@ -12,11 +12,12 @@ let
   inherit (config.Tow-Boot)
     variant
     releaseNumber
+    releaseRC
     releaseIdentifier
     withLogo
   ;
 
-  towBootIdentifier = "${releaseNumber}${releaseIdentifier}";
+  towBootIdentifier = "${releaseNumber}${releaseRC}${releaseIdentifier}";
 
   # Not actually configurable. This is a constant in Tow-Boot.
   # Changing this will require handling the migration to a larger size.
