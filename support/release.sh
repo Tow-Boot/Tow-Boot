@@ -18,6 +18,11 @@ sed -i -e \
 	's/releaseIdentifier = "-pre";/releaseIdentifier = "";/' \
 	modules/tow-boot/identity.nix
 
+# Remove any `-rc` suffix
+sed -i -e \
+	's/releaseRC = .*/releaseRC = "";/' \
+	modules/tow-boot/identity.nix
+
 # Commit and tag the version
 version="$(nix-instantiate --eval -E '(import ./release.nix {}).version' | sed -e 's/"//g')"
 git add modules/tow-boot/identity.nix
