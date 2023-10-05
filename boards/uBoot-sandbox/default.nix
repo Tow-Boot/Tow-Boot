@@ -24,6 +24,9 @@
         VIDEO_SANDBOX_SDL = yes;
         SANDBOX_RAM_SIZE_MB = freeform "512";
       })
+      (helpers: with helpers; {
+        BOOTSTD = lib.mkForce yes;
+      })
     ];
     builder = {
       buildInputs = [
