@@ -15,6 +15,7 @@
     name = "ODROID-C2";
     identifier = "odroid-C2";
     productPageURL = "https://www.hardkernel.com/shop/odroid-c2/";
+    supportLevel = "best-effort";
   };
 
   hardware = {
