@@ -6,6 +6,7 @@
     name = "ODROID-C4";
     identifier = "odroid-C4";
     productPageURL = "https://www.hardkernel.com/shop/odroid-c4/";
+    supportLevel = "best-effort";
   };
 
   hardware = {
