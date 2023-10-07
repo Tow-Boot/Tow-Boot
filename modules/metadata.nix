@@ -42,6 +42,7 @@ in
               productPageURL
             ;
             fullName = "${config.device.manufacturer} ${config.device.name}";
+            supportLevel = config.documentation.supportLevelDescriptions."${config.device.supportLevel}";
           };
           hardware = {
             inherit (config.hardware)

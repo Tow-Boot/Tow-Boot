@@ -19,6 +19,7 @@ COLUMNS = [
   { key: "device.identifier",   name: "Identifier" },
   { key: "device.name",         name: "Name" },
   { key: "hardware.soc",        name: "SoC" },
+  { key: "device.supportLevel.title", name: "Support level" },
 ]
 
 $out = ENV["out"]
@@ -27,6 +28,11 @@ $devicesInfo = Dir.glob(File.join(ENV["devicesInfo"], "*")).sort.map do |filenam
   [data["device"]["identifier"], data]
 end.to_h
 $devicesDir = ENV["devicesDir"]
+
+supportLevels = $devicesInfo
+  .map { |key, info| info["device"]["supportLevel"] }
+  .sort { |a,b| a["order"] <=> b["order"] }
+  .uniq
 
 # First, generate the devices listing.
 puts ":: Generating devices/index.md"
@@ -81,6 +87,33 @@ File.open(File.join($out, "devices/index.md"), "w") do |file|
 
   file.puts <<~EOF
 
+    <section class="devices-legend">
+
+    <h2>Legend</h2>
+
+    <h3>Support level</h3>
+
+  EOF
+
+  supportLevels.each do |level|
+    file.puts <<~EOF
+
+      <dl>
+        <dt>#{level["title"]}</dt>
+          <dd>#{level["description"].gsub(/\n\n+/, "<br /><br />")}</dd>
+      </dl>
+
+    EOF
+  end
+
+  file.puts <<~EOF
+
+    </section>
+
+  EOF
+
+  file.puts <<~EOF
+
     </div>
   </div>
 
@@ -109,6 +142,8 @@ $devicesInfo.values.each do |info|
           <dd>#{info["device"]["name"]}</dd>
         <dt>Identifier</dt>
           <dd>#{info["device"]["identifier"]}</dd>
+        <dt>Support level</dt>
+          <dd>#{info["device"]["supportLevel"]["title"]}</dd>
         <dt>SoC</dt>
           <dd>#{info["hardware"]["soc"]}</dd>
         <dt>Dedicated firmware storage</dt>
