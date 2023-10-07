@@ -39,6 +39,8 @@ in
     name = "Combined AArch64";
     identifier = lib.mkDefault "raspberryPi-aarch64";
     productPageURL = "https://www.raspberrypi.com/products/";
+    # This line of boards is YMMV.
+    supportLevel = "experimental";
   };
 
   hardware = {
