@@ -6,6 +6,7 @@
     name = "Sandbox";
     identifier = "uBoot-sandbox";
     inRelease = false;
+    supportLevel = "unsupported";
   };
 
   hardware = {
