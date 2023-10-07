@@ -6,6 +6,7 @@
     name = "Pinephone (A64)";
     identifier = "pine64-pinephoneA64";
     productPageURL = "https://www.pine64.org/pinephone/";
+    supportLevel = "supported";
   };
 
   hardware = {
