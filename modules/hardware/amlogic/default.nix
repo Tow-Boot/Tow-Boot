@@ -22,6 +22,7 @@ let
   ];
   amlogicGXL = lib.any (soc: config.hardware.socs.${soc}.enable) [
     "amlogic-s805x"
+    "amlogic-s905x"
   ];
 
   # amlogic families using sector 0x01 for the startup sequence *ugh*.
@@ -55,6 +56,12 @@ in
         description = "Enable when SoC is Amlogic S905";
         internal = true;
       };
+      amlogic-s905x.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Amlogic S905X";
+        internal = true;
+      };
       amlogic-s905x3.enable = mkOption {
         type = types.bool;
         default = false;
@@ -76,6 +83,7 @@ in
         "amlogic-a311d"
         "amlogic-s805x"
         "amlogic-s905"
+        "amlogic-s905x"
         "amlogic-s905x3"
         "amlogic-s922x"
       ];
@@ -87,6 +95,9 @@ in
       system.system = "aarch64-linux";
     })
     (mkIf cfg.amlogic-s905.enable {
+      system.system = "aarch64-linux";
+    })
+    (mkIf cfg.amlogic-s905x.enable {
       system.system = "aarch64-linux";
     })
     (mkIf cfg.amlogic-s905x3.enable {
