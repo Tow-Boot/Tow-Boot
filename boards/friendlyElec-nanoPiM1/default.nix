@@ -4,6 +4,7 @@
     name = "NanoPi M1";
     identifier = "friendlyElec-nanoPiM1";
     productPageURL = "https://wiki.friendlyelec.com/wiki/index.php/NanoPi_M1";
+    supportLevel = "best-effort";
   };
 
   hardware = {
