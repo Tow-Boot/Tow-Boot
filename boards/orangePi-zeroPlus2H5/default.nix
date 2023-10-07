@@ -4,6 +4,7 @@
     name = "Zero Plus2 (H5)";
     identifier = "orangePi-zeroPlus2H5";
     productPageURL = "http://www.orangepi.org/OrangePiZeroPlus2/";
+    supportLevel = "supported";
   };
 
   hardware = {
