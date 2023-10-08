@@ -9,5 +9,6 @@
     ./phone-ux.nix
     ./smbios.nix
     ./src.nix
+    ./uswid.nix
   ];
 }
