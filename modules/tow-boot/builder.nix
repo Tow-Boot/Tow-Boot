@@ -19,8 +19,6 @@ let
     version = config.Tow-Boot.uBootVersion;
     structuredConfig = (config.Tow-Boot.structuredConfigHelper version);
   };
-
-  towBootIdentifier = "${config.Tow-Boot.releaseNumber}${config.Tow-Boot.releaseIdentifier}";
 in
 {
   options = {
@@ -240,6 +238,7 @@ in
           uBootVersion
           outputName
           buildUBoot
+          towBootIdentifier
         ;
         inherit (config.Tow-Boot.builder)
           additionalArguments
@@ -250,7 +249,6 @@ in
           postPatch
         ;
         boardIdentifier = config.device.identifier;
-        inherit towBootIdentifier;
       });
 
       builder = {

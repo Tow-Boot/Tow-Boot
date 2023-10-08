@@ -15,7 +15,7 @@ let
   };
 
   # We're slightly cheating here
-  version = "${anonymousEval.config.Tow-Boot.uBootVersion}-${anonymousEval.config.Tow-Boot.releaseNumber}${anonymousEval.config.Tow-Boot.releaseIdentifier}";
+  version = "${anonymousEval.config.Tow-Boot.uBootVersion}-${anonymousEval.config.Tow-Boot.towBootIdentifier}";
 
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };
 in
