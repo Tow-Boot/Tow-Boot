@@ -15,5 +15,8 @@
     patches = [
       ./0001-nanopi-k1-plus-board-enablement.patch
     ];
+    builder.additionalArguments = {
+      SCP = "/dev/null";
+    };
   };
 }
