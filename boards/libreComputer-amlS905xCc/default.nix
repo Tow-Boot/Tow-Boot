@@ -6,6 +6,7 @@
     name = "Le Potato";
     identifier = "libreComputer-amlS805xAc";
     productPageURL = "https://libre.computer/products/aml-s905x-cc/";
+    supportLevel = "best-effort";
   };
 
   hardware = {

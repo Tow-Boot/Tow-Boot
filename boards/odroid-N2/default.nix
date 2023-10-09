@@ -6,6 +6,7 @@
     name = "ODROID-N2";
     identifier = "odroid-N2";
     productPageURL = "https://www.hardkernel.com/shop/odroid-n2-with-4gbyte-ram-2/";
+    supportLevel = "best-effort";
   };
 
   hardware = {

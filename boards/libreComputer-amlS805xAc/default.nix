@@ -6,6 +6,7 @@
     name = "La Frite";
     identifier = "libreComputer-amlS805xAc";
     productPageURL = "https://libre.computer/products/s805x/";
+    supportLevel = "supported";
   };
 
   hardware = {

@@ -4,6 +4,7 @@
     name = "Pinebook (A64)";
     identifier = "pine64-pinebookA64";
     productPageURL = "https://www.pine64.org/pinebook/";
+    supportLevel = "supported";
   };
 
   hardware = {

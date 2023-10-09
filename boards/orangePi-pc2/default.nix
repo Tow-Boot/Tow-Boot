@@ -4,6 +4,7 @@
     name = "PC 2";
     identifier = "orangePi-pc2";
     productPageURL = "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-PC-2.html";
+    supportLevel = "best-effort";
   };
 
   hardware = {

@@ -4,6 +4,7 @@
     name = "A64-LTS";
     identifier = "pine64-pineA64LTS";
     productPageURL = "https://www.pine64.org/devices/single-board-computers/pine-a64-lts/";
+    supportLevel = "supported";
   };
 
   hardware = {

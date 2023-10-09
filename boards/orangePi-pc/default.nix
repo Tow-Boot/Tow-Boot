@@ -4,6 +4,7 @@
     name = "PC";
     identifier = "orangePi-pc";
     productPageURL = "http://www.orangepi.org/orangepipc/";
+    supportLevel = "supported";
   };
 
   hardware = {

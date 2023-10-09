@@ -4,6 +4,7 @@
     name = "ALL-H3-CC H5";
     identifier = "allH3CcH5";
     productPageURL = "https://libre.computer/products/all-h3-cc/";
+    supportLevel = "best-effort";
   };
 
   hardware = {

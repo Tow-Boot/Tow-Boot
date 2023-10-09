@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 let
   inherit (lib)
@@ -45,6 +45,13 @@ in
         '';
         default = null;
         type = with types; nullOr str;
+      };
+      supportLevel = mkOption {
+        type = types.enum (builtins.attrNames config.documentation.supportLevelDescriptions);
+        # NO default, the eval should fail if unset!
+        description = ''
+          Support level for the device.
+        '';
       };
     };
   };

@@ -47,6 +47,56 @@ in
           '';
         };
       };
+      supportLevelDescriptions = mkOption {
+        type = with types; attrsOf attrs;
+        internal = true;
+        readOnly = true;
+        default = {
+          "supported" = {
+            title = "Supported";
+            description = ''
+              These devices are supported, and regularly verified to work.
+            '';
+            order = 0;
+          };
+          "best-effort" = {
+            title = "Best effort";
+            description = ''
+              These devices are almost supported, but lack regular hardware validation by contributors and maintainers.
+
+              They are likely to work just fine.
+            '';
+            order = 1;
+          };
+          "experimental" = {
+            title = "Experimental";
+            order = 5;
+            description = ''
+              These devices are included in the release builds, and may be verified.
+
+              They may still not work as well as better supported devices, though it is intended to support them as best as possible.
+            '';
+          };
+          "unsupported" = {
+            title = "Unsupported";
+            description = ''
+              These devices are not abandoned, but not supported.
+
+              Lower your expectations.
+            '';
+            order = 10;
+          };
+          "abandoned" = {
+            title = "Abandoned";
+            description = ''
+              These devices are still in the repository, but are unmaintained, and abandoned.
+
+              Expect them to be removed.
+            '';
+            order = 11;
+          };
+        };
+      };
     };
   };
 

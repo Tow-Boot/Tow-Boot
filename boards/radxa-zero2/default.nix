@@ -45,6 +45,7 @@ in
     name = "Zero 2";
     identifier = "radxa-zero2";
     productPageURL = "https://wiki.radxa.com/Zero2";
+    supportLevel = "supported";
   };
 
   hardware = {
