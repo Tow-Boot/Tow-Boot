@@ -74,6 +74,8 @@ in
 
     meson64-tools = callPackage ./meson64-tools { };
 
+    uswid = final.python3Packages.callPackage ./uswid { };
+
     mkScript = file: final.runCommand "out.scr" {
       nativeBuildInputs = [
         final.buildPackages.ubootTools

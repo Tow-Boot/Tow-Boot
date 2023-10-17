@@ -92,6 +92,11 @@ in
           RC part of the tag, for pre-release management.
         '';
       };
+      towBootIdentifier = mkOption {
+        internal = true;
+        readOnly = true;
+        default = "${config.Tow-Boot.releaseNumber}${config.Tow-Boot.releaseRC}${config.Tow-Boot.releaseIdentifier}";
+      };
 
       defconfig = mkOption {
         type = types.str;

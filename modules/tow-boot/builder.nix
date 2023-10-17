@@ -19,8 +19,6 @@ let
     version = config.Tow-Boot.uBootVersion;
     structuredConfig = (config.Tow-Boot.structuredConfigHelper version);
   };
-
-  towBootIdentifier = "${config.Tow-Boot.releaseNumber}${config.Tow-Boot.releaseIdentifier}";
 in
 {
   options = {
@@ -100,6 +98,7 @@ in
         , buildInputs
         , nativeBuildInputs
         , postPatch
+        , uswidHelper
         }:
 
         stdenv.mkDerivation ({
@@ -224,6 +223,30 @@ in
             cp .config $out/config/$variant.config
             mkdir -p $out/binaries
             ${installPhase}
+            if test -e $out/binaries; then
+              (
+              echo ":: Adding uSWID data"
+              cd $out/binaries
+              for binary in "${outputName}"*.bin; do
+                printf " - '%s' \n" "$binary"
+                ${/*
+                  Most builds should produce only one output here, but in case other outputs
+                  grow, we'll pre-empt problems by appending the binary name to the tagId.
+
+                  We're referring to tagId as ISO/IEC 19770-2:2015 implies: “a unique
+                  reference for the **specific** […] binary […] If two tagIDs match […] the
+                  underlying products they represent are […] exactly the same”.
+
+                  **Always** treat this tagId as an opaque blob. The useful data it
+                  contains should be found elsewhere.
+                */""}
+                tagId="$(echo $(basename $out)/$binary | sed -e 's/-${stdenv.cc.targetPrefix}/-/')"
+                ${uswidHelper} "$tagId" --compress --save uswid.bin
+                cat uswid.bin >> "$binary"
+                rm uswid.bin
+              done
+              )
+            fi
             runHook postInstall
           '';
 
@@ -240,6 +263,7 @@ in
           uBootVersion
           outputName
           buildUBoot
+          towBootIdentifier
         ;
         inherit (config.Tow-Boot.builder)
           additionalArguments
@@ -250,7 +274,7 @@ in
           postPatch
         ;
         boardIdentifier = config.device.identifier;
-        inherit towBootIdentifier;
+        uswidHelper = config.Tow-Boot.uswid.output.helper;
       });
 
       builder = {
