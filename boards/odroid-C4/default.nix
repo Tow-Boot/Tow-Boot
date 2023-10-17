@@ -11,6 +11,7 @@
 
   hardware = {
     soc = "amlogic-s905x3";
+    mmcBootIndex = "1";
   };
 
   Tow-Boot = {
