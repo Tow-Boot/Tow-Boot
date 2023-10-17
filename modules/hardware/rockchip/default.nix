@@ -97,6 +97,17 @@ in
       };
     })
 
+    (mkIf (anyRockchip) {
+      Tow-Boot = {
+        config = [
+          (helpers: with helpers; {
+            CMD_POWEROFF = yes;
+            SYSRESET_CMD_POWEROFF = yes;
+          })
+        ];
+      };
+    })
+
     # Documentation fragments
     (mkIf (anyRockchip && !isPhoneUX) {
       documentation.sections.installationInstructions =
