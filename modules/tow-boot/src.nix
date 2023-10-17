@@ -74,6 +74,7 @@ in
         Tow-Boot = {
           "tb-2023.07-007-rc1" = "sha256-vAB7MHn5VZEo3fPR7zWADpUMJ14Una90JrXRSPI9T9U=";
           "tb-2023.07-007-rc2" = "sha256-ENE2bSPUfdFqXLmZFBWfYS/sJ6sXqPr2QjO0XdFzido=";
+          "tb-2023.07-007-rc3" = "sha256-/eKHISaHLiNikk4gWoOSIPd2D3xiG1A/TSGUPEzhfZQ=";
         };
       };
 
