@@ -78,27 +78,12 @@ in
         };
       };
 
-      src = if config.Tow-Boot.buildUBoot then
-        let knownHashes = config.Tow-Boot.knownHashes.U-Boot; in
-        mkDefault (pkgs.fetchurl {
-          url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
-          sha256 =
-            if knownHashes ? ${uBootVersion}
-            then knownHashes.${uBootVersion}
-            else builtins.throw "No known hashes for upstream release U-Boot version ${uBootVersion}"
-          ;
-        })
-      else
-        let knownHashes = config.Tow-Boot.knownHashes.Tow-Boot; in
+      src =
         mkDefault (pkgs.fetchFromGitHub {
           repo = "U-Boot";
-          owner = "Tow-Boot";
-          rev = "${tag}";
-          sha256 =
-            if knownHashes ? ${tag}
-            then knownHashes.${tag}
-            else builtins.throw "No known hashes for Tow-Boot-flavoured U-Boot matching tag ${tag}"
-          ;
+          owner = "samueldr"; # wip/tb2307/ppp-dt
+          rev = "2b8f636a910bdbc95373be073892f29220f45a1b";
+          hash = "sha256-G8msC3elWavRZzvmgOyqFuuMbyJtfuYdI2GpEm4+DjE=";
         })
       ;
     };
