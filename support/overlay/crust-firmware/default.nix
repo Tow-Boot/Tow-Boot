@@ -10,13 +10,13 @@
 
 stdenv.mkDerivation rec {
   pname = "crust-firmware";
-  version = "untagged-2023-02-28";
+  version = "0.6";
 
   src = fetchFromGitHub {
     owner = "crust-firmware";
     repo = "crust";
-    rev = "c308a504853e7fdb47169796c9a832796410ece8";
-    sha256 = "sha256-AobVD3Jo/6s0cExHXpYYAqZv/gCplxLlDYVscSCIS6M=";
+    rev = "v${version}";
+    sha256 = "sha256-zalBVP9rI81XshcurxmvoCwkdlX3gMw5xuTVLOIymK4=";
   };
 
   depsBuildBuild = [
