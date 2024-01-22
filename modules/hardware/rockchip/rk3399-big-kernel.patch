@@ -1,0 +1,13 @@
+diff --git a/include/configs/rk3399_common.h b/include/configs/rk3399_common.h
+index 96ba19c659..eef8657258 100644
+--- a/include/configs/rk3399_common.h
++++ b/include/configs/rk3399_common.h
+@@ -39,7 +39,7 @@
+ 	"fdt_addr_r=0x01f00000\0" \
+ 	"fdtoverlay_addr_r=0x02000000\0" \
+ 	"kernel_addr_r=0x02080000\0" \
+-	"ramdisk_addr_r=0x06000000\0" \
++	"ramdisk_addr_r=0x08000000\0" \
+ 	"kernel_comp_addr_r=0x08000000\0" \
+ 	"kernel_comp_size=0x2000000\0"
+ 

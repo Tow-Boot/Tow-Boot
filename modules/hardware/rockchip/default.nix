@@ -47,6 +47,9 @@ in
     (mkIf cfg.rockchip-rk3399.enable {
       system.system = "aarch64-linux";
       Tow-Boot = {
+        patches = [
+          ./rk3399-big-kernel.patch
+        ];
         config = mkIf withSPI [
           (helpers: with helpers; {
             # SPI boot Support
