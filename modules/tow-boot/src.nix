@@ -82,8 +82,8 @@ in
         mkDefault (pkgs.fetchFromGitHub {
           repo = "U-Boot";
           owner = "samueldr"; # wip/tb2307/ppp-dt
-          rev = "2b8f636a910bdbc95373be073892f29220f45a1b";
-          hash = "sha256-G8msC3elWavRZzvmgOyqFuuMbyJtfuYdI2GpEm4+DjE=";
+          rev = "d2a22065a42791c056db08e61758aefab87f8890";
+          hash = "sha256-qEVvvnKy3fdFmU7Qn1U2PMqhf8p228v6+4XtkVGgQgk=";
         })
       ;
     };
