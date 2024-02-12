@@ -44,7 +44,9 @@
         CMD_POWEROFF = lib.mkForce yes;
       })
       (helpers: with helpers; {
-        # Workarounds required for eMMC issues and current patchset.
+        # NOTE: works around an issue with the config, where we hit:
+        #     mmc fail to send stop cmd
+        #     ** fs_devread read error - block
         MMC_IO_VOLTAGE = yes;
         MMC_SDHCI_SDMA = yes;
         MMC_SPEED_MODE_SET = yes;
