@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Tow-Boot | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<div class="homepage-hero">
+<h1>Tow-Boot</h1>
+<h2>What is Tow-Boot?</h2>
+<p><strong>Tow-Boot</strong> a user-friendly, opinionated distribution of <em>U-Boot</em>, where there
+is as few differences in features possible between boards, and a "familiar"
+user interface for an early boot process tool.</p>
+<p>The goal of Tow-Boot is to <strong>make booting boring</strong>.</p>
+</div>
+<h2>Goals</h2>
+<blockquote>
+<p><strong>NOTE</strong>: Some of these goals are work-in-progress, others may not be started.</p>
+</blockquote>
+<h3>Simple and boring</h3>
+<p>Install firmware, boot distro. No other steps.</p>
+<h3>"Normal" BIOS-like experience</h3>
+<p>On boards with dedicated storage for the firmware, the <em>Tow-Boot</em> build should
+be independent from, and not care about the installed system media.</p>
+<p>Update should be handled out-of-band (through a firmware update option in the
+firmware, or from distro-independent systems like <em>fwupd</em>). The firmware is not
+"owned" by the currently running distro. The firmware is not updated or changed
+through package upgrades.</p>
+<p>Having no bootable storage, or all blanked bootable storage should still show
+a "useful" boot interface. (E.g. explaining what to do and giving some basic
+information about the board)</p>
+<p>Configuration should be handled through menu-based interfaces. Options changed
+in the menu interface saved to the firmware storage.</p>
+<h3>Boot modes</h3>
+<p>Support for generic mainline-based ARM distros as a first class citizen. Whether
+they boot using UEFI (preferred), or extlinux-compatible boot.</p>
+<p>See <a href="https://source.denx.de/u-boot/u-boot/-/blob/master/doc/develop/distro.rst"><code>develop/distro.rst</code></a>
+from <em>U-Boot</em> for all the boot modes that aim to be supported.</p>
+<h3>Pretty and boring</h3>
+<p>A logo, instructions on how to to get to the firmware interface. That's it.</p>
+<p>Serial output should stay as verbose as mainline <em>U-Boot</em> is.</p>
+<p>The firmware interface is menu-driven. Though breaking out into hush is
+supported for more involved needs.</p>
+<h3>Unsurprising and boring</h3>
+<p>No needless board-specific or SoC-specific differences in builds.</p>
+<p>Boot order is unsurprising: on shared storage, the storage from which the
+currently running <em>Tow-Boot</em> is running is prioritized by default.</p>
+<p>Bootable targets are listed in the menu driven interface.</p>
+<div class="homepage-acknowledgements">
+<h2>Acknowledgements</h2>
+<p>This project was funded in part through the NGI PET Fund.
+<a href="https://nlnet.nl/PET/">Read more about it on NLnet's website</a>.</p>
+<a href="https://nlnet.nl/NGI0/">
+	<img src="images/NGI0_tag_black_mono.svg" alt="NGI0">
+</a>
+</div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

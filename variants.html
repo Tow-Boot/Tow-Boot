@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Variants | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Variants</h1>
+<ul>
+<li>
+<code>noenv</code> does not save environment anywhere</li>
+<li>
+<code>spi</code> saves the environment to the SPI device</li>
+<li>
+<code>mmcboot</code> does not save environment anywhere</li>
+</ul>
+<h2><code>noenv</code></h2>
+<p>Only the built-in environment is used, read-only. In other words, <code>saveenv</code>
+does nothing useful.</p>
+<p>This variant is to be used with shared firmware storage <em>retrofitted</em> with a
+Tow-Boot installation. In other words, in a system that does not provide a
+protective partition for the firmware.</p>
+<p>This variant is also used to build the installer images, as it ensures no stray
+environment will change the behaviour of the installer <em>when booted form the
+embedded Tow-Boot</em>.</p>
+<blockquote>
+<p><strong>NOTE</strong>: This variant is currently used on all shared firwmare storage
+installations. In other words, using the protective partition does not
+<em>currently</em> grant the ability to save the environment.</p>
+</blockquote>
+<h2><code>spi</code></h2>
+<p>This variant is to be used on systems with SPI Flash as dedicated firmware
+storage.</p>
+<h2><code>mmcboot</code></h2>
+<p>This variant is to be used on systems with eMMC Hardware boot partitions
+as dedicated firmware storage.</p>
+<hr>
+<h2>Upcoming changes</h2>
+<p>It is expected that two other types of variants will come in the future. They
+will provide environment facilities for the shared firmware storage
+installations with protective partitions.</p>
+<p>One will save the environment at the end of the protective partition.</p>
+<p>The other, spcecialized for the Raspberry Pi family of hardware, will save the
+environment as a file on the Tow-Boot firmware partition.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

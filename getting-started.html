@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Getting Started | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Getting Started</h1>
+<p>There are two main general ways to install <em>Tow-Boot</em>. Installing to a dedicated
+platform firmware storage media, if your board supports it, or installing
+on shared storage.</p>
+<p>To know whether your board supports the dedicated storage for the platform
+firmware, consult the documentation for your board.</p>
+<p>On most boards supporting dedicated storage, it is possible to install using
+the shared storage strategy, but this is discouraged. The benefits of writing
+the firmware to dedicated storage far outweighs the drawbacks compared to using
+the shared storage strategy.</p>
+<p>In all cases, once the firmware has been installed, continue to the
+<a href="installing-an-operating-system.html"><em>Installing an Operating System</em></a> section
+from this manual.</p>
+<h2>Dedicated Storage</h2>
+<p>This will use the automated menu-driven installer. Installing manually is also
+possible, but out of scope for this guide.</p>
+<p>Learn about the CPU boot order of your board, and ensure no dedicated or shared
+storage has priority over the one you're going to use.</p>
+<blockquote>
+<p><strong>NOTE</strong>: If another Platform Firmware is present on the dedicated
+storage for your board, it is possible that it will have priority.</p>
+<p>You may need to erase it, or do other manipulations on your board to skip it
+for a single boot.</p>
+</blockquote>
+<p>After writing the firmware, the installer will report success, and depending,
+either reboot on any key input, or allow you to go back to the main menu, for
+the graphical installer.</p>
+<p>Assuming the dedicated storage has priority, or that the SD card has been
+removed, it should now be booting in Tow-Boot from the dedicated storage.</p>
+<p>You can now install a Linux distribution, without having to care about keeping
+the storage media formatted in a specific manner.</p>
+<h3>For SPI</h3>
+<ol>
+<li>Write the <code>spi.installer.img</code> file to an SD card or another valid storage
+media for your particular board.
+<pre><code class="language-shell-session"> # dd if=spi.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+</li>
+<li>Boot the media on your board</li>
+<li>Use the menu-driven interface to choose <strong>Flash firmware to SPI</strong>.</li>
+</ol>
+<h3>For eMMC Boot</h3>
+<ol>
+<li>Write the <code>mmcboot.installer.img</code> file to an SD card or another valid storage
+media for your particular board.
+<pre><code class="language-shell-session"> # dd if=mmcboot.installer.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+</li>
+<li>Boot the media on your board</li>
+<li>Use the menu-driven interface to choose <strong>Flash firmware to eMMC Boot</strong>.</li>
+</ol>
+<h2>Shared storage strategy</h2>
+<p>This is called a <em>strategy</em> because we are making plans that we have to follow.</p>
+<p>With this method, we write what amounts to a <em>template</em> disk image, which is
+already formatted in a controlled manner. The partition table is likely to be
+GPT formatted, but some SoC families force the use of MBR.</p>
+<p>The disk will contain a partition, this partition serves to <strong>protect</strong> the
+platform firmware. It is important to know that with almost all SoC
+families you <strong>cannot</strong> move the partition. It may be possible to resize it,
+but the size has been chosen to allow further expansion if needed.</p>
+<ol>
+<li>
+<p>Write the <code>shared.disk-image.img</code> file to an SD card or another valid storage
+media for your particular board.</p>
+<pre><code class="language-shell-session"> # dd if=shared.disk-image.img of=/dev/XXX bs=1M oflag=direct,sync status=progress
+</code></pre>
+</li>
+<li>
+<p>Some partitioning tools require the secondary GPT to be at the end of the
+disk before attempting any operations. Grow the GPT partition to the physical
+size of the medium. (This operation is a no-op that forces a rewrite of the
+partition table.)</p>
+<pre><code class="language-shell-session"> # sfdisk --append /dev/XXX
+</code></pre>
+</li>
+<li>
+<p>Boot the media on your board</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>NOTE</strong>: When installing your operating system, make sure that you do not
+re-create the partition table from scratch, only edit the existing one.
+The <a href="installing-an-operating-system.html"><em>Installing an Operating System</em></a>
+section from this manual will remind you.</p>
+</blockquote>
+<p>Using the <em>shared storage</em> strategy, you can simulate <em>dedicated storage</em> by
+<strong>not</strong> installing and using the storage media the platform firmware lives
+on.</p>
+<h2>Serial</h2>
+<p>Many <code>AArch64</code> devices do not come with a display or can be used in headless mode (as an example - a small home server which doesn't need a display).</p>
+<p>In those cases, using serial to interact with the device can be required. Especially before your operating system of choice is loaded.</p>
+<p>Tow-Boot uses the same baud rate for all platforms and devices: <code>115200</code>. This applies to all platforms, even those which generally default to another serial baud rate.</p>
+<p>You can use the serial console software of your preference - <code>screen</code> , <code>picocom</code> , <code>minicom</code> and others.</p>
+<h3>Examples for connecting with serial</h3>
+<p>Examples to connect to the device while installing or booting Tow-Boot from another device:</p>
+<pre><code class="language-shell-session">$ screen /dev/ttyUSB0 115200
+...
+Press Ctrl+a and K to exit
+</code></pre>
+<pre><code class="language-shell-session">$ picocom /dev/ttyUSB0 -b 115200
+...
+Press Ctrl+a and Ctrl+x to exit
+</code></pre>
+<pre><code class="language-shell-session">$ minicom -D /dev/ttyUSB0 -b 115200
+...
+Press Ctrl+a and X to exit
+</code></pre>
+<p>To learn more, read the <a href="differences-from-u-boot.html"><em>Differences from U-boot</em></a> section.</p>
+<h2>Building Tow-Boot</h2>
+<p>This is not a <em>getting started</em> topic exactly. This is covered in the
+<em><a href="development-guide.html">Development Guide</a></em> section.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

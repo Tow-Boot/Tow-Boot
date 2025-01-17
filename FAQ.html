@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>FAQ | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>FAQ</h1>
+<h2>Can I install any Linux distribution?</h2>
+<p>Maybe.</p>
+<p>The Linux distribution installer image has to support your hardware.</p>
+<p>Additionally, the distribution has to provide either a U-Boot compatible image,
+or a UEFI installer.</p>
+<p>Using a UEFI installer, and installing as a UEFI system is the preferred
+method.</p>
+<h2>So I can install to an SD card that boots in any <code>AArch64</code> devices?</h2>
+<p>Yes and no.</p>
+<p>First, the "any <code>AArch64</code> devices" has to assume that the operating system can
+run on those devices. For this question, we assume the operating system does.</p>
+<p>It all depends on whether the systems require dedicated or shared storage for
+the firmware. If the system requires shared storage, and can only start the
+platform firmware from the SD card, the SD card must contain its firmware. This
+will probably not work well for two different enough platforms.</p>
+<p>Though, still assuming the operating system can boot on all the devices you
+want, if there is dedicated storage for the firmware on all of them, it should
+work fine. Up to one system with shared storage using the pre-built images.</p>
+<p>If you craft your own image, you might be able to put more than one firmware
+for shared storage, if the location the different SoC uses does not conflict.</p>
+<h2>Why isn't this upstream?</h2>
+<p>There are four main reasons it could be. The first is easy: because I've not
+gotten around to posting a patch for it yet. Please press us to it for these
+kind of changes!</p>
+<p>The second is that the implementation is more experimental than final. It is
+good enough for <em>Tow-Boot</em>, but the implementation needs more finishing touches
+and more testing before being sent upstream. Think of these changes as if it
+was part of a "staging" workflow, first maturing here.</p>
+<p>The third is for changes that go against the opinions of upstream. These may
+be changes to default options, or opinionated changes made in an unacceptable
+form for upstream. Generally speaking, those changes represent opinionated
+user-experience changes.</p>
+<p>Finally, the main fourth reason is for board enablement. Generally speaking
+those changes are provided by or on behalf of the vendor, and it is not our job
+to provide those upstream. We try to avoid board enablement that have not
+already been sent to upstream.</p>
+<h2>Why use this instead of my distro's <em>U-Boot</em> build?</h2>
+<p>In this project's opinion, the distribution shouldn't be managing the firmware
+used to boot the system.</p>
+<p>Confusingly enough, <em>U-Boot</em> is <strong>both</strong> a firmware (think "BIOS") and a
+bootloader (think "grub").</p>
+<p>The firmware should be a basic constant on the system, with well-defined
+semantics allowing either a bootloader or an operating system to start.</p>
+<p>Should all the distributions <em>have to</em> build and manage all the BIOS for all
+your boring <code>x86_64</code> machines too?</p>
+<h2>Why the <em>Tow-Boot</em> name?</h2>
+<p>Because of the pun on towboats, and the upstream pun on
+<a href="https://en.wikipedia.org/wiki/U-boat">U-Boat</a>.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

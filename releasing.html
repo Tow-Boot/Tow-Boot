@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Making a release | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Making a release</h1>
+<h2>Prep work</h2>
+<h3>Check for "foundational" software upgrades</h3>
+<p>Mainly <em>Trusted Firmware-A</em>. If a new release was made, upgrade it.</p>
+<h2>At release time</h2>
+<p>We have <strong>one</strong> commit with the released name/version un-suffixed.</p>
+<p>Use the <code>support/release.sh</code> script to update the version numbers, make the
+commits and tag accordingly.</p>
+<h2>After the release</h2>
+<h3>Update Nixpkgs</h3>
+<p>Not strictly needed, but upgrading Nixpkgs frequently enough helps us stay on
+top of updates for dependencies.</p>
+<p>Updating the pinned Nixpkgs after the release ensures we're testing the change
+for the longest time possible.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

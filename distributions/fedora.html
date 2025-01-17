@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Fedora | Tow-Boot</title>
+  <base href=".." />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Fedora</h1>
+<p>Notes specific to Fedora.</p>
+<blockquote>
+<p><em>These notes are given as a best effort.</em>
+This is not an installation guide, only notes about possible issues.</p>
+</blockquote>
+<hr>
+<h2>Partitioning shared storage with the graphical installer</h2>
+<p>When using the <strong>shared firmware storage strategy</strong>, you will need to be
+careful with the partitioning. Pay attention to what the installer will do when
+partitioning the disk.</p>
+<p>Use your preferred tool to partition your disk as desired, make sure to include
+an EFI system partition (ESP) big enough.</p>
+<p>In the installer, choose <em>Custom</em> and add mount points and format the
+partitions you have created.</p>
+<blockquote>
+<p>No testing with <em>Advanced-Custom (Blivet-GUI)</em> was done, but assuming it will
+not re-write the partition table from scratch and not touch the firmware
+partition, it may work as well.</p>
+</blockquote>
+<p>When using <strong>dedicated firmware storage</strong>, nothing special has to be done to
+keep the <em>platform firmware</em> working.</p>
+<h2>Bootloader Installation</h2>
+<p>The following error may happen near the end of the installation:</p>
+<blockquote>
+<p>Failed to set new efi boot target. This is most likely a kernel or firmware bug.</p>
+</blockquote>
+<p>This is a known limitation with <em>U-Boot</em> and <em>Tow-Boot</em>.</p>
+<p>You can ignore this error and continue with the installation (<strong>Yes</strong>).</p>
+<p>Additionally, the EFI bootloader shim appears not to work under the conditions.</p>
+<blockquote>
+<p><strong>NOTE</strong> These manipulations were written by someone not familiar with
+Fedora. Please suggest better supported alternatives.</p>
+</blockquote>
+<p>You will need to do the following manipulation in the ESP after the
+installation, before rebooting.</p>
+<pre><code>$ sudo -i
+# cd /mnt/sysroot/boot/efi/EFI/BOOT/
+# mv BOOTAA64.EFI _BOOTAA64.EFI 
+# cp /mnt/sysroot/boot/efi/EFI/fedora/grubaa64.efi BOOTAA64.EFI
+</code></pre>
+<p>This will install GRUB as the default fallback bootloader location. Note that
+this means that updates to GRUB from Fedora may not apply as expected.</p>
+<p>It may be preferable to, instead, install <em>rEFInd</em> at the fallback bootloader
+location (<code>/boot/efi/EFI/BOOT/BOOTAA64.EFI</code>).</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

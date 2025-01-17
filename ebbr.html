@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>EBBR Compliance | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>EBBR Compliance</h1>
+<p>This document describes how compliant and non-compliant this project is.</p>
+<p>The specification is available here:</p>
+<ul>
+<li><a href="https://arm-software.github.io/ebbr/">Embedded Base Boot Requirements (EBBR) Specification</a></li>
+</ul>
+<p>At the time of last updating this document the EBBR specification was at
+version <strong>2.0.0</strong>.</p>
+<blockquote>
+<p><em>Any compliance issues missing from this document means either a
+documentation bug, and  it should be added to this document, or a
+non-compliance issue that should preferably be fixed.</em></p>
+</blockquote>
+<hr>
+<h2>Platform specific notes</h2>
+<h3>Allwinner</h3>
+<p>With shared storage, as allowed by <em>4.1.1 GPT partitioning</em>, reduces the
+<em>NumberOfPartitionEntries</em> value to make the required offset (LBA16) available.</p>
+<h3>Amlogic</h3>
+<p>With shared storage, as allowed by <em>4.1.1.1. MBR partitioning</em>, the partition
+scheme is MBR only. LBA1 is used by the platform <em>Boot ROM</em>, which conflicts
+with the GPT data structures.</p>
+<h3>Raspberry Pi</h3>
+<p>Contrary to <em>4.1. Partitioning of Shared Storage</em> and <em>4.1.1. GPT partitioning</em>,
+the shared storage disk images for the Raspberry Pi platforms use an hybrid
+partitioning scheme.</p>
+<p>In this scheme, the <em>protective MBR</em> presents the firmware partition in a way
+the <em>Boot ROM</em> of these platforms can use. This is the only allowed use of the
+<em>protective MBR</em>. End-users should only edit the GPT entries, and ignore the
+existence of the <em>protective MBR</em>.</p>
+<p>We are not strictly complying here mainly because it allows using the GPT and
+UEFI semantics better on a platform where we can.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

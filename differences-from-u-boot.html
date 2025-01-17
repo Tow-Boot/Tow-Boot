@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="en" class="without-js">
+<head>
+  <title>Differences from U-Boot | Tow-Boot</title>
+  <base href="" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles/index.css" type="text/css" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <meta property="og:image" content="logo/opengraph-image.png" />
+  <script>
+    var html = document.documentElement;
+    html.className = html.className.replace("without-js", "with-js");
+  </script>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1><a href="./">Tow-Boot</a></h1>
+      <nav>
+        <ul>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="devices/index.html">Devices</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/releases">Releases</a></li>
+          <li><a href="https://github.com/Tow-Boot/Tow-Boot/">Code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="generic-layout">
+
+<h1>Differences from U-Boot</h1>
+<p>Tow-Boot tries to stay in-line with how U-Boot works. This is to make the
+process of changing back and forth less painful, if desired. It also helps with
+upstreaming changes back into U-Boot.</p>
+<p>This document lists the breaking changes compared to U-Boot.</p>
+<hr>
+<h2>Behaviour</h2>
+<h3>Serial is always at 115200</h3>
+<p>U-Boot uses the vendor's <em>usual</em> serial baud rate. This is fine when trying to
+stay compatible with the vendor's ecosystem and usual ways of doing.</p>
+<p>This is problematic when working and documenting across different platforms.
+Having the same software act differently because it is booted on a different
+computer may be surprising.</p>
+<p>This is why <strong>115200</strong> is the serial baud rate. To date, no platform was found
+to be incompatible with this baud rate.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="sitemap.html">Sitemap</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
