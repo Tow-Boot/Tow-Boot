@@ -13,6 +13,7 @@ let
     "allwinner-a64"
     "allwinner-h3"
     "allwinner-h5"
+    "allwinner-h6"
   ];
   anyAllwinner = lib.any (soc: config.hardware.socs.${soc}.enable) allwinnerSOCs;
   anyAllwinner64 = anyAllwinner && config.system.system == "aarch64-linux";
@@ -37,6 +38,12 @@ in
         type = types.bool;
         default = false;
         description = "Enable when SoC is Allwinner H5";
+        internal = true;
+      };
+      allwinner-h6.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Allwinner H6";
         internal = true;
       };
     };
@@ -101,6 +108,12 @@ in
     })
     (mkIf cfg.allwinner-h5.enable {
       system.system = "aarch64-linux";
+    })
+    (mkIf cfg.allwinner-h6.enable {
+      system.system = "aarch64-linux";
+      Tow-Boot.builder.additionalArguments = {
+        BL31 = lib.mkForce "${pkgs.Tow-Boot.armTrustedFirmwareAllwinnerH6}/bl31.bin";
+      };
     })
 
     # Documentation fragments
