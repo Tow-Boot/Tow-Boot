@@ -13,6 +13,7 @@ let
     "allwinner-a64"
     "allwinner-h3"
     "allwinner-h5"
+    "allwinner-s3"
   ];
   anyAllwinner = lib.any (soc: config.hardware.socs.${soc}.enable) allwinnerSOCs;
   anyAllwinner64 = anyAllwinner && config.system.system == "aarch64-linux";
@@ -37,6 +38,12 @@ in
         type = types.bool;
         default = false;
         description = "Enable when SoC is Allwinner H5";
+        internal = true;
+      };
+      allwinner-s3.enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable when SoC is Allwinner S3";
         internal = true;
       };
     };
@@ -101,6 +108,9 @@ in
     })
     (mkIf cfg.allwinner-h5.enable {
       system.system = "aarch64-linux";
+    })
+    (mkIf cfg.allwinner-s3.enable {
+      system.system = "armv7l-linux";
     })
 
     # Documentation fragments

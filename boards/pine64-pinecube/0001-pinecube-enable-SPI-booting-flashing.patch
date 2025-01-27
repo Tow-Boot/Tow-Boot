@@ -1,0 +1,71 @@
+From 2467b4f793a13a4f384e08cd0e1a54481fdd74e0 Mon Sep 17 00:00:00 2001
+From: Daniel Fullmer <danielrf12@gmail.com>
+Date: Tue, 27 Oct 2020 18:44:03 -0700
+Subject: [PATCH] pinecube: enable SPI booting/flashing
+
+Co-authored-by: Samuel Dionne-Riel <samuel@dionne-riel.com>
+---
+ arch/arm/dts/sun8i-s3-pinecube.dts | 3 ++-
+ arch/arm/mach-sunxi/Kconfig        | 2 +-
+ configs/pinecube_defconfig         | 4 ++++
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/sun8i-s3-pinecube.dts b/arch/arm/dts/sun8i-s3-pinecube.dts
+index 20966e954ed..e5c19a201e4 100644
+--- a/arch/arm/dts/sun8i-s3-pinecube.dts
++++ b/arch/arm/dts/sun8i-s3-pinecube.dts
+@@ -14,6 +14,7 @@
+ 
+ 	aliases {
+ 		serial0 = &uart2;
++		spi0 = &spi0;
+ 	};
+ 
+ 	chosen {
+@@ -207,7 +208,7 @@
+ 	flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-		compatible = "winbond,w25q128", "jedec,spi-nor";
++		compatible = "xtx,xt25f128b", "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <40000000>;
+ 	};
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index e712a895340..8fc2cfc88ef 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -1010,7 +1010,7 @@ config SPL_STACK_R_ADDR
+ 
+ config SPL_SPI_SUNXI
+ 	bool "Support for SPI Flash on Allwinner SoCs in SPL"
+-	depends on MACH_SUN4I || MACH_SUN5I || MACH_SUN7I || MACH_SUNXI_H3_H5 || MACH_SUN50I || MACH_SUN8I_R40 || MACH_SUN50I_H6 || MACH_SUNIV
++	depends on MACH_SUN4I || MACH_SUN5I || MACH_SUN7I || MACH_SUN8I || MACH_SUNXI_H3_H5 || MACH_SUN50I || MACH_SUN8I_R40 || MACH_SUN50I_H6 || MACH_SUNIV
+ 	help
+ 	  Enable support for SPI Flash. This option allows SPL to read from
+ 	  sunxi SPI Flash. It uses the same method as the boot ROM, so does
+diff --git a/configs/pinecube_defconfig b/configs/pinecube_defconfig
+index 28e347b4d95..0be9352228f 100644
+--- a/configs/pinecube_defconfig
++++ b/configs/pinecube_defconfig
+@@ -7,13 +7,17 @@ CONFIG_SUNXI_DRAM_DDR3_1333=y
+ CONFIG_DRAM_CLK=504
+ CONFIG_DRAM_ODT_EN=y
+ CONFIG_I2C0_ENABLE=y
++CONFIG_SPL_SPI_SUNXI=y
+ # CONFIG_HAS_ARMV7_SECURE_BASE is not set
+ CONFIG_SPL_I2C=y
+ CONFIG_SPL_SYS_I2C_LEGACY=y
+ CONFIG_SYS_I2C_MVTWSI=y
+ CONFIG_SYS_I2C_SLAVE=0x7f
+ CONFIG_SYS_I2C_SPEED=400000
++CONFIG_DM_MTD=y
++CONFIG_SPI_FLASH_SFDP_SUPPORT=y
+ CONFIG_SPI_FLASH_WINBOND=y
++CONFIG_SPI_FLASH_XTX=y
+ # CONFIG_NETDEVICES is not set
+ CONFIG_AXP209_POWER=y
+ CONFIG_AXP_DCDC2_VOLT=1250
+-- 
+2.38.0
+
