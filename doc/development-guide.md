@@ -50,6 +50,8 @@ want to build, here's how you can build the `uBoot-sandbox` board.
 After the build is finished successfully, a `result` symlink will refer to the
 build output. The build output by default is the content of the archive.
 
+The list of all boards can be found in the `boards` directory.
+
 
 I want to build my WIP fork of the Tow-Boot-flavoured U-Boot
 ------------------------------------------------------------
