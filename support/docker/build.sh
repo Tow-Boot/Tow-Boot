@@ -61,11 +61,20 @@ if [ -e /Tow-Boot ]; then
 
 	stderr.printf "\n(Unwrapping store paths...)\n"
 
+	proxy_dir="/tmp-proxy-dir"
+	mkdir -p "$proxy_dir"
+
 	for f in *; do
 		target="$(readlink -f "$f")"
 		rm -rf "$current_dir/$f"
 		stderr.printf "%s -> %s\n" "$f" "$target"
-		cp -r "$target" "$current_dir/$f"
+
+		# Docker on Mac fails to copy into read-only `result` directory
+		# So we copy into proxy directory within container and add write permissions first
+		cp -r "$target" "$proxy_dir/$f"
+		chmod -R u+w "$proxy_dir/$f"
+
+		mv "$proxy_dir/$f" "$current_dir/$f"
 		chown -R "$REAL_UID:$REAL_GID" "$current_dir/$f"
 	done
 else
