@@ -5,6 +5,11 @@ def githubURL(device)
   "https://github.com/Tow-Boot/Tow-Boot/tree/released/boards/#{device}"
 end
 
+def downloadUrl(device)
+  $towBootVersion = ENV["towBootVersion"]
+  "https://github.com/Tow-Boot/Tow-Boot/releases/download/release-#{$towBootVersion}/#{device}-#{$towBootVersion}.tar.xz"
+end
+
 def yesno(bool)
   if bool
     "yes"
@@ -20,6 +25,7 @@ COLUMNS = [
   { key: "device.name",         name: "Name" },
   { key: "hardware.soc",        name: "SoC" },
   { key: "device.supportLevel.title", name: "Support level" },
+  { key: "generated.download",        name: "Download" },
 ]
 
 $out = ENV["out"]
@@ -78,6 +84,8 @@ File.open(File.join($out, "devices/index.md"), "w") do |file|
       value = data.dig(*(col[:key].split(".")))
       if col[:key] == "device.identifier"
         file.print(" [`#{value}`](devices/#{identifier}.md) |")
+      elsif col[:key] == "generated.download"
+        file.print(" [Download](#{downloadUrl(identifier)})")
       else
         file.print(" [#{value}](devices/#{identifier}.md) |")
       end
@@ -150,6 +158,8 @@ $devicesInfo.values.each do |info|
           <dd>#{yesno(info["hardware"]["withSPI"] || info["hardware"]["withMMCBoot"])}</dd>
         <dt>Architecture</dt>
           <dd>#{info["system"]["system"]}</dd>
+        <dt>Download</dt>
+          <dd><a href="#{downloadUrl(identifier)}">Compiled Binary</a></dd>
         <dt>Source</dt>
           <dd><a href="#{githubURL(identifier)}">Tow-Boot repository</a></dd>
         #{if links.length > 0 then

@@ -20,6 +20,7 @@ runCommand "Tow-Boot-docs-devices" {
     ruby
     glibcLocales
   ];
+  towBootVersion = (import (src + "/release.nix") {}).version;
   inherit devicesDir devicesInfo;
 }
 ''
