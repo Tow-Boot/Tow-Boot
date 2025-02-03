@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs)
-    fetchpatch
-  ;
   inherit (lib)
     mkIf
     mkMerge

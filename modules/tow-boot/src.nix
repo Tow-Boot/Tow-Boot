@@ -64,20 +64,20 @@ in
 
       knownHashes = {
         U-Boot = {
-          "2021.01" = "sha256-tAfhUQp06GO4tctCokYlNE8ODC/HWC2MhmvYmTZ9BFQ=";
-          "2021.04" = "sha256-DUOLG7XM61ehjqLeSg1R975bBbmHF98Fk4Y24Krf4Ro=";
-          "2021.07" = "sha256-MSt+6uRFgdE2LDo/AsKNgGZHdWyCuoxyJBx82+aLp34=";
-          "2021.10" = "1m0bvwv8r62s4wk4w3cmvs888dhv9gnfa98dczr4drk2jbhj7ryd";
-          "2022.01" = "sha256-gbRUMifbIowD+KG/XdvIE7C7j2VVzkYGTvchpvxoBBM=";
-          "2022.04" = "sha256-aOBlQTkmd44nbsOr0ouzL6gquqSmiY1XDB9I+9sIvNA=";
-          "2022.07" = "sha256-krCOtJwk2hTBrb9wpxro83zFPutCMOhZrYtnM9E9z14=";
-          "2022.10" = "sha256-ULRIKlBbwoG6hHDDmaPCbhReKbI1ALw1xQ3r1/pGvfg=";
-          "2023.01" = "sha256-aUI7rTgPiaCRZjbonm3L0uRRLVhDCNki0QOdHkMxlQ8=";
-          "2023.04" = "sha256-4xyskVRf9BtxzsXYwir9aVZFzW4qRCzNrKzWBTQGk0E=";
-          "2023.07" = "sha256-EukhtGaucxzbw1Xmgyt/IryQsBrs7vmIb5iquns5QwA=";
-          "2023.10" = "sha256-4A5sbwFOBGEBc50I0G8yiBHOvPWuEBNI9AnLvVXOaQA=";
-          "2024.01" = "sha256-uZYR8e0je/NUG9yENLaMlqbgWWcGH5kkQ8swqr6+9bM=";
-          "2024.04" = "sha256-GKhT/jn6160DqQzC1Cda6u1tppc13vrDSSuAUIhD3Uo=";
+          "2021.01" = "sha256-tI80LPNs8jY8Ir78VdHP0NOMZvjkgICWTE1dVUruVIg=";
+          "2021.04" = "sha256-QxrTPcx0n0NWUJ990EuIWyOBtknW/fHDRcrYP0yQzTo=";
+          "2021.07" = "sha256-e7sXjV+O1BFDtKAhU8kdAk2mWxPTGOvJ5RU3upMM1VM=";
+          "2021.10" = "sha256-2CcIHGbm0HPmY63Xsjaf/Yy78JbRPNhmvZmRJAyla2U=";
+          "2022.01" = "sha256-kKxo62/TI0HD8uZaL39FyJc783JsErkfspKsQ6uvEMU=";
+          "2022.04" = "sha256-iQNy28xMlixQJLc97hfOBwJ0bod1XYRjgIE1UhFslCw=";
+          "2022.07" = "sha256-1EONRmYLsD0uxo+kpE6mLIYkYMU09Yt0EvSbHhj5prw=";
+          "2022.10" = "sha256-L6AXbJEDx+KoMvqBuJYyIyK2Xn2zyF21NH5mMNvygmM=";
+          "2023.01" = "sha256-30fe8klLHRsEtEQ1VpYh4S+AflG5yCQYWlGmpWyFL8w=";
+          "2023.04" = "sha256-k4CgiG6rOdgex+YxMRXqyJF7NFqAN9R+UKc3Y/+7jV0=";
+          "2023.07" = "sha256-hd9ySV4uUczfigtwrupVlEs8JkK9yX44kaBJgDAykk4=";
+          "2023.10" = "sha256-f0xDGxTatRtCxwuDnmsqFLtYLIyjA5xzyQcwfOy3zEM=";
+          "2024.01" = "sha256-0Da7Czy9cpQ+D5EICc3/QSZhAdCBsmeMvBgykYhAQFw=";
+          "2024.04" = "sha256-IlaDdjKq/Pq2orzcU959h93WXRZfvKBGDO/MFw9mZMg=";
         };
         Tow-Boot = {
           "tb-2023.07-007" = "sha256-qEVvvnKy3fdFmU7Qn1U2PMqhf8p228v6+4XtkVGgQgk=";
@@ -86,9 +86,9 @@ in
 
       src = if config.Tow-Boot.buildUBoot then
         let knownHashes = config.Tow-Boot.knownHashes.U-Boot; in
-        mkDefault (pkgs.fetchurl {
+        mkDefault (pkgs.Tow-Boot.fetchzip {
           url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${uBootVersion}.tar.bz2";
-          sha256 =
+          hash =
             if knownHashes ? ${uBootVersion}
             then knownHashes.${uBootVersion}
             else builtins.throw "No known hashes for upstream release U-Boot version ${uBootVersion}"
@@ -96,11 +96,11 @@ in
         })
       else
         let knownHashes = config.Tow-Boot.knownHashes.Tow-Boot; in
-        mkDefault (pkgs.fetchFromGitHub {
+        mkDefault (pkgs.Tow-Boot.fetchFromGitHub {
           repo = "U-Boot";
           owner = "Tow-Boot";
           rev = "${tag}";
-          sha256 =
+          hash =
             if knownHashes ? ${tag}
             then knownHashes.${tag}
             else builtins.throw "No known hashes for Tow-Boot-flavoured U-Boot matching tag ${tag}"

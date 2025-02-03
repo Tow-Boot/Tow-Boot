@@ -26,7 +26,7 @@ let
       owner = "ARM-software";
       repo = "arm-trusted-firmware";
       rev = "v${version}";
-      sha256 = "sha256-CAuftVST9Fje/DWaaoX0K2SfWwlGMaUFG4huuwsTOSU=";
+      hash = "sha256-CAuftVST9Fje/DWaaoX0K2SfWwlGMaUFG4huuwsTOSU=";
     };
 
     depsBuildBuild = [ buildPackages.stdenv.cc ];

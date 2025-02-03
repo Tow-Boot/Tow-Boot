@@ -1,6 +1,5 @@
 { stdenvNoCC
 , lib
-, fetchpatch
 , gptfdisk
 , buildPackages
 , utillinux

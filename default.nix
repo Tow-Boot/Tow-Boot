@@ -3,7 +3,12 @@
 , silent ? false
 , pkgs ? import ./nixpkgs.nix { }
 , src ? null
+, config ? null
 }:
+
+if !(builtins.isNull config)
+then throw "hint: use the `configuration` argument to provide a configuration fragment."
+else
 
 let
   release-tools = import ./support/nix/release-tools.nix { inherit pkgs; };

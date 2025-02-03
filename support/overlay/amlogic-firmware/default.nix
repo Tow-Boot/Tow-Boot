@@ -11,7 +11,7 @@ stdenv.mkDerivation {
     owner = "LibreELEC";
     repo = "amlogic-boot-fip";
     rev = "ac20772f44b2b74c8f55331b5c91a277d0bfbc37";
-    sha256 = "1z739644655w1wbfi3456qg9k1izrmn2xci6vjh4sb55cxydja15";
+    hash = "sha256-JSjZfGelLE2g3CayLmzNP4aZHjaFjOgWD7wUQ4hJ4/w=";
   };
 
   installPhase = ''

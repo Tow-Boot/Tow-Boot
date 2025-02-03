@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     owner = "repk";
     repo = pname;
     rev = "c545568fdd6a0470da4265a3532f5e652646707f";
-    sha256 = "05799f3gdxjqcv0s7bba724n8pxr0hldcj0p5n9ab92vgasgnpcq";
+    hash = "sha256-mF37tHpbpKWSLRdI1igEuV9kiThqraPBZlj29oZL6RQ=";
   };
 
   buildInputs = [

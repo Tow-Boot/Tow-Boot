@@ -7,7 +7,7 @@ let
     versionOlder
     versionAtLeast
   ;
-  inherit (pkgs)
+  inherit (pkgs.Tow-Boot)
     fetchpatch
   ;
 
@@ -16,10 +16,10 @@ let
   ;
 
   tbPatch =
-    rev: sha256:
+    rev: hash:
     fetchpatch {
       url = "https://github.com/Tow-Boot/U-Boot/commit/${rev}.patch";
-      inherit sha256;
+      inherit hash;
     }
   ;
 in
@@ -40,7 +40,7 @@ mkIf config.Tow-Boot.buildUBoot
     # common: Kconfig: Fix CMD_BMP/BMP dependency
     (fetchpatch {
       url = "https://patchwork.ozlabs.org/project/uboot/patch/20230709231810.633044-1-samuel@dionne-riel.com/raw/";
-      sha256 = "sha256-hBv2BeLjyUr4ydTieNv8AZ0FGXqwKHo+2+GyLGgodUQ=";
+      hash = "sha256-hBv2BeLjyUr4ydTieNv8AZ0FGXqwKHo+2+GyLGgodUQ=";
     })
   ]
   ;

@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     owner = "crust-firmware";
     repo = "crust";
     rev = "v${version}";
-    sha256 = "sha256-zalBVP9rI81XshcurxmvoCwkdlX3gMw5xuTVLOIymK4=";
+    hash = "sha256-zalBVP9rI81XshcurxmvoCwkdlX3gMw5xuTVLOIymK4=";
   };
 
   depsBuildBuild = [

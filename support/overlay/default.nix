@@ -1,1 +1,1 @@
-{ pkgs }: pkgs.extend (import ./overlay.nix)
+{ pkgs ? import ../../nixpkgs.nix {} }: pkgs.extend (import ./overlay.nix)

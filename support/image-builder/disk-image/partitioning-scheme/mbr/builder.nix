@@ -1,6 +1,5 @@
 { stdenvNoCC
 , lib
-, fetchpatch
 , buildPackages
 , utillinux
 , config

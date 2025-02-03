@@ -7,7 +7,7 @@ stdenv.mkDerivation {
   src = fetchgit {
     url = "git://git.openwrt.org/project/make_ext4fs.git";
     rev = "eebda1d55d9701ace2700d7ae461697fadf52d1f";
-    sha256 = "03lqd5qy3nli9mmnlbgxwsplwz8v10cyjyzl1fxcfz8jvzr00c61";
+    hash = "sha256-wTAA8t8Sfce6C/R76RkIG31Or+b9LWprTZHa4XFpmA4=";
   };
 
   patches = [
