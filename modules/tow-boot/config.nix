@@ -148,11 +148,11 @@ in
       # For now, it's outright disabled, we will need to re-evaluate our
       # infra to work with bootstd, but only after a larger proportion of
       # the devices default to `bootstd`.
-      BOOTSTD = no;
-      BOOTSTD_DEFAULTS = no;
-      DISTRO_DEFAULTS = yes;
-      USE_BOOTCOMMAND = yes;
-      BOOTCOMMAND = freeform ''"run distro_bootcmd"'';
+      BOOTSTD = option no;
+      BOOTSTD_DEFAULTS = option no;
+      DISTRO_DEFAULTS = option yes;
+      USE_BOOTCOMMAND = option yes;
+      BOOTCOMMAND = option (freeform ''"run distro_bootcmd"'');
     })
 
     # Logo handling
