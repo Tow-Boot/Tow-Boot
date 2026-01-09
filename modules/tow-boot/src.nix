@@ -78,6 +78,13 @@ in
           "2023.10" = "sha256-4A5sbwFOBGEBc50I0G8yiBHOvPWuEBNI9AnLvVXOaQA=";
           "2024.01" = "sha256-uZYR8e0je/NUG9yENLaMlqbgWWcGH5kkQ8swqr6+9bM=";
           "2024.04" = "sha256-GKhT/jn6160DqQzC1Cda6u1tppc13vrDSSuAUIhD3Uo=";
+          "2024.07" = "sha256-9ZHamrkO89az0XN2bQ3f+QxO1zMGgIl0hhF985DYPI8=";
+          "2024.10" = "sha256-so2vSsF+QxVjYweL9RApdYQTf231D87ZsS3zT2GpL7A=";
+          "2025.01" = "sha256-ze99UHyT8bvZ8BXqm8IfoHQmhIFAVQGUWrxvhU1baG8=";
+          "2025.04" = "sha256-Q5077ylu/9VBML5qcxxbEYvn/d1/zGY8y8X7GClNhxg=";
+          "2025.07" = "sha256-D5M/bFpCaJW/MG6T5qxTxghw5LVM2lbZUhG+yZ5jvsc=";
+          "2025.10" = "sha256-tPAyhI5WzI8hOtWfkTLAhNu7YyvCkXbQJOWCIODv30o=";
+          "2026.01" = "sha256-tg1YZc79vHXajaQVbFbEWOAN51pJuAwaLlipbjCtDVQ=";
         };
         Tow-Boot = {
           "tb-2023.07-007" = "sha256-qEVvvnKy3fdFmU7Qn1U2PMqhf8p228v6+4XtkVGgQgk=";
