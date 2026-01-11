@@ -170,6 +170,7 @@ in
             buildPackages.swig
             buildPackages.gnutls  # For tools/mkeficapsule
             buildPackages.libuuid # For tools/mkeficapsule
+            buildPackages.unixtools.xxd # For xxd
             (buildPackages.python3.withPackages (p: [
               p.libfdt
               p.pyelftools
@@ -206,7 +207,7 @@ in
             runHook preConfigure
             make ${defconfig}
             cat $extraConfigPath >> .config
-            make $makeFlags "''${makeFlagsArray[@]}" oldconfig
+            make $makeFlags "''${makeFlagsArray[@]}" olddefconfig
 
             runHook postConfigure
 

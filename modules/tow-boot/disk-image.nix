@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib)
@@ -85,12 +85,54 @@ in
           # May be overriden by platforms.
           else "F8"
         );
-        raw = lib.mkIf config.Tow-Boot.writeBinaryToFirmwarePartition "${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.noenv.bin";
+        raw = lib.mkIf config.Tow-Boot.writeBinaryToFirmwarePartition "${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.${config.Tow-Boot.variant}.bin";
       };
 
       outputs = {
-        # Round-about, but this is our stable interface now.
-        diskImage = config.Tow-Boot.diskImage.output;
+        # For androidboot variant, create Android boot image instead of disk image
+        diskImage =
+          if config.Tow-Boot.variant == "androidboot"
+          then pkgs.callPackage (
+            { runCommand, android-tools }:
+            runCommand "${config.Tow-Boot.outputName}.${config.device.identifier}.androidboot.img" {} ''
+              mkdir -p $out
+
+              # Follow official U-Boot Qualcomm docs:
+              # https://docs.u-boot.org/en/stable/board/qualcomm/board.html
+              #
+              # 1. Gzip u-boot-nodtb.bin
+              # 2. Append DTB to create u-boot-nodtb.bin.gz-dtb
+              # 3. Package with mkbootimg
+
+              echo "Creating Android boot image for SDM845..."
+
+              # Gzip the U-Boot binary (use u-boot-nodtb.bin if available, otherwise the full binary)
+              if [ -f ${config.Tow-Boot.outputs.firmware}/binaries/u-boot-nodtb.bin ]; then
+                UBOOT_BIN="${config.Tow-Boot.outputs.firmware}/binaries/u-boot-nodtb.bin"
+              else
+                UBOOT_BIN="${config.Tow-Boot.outputs.firmware}/binaries/Tow-Boot.${config.Tow-Boot.variant}.bin"
+              fi
+
+              echo "Compressing U-Boot binary..."
+              gzip -n -9 -k -c "$UBOOT_BIN" > u-boot-nodtb.bin.gz
+
+              # Create Android boot image with mkbootimg
+              echo "Building without ramdisk (U-Boot standalone)..."
+              ${android-tools}/bin/mkbootimg \
+                --kernel u-boot-nodtb.bin.gz \
+                --output $out/Tow-Boot.androidboot.img \
+                --pagesize 4096 \
+                --base 0x00000000 \
+                --kernel_offset 0x00008000 \
+                --ramdisk_offset 0x01000000 \
+                --tags_offset 0x00000100 \
+                --board ""
+
+              echo "Created Android boot image:"
+              ls -lh $out/
+            ''
+          ) {}
+          else config.Tow-Boot.diskImage.output;
       };
     };
   };

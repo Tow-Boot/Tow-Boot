@@ -103,7 +103,7 @@ in
       };
       variant = mkOption {
         # TIP: look for `composeConfig` for customizing `Tow-Boot.variant`.
-        type = types.enum [ "noenv" "spi" "mmcboot" "boot-installer" ];
+        type = types.enum [ "noenv" "spi" "mmcboot" "boot-installer" "androidboot" ];
         default = "noenv";
         description = ''
           Build variant for this eval.

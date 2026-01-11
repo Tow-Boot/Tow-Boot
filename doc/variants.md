@@ -4,6 +4,7 @@ Variants
  - `noenv` does not save environment anywhere
  - `spi` saves the environment to the SPI device
  - `mmcboot` does not save environment anywhere
+ - `androidboot` does not save environment anywhere (for Android chainloading)
 
 
 `noenv`
@@ -38,6 +39,22 @@ storage.
 This variant is to be used on systems with eMMC Hardware boot partitions
 as dedicated firmware storage.
 
+
+`androidboot`
+-------------
+
+This variant is designed to be chainloaded from Android Boot Loader (ABL) on
+Qualcomm and other Android-based devices. Like `noenv`, it does not save the
+environment anywhere.
+
+This variant is specifically for Android phones where:
+- U-Boot is chainloaded from the device's ABL (Android Boot Loader)
+- The framebuffer is inherited from ABL, avoiding complex display initialization
+- The boot image format is compatible with Android fastboot flashing
+
+Typical use cases include Qualcomm Snapdragon devices (SDM845, etc.) and other
+Android phones with unlocked bootloaders that allow chainloading alternative
+boot firmware.
 
 
 * * *

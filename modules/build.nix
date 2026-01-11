@@ -97,7 +97,14 @@ in
           cp -rt $out/binaries/ ${firmware}/binaries/*
           cp -rt $out/config/ ${firmware}/config/*
           cp -rt $out/diff/ ${firmware}/diff/*
-          cp ${sharedDiskImage} $out/shared.disk-image.img
+          # For androidboot variant, copy directory contents; otherwise copy file
+          if [ -d "${sharedDiskImage}" ]; then
+            for file in "${sharedDiskImage}"/*; do
+              cp -v "$file" $out/
+            done
+          else
+            cp "${sharedDiskImage}" $out/shared.disk-image.img
+          fi
           ${optionalString (firmwareMMCBoot != null) ''
             cp -rt $out/binaries/ ${firmwareMMCBoot}/binaries/*
             cp -rt $out/config/ ${firmwareMMCBoot}/config/*
