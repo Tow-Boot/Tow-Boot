@@ -54,6 +54,13 @@ in
           Additional make flags.
         '';
       };
+      configFragments = mkOption {
+        type = with types; listOf str;
+        default = [];
+        description = ''
+          Kconfig fragments to merge after the board defconfig.
+        '';
+      };
       buildInputs = mkOption {
         type = with types; listOf package;
         default = [];
@@ -95,6 +102,7 @@ in
         , additionalArguments
         , installPhase
         , makeFlags
+        , configFragments
         , buildInputs
         , nativeBuildInputs
         , postPatch
@@ -205,8 +213,12 @@ in
           configurePhase = ''
             runHook preConfigure
             make ${defconfig}
+            ${lib.optionalString (configFragments != []) ''
+              scripts/kconfig/merge_config.sh -m .config \
+                ${lib.concatMapStringsSep " " lib.escapeShellArg configFragments}
+            ''}
             cat $extraConfigPath >> .config
-            make $makeFlags "''${makeFlagsArray[@]}" oldconfig
+            make $makeFlags "''${makeFlagsArray[@]}" ${if configFragments == [] then "oldconfig" else "olddefconfig"}
 
             runHook postConfigure
 
@@ -286,6 +298,7 @@ in
           additionalArguments
           installPhase
           makeFlags
+          configFragments
           buildInputs
           nativeBuildInputs
           postPatch
