@@ -61,6 +61,14 @@ in
           Kconfig fragments to merge after the board defconfig.
         '';
       };
+      environmentFile = mkOption {
+        type = with types; nullOr str;
+        default = "include/tow-boot_env.h";
+        description = ''
+          Legacy environment header containing the board identifier placeholder.
+          Set to null when the board supplies its own text environment instead.
+        '';
+      };
       buildInputs = mkOption {
         type = with types; listOf package;
         default = [];
@@ -137,9 +145,9 @@ in
               # We use releases, any extra qualifier is owned by us.
               sed -i -e 's/^EXTRAVERSION =.*/EXTRAVERSION =/' Makefile
             ''
-            + (lib.optionalString (!buildUBoot) ''
+            + (lib.optionalString (!buildUBoot && config.Tow-Boot.builder.environmentFile != null) ''
               echo ":: Sneaking in boardIdentifier in the Tow-Boot environment"
-              substituteInPlace include/tow-boot_env.h \
+              substituteInPlace ${lib.escapeShellArg config.Tow-Boot.builder.environmentFile} \
                 --replace "@boardIdentifier@" "${boardIdentifier}"
             '')
             + postPatch

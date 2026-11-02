@@ -8,8 +8,9 @@ the `r8q-boot-image` artifact from the completed run and extract
 `u-boot-r8q-boot.img`. It also includes the matching U-Boot binary, device trees,
 configuration, build information, and `SHA256SUMS`.
 
-The workflow builds with Nix, then runs the pinned fork's packaging tests and
-boot image validation. The image uses the Samsung header and stock DTB section
+The workflow builds the Tow-Boot port with Nix, checks that the actual menu and
+complete phone boot environment are in the binary, then runs the pinned fork's
+packaging tests and boot image validation. The image uses the Samsung header and stock DTB section
 committed in that fork. These are not automatically matched to your installed
 firmware. A successful build does not verify booting on your phone. Confirm
 compatibility with your exact model and firmware, back up your working boot
@@ -19,6 +20,8 @@ image, and ensure you can restore it before testing. No flashing is automated.
 
 ```
 nix-build -A samsung-galaxyS20FER8q -o result-r8q
+python3 boards/samsung-galaxyS20FER8q/check-port.py \
+  result-r8q/r8q-build/u-boot.bin result-r8q/config/noenv.config
 archive=$(nix-build -A samsung-galaxyS20FER8q.config.Tow-Boot.src --no-out-link)
 mkdir r8q-source
 tar -xf "$archive" -C r8q-source --strip-components=1
@@ -43,3 +46,18 @@ depends on the exact device firmware. Use the packaging instructions and
 scripts in the [R8Q U-Boot source repository](https://github.com/ben443/u-boot-r8q)
 with the matching stock boot image. Verify the resulting image and recovery
 procedure for your exact model before flashing.
+
+### Hardware validation
+
+Keep the previous working U-Boot image and stock boot image available before
+testing. First verify that Tow-Boot is displayed and that holding Volume Down
+opens its menu, with both volume keys and Power working. Test USB serial
+before dropping to the firmware console. Check USB storage without modifying
+the host-visible partition table, and confirm the phone returns to the menu
+when USB storage or fastboot exits.
+
+Use separate, known-good EFI/extlinux installations to check internal, microSD,
+and USB boot options. Check automatic fallback with no bootable OS and verify
+that reboot and shutdown work. Report the exact device model, firmware, image
+checksum, console output, and which of these checks passed. A successful CI
+run alone does not establish that the port boots safely on hardware.

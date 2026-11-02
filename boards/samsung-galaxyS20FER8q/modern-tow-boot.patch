@@ -1,0 +1,356 @@
+diff --git a/Makefile b/Makefile
+index 76b44e1..e766e86 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2311,7 +2311,7 @@ endif
+ # Use sed to remove leading zeros from PATCHLEVEL to avoid using octal numbers
+ define filechk_version.h
+ 	(echo \#define PLAIN_VERSION \"$(UBOOTRELEASE)\"; \
+-	echo \#define U_BOOT_VERSION \"U-Boot \" PLAIN_VERSION; \
++	echo \#define U_BOOT_VERSION \"Tow-Boot \" PLAIN_VERSION; \
+ 	echo \#define U_BOOT_VERSION_NUM $(VERSION); \
+ 	echo \#define U_BOOT_VERSION_NUM_PATCH $$(echo $(PATCHLEVEL) | \
+ 		sed -e "s/^0*//"); \
+diff --git a/cmd/Kconfig b/cmd/Kconfig
+index 35ce42f..8045132 100644
+--- a/cmd/Kconfig
++++ b/cmd/Kconfig
+@@ -3251,4 +3251,6 @@ config CMD_SPAWN_NUM_JOBS
+ 	  When a jobs exits, its identifier is available to be re-used by the next
+ 	  spawn command.
+ 
++source "cmd/tow-boot/Kconfig"
++
+ endif
+diff --git a/cmd/Makefile b/cmd/Makefile
+index ce772e5..5a450fa 100644
+--- a/cmd/Makefile
++++ b/cmd/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0+
++obj-$(CONFIG_TOW_BOOT_MENU) += tow-boot/
+ #
+ # (C) Copyright 2004-2006
+ # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+diff --git a/cmd/tow-boot/tow-boot_menu.c b/cmd/tow-boot/tow-boot_menu.c
+index 0e4ce57..1d8c4c5 100644
+--- a/cmd/tow-boot/tow-boot_menu.c
++++ b/cmd/tow-boot/tow-boot_menu.c
+@@ -6,7 +6,8 @@
+ #include <PDCurses/curses.h>
+ 
+ #include <command.h>
+-#include <common.h>
++#include <console.h>
++#include <stdlib.h>
+ #include <linux/compat.h>
+ #include <serial.h>
+ #include <splash.h>
+@@ -57,16 +58,16 @@ static void draw_item(menustate *state, int i, bool selected)
+ 
+ 	// A separator is just an empty line.
+ 	if (iter->separator) {
+-		sprintf(label, "");
++		label[0] = '\0';
+ 	}
+ 	else {
+-		sprintf(label, " %-" xstr(MAX_LEN) "s ", iter->label);
++		snprintf(label, sizeof(label), " %-*.*s ", MAX_LEN, MAX_LEN, iter->label);
+ 	}
+ 	mvwprintw(state->menu, iter->number-1, 0, "%s", label);
+ 
+ 	if (selected) {
+ 		wattroff(state->menu, A_STANDOUT);
+-		sprintf(label, " %-" xstr(MAX_LEN) "s ", iter->description);
++		snprintf(label, sizeof(label), " %-*.*s ", MAX_LEN, MAX_LEN, iter->description);
+ 		mvwprintw(current_menu->help, 0, 0, "%s", label);
+ 	}
+ }
+@@ -89,6 +90,9 @@ static menuentry *init_entry(menuentry *previous)
+ {
+ 	menuentry *entry = calloc(1, sizeof(menuentry));
+ 
++	if (!entry)
++		return NULL;
++
+ 	if (previous) {
+ 		entry->number = previous->number + 1;
+ 		previous->next = entry;
+@@ -117,6 +121,8 @@ static int menu_num_entries(menustate *state)
+ menuentry * menu_add_entry(menustate *state, char *label, char *description, char *command)
+ {
+ 	menuentry *entry = init_entry(state->last_entry);
++	if (!entry)
++		return NULL;
+ 	if (!state->first_entry) {
+ 		state->first_entry = entry;
+ 	}
+@@ -135,6 +141,9 @@ static void menu_delete(menustate *state)
+ 	menuentry *next = NULL;
+ 	while (iter) {
+ 		next = iter->next;
++		free(iter->label);
++		free(iter->description);
++		free(iter->command);
+ 		free(iter);
+ 		iter = next;
+ 	}
+@@ -163,6 +172,10 @@ static int do_new(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+ 
+ 	fprintf(stderr, "Creating menu...\n");
+ 	current_menu = calloc(1, sizeof(menustate));
++	if (!current_menu) {
++		printf("ERROR: Could not allocate the Tow-Boot menu.\n");
++		return CMD_RET_FAILURE;
++	}
+ 	
+ 	return CMD_RET_SUCCESS;
+ }
+@@ -190,15 +203,28 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 
+ 	run_command("cls", 0);
+ 
+-	initscr();
++	if (!initscr()) {
++		printf("ERROR: Could not initialize the Tow-Boot menu.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+ 	menu_height = menu_num_entries(current_menu);
++	if (menu_height + 4 > LINES || menu_width + 4 > COLS) {
++		endwin();
++		printf("ERROR: Console is too small for the Tow-Boot menu.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+ 	// Creates the "canvas" for the menu, centered.
+ 	current_menu->window = newwin(
+ 		menu_height + 2 + 2, menu_width + 4,
+ 		0, 0
+ 	);
++	if (!current_menu->window) {
++		endwin();
++		printf("ERROR: Could not allocate the menu window.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+ 	// Line for the help text
+ 	current_menu->help = derwin(
+@@ -206,7 +232,6 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 		1, menu_width + 2,
+ 		menu_height + 2, 1
+ 	);
+-	syncok(current_menu->help, TRUE);
+ 
+ 	// "Viewport" for the menu listing
+ 	current_menu->menu = derwin(
+@@ -214,7 +239,18 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 		menu_height, menu_width + 2,
+ 		1, 1
+ 	);
++	if (!current_menu->help || !current_menu->menu) {
++		if (current_menu->help)
++			delwin(current_menu->help);
++		if (current_menu->menu)
++			delwin(current_menu->menu);
++		delwin(current_menu->window);
++		endwin();
++		printf("ERROR: Could not allocate menu contents.\n");
++		return CMD_RET_FAILURE;
++	}
+ 	syncok(current_menu->menu, TRUE);
++	syncok(current_menu->help, TRUE);
+ 
+ 	mvwin(
+ 		current_menu->window,
+@@ -282,6 +318,7 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 				} while (menu_get_item(current_menu, curr)->separator);
+ 				draw_item(current_menu, curr, TRUE);
+ 				break;
++			case '\r':
+ 			case '\n':
+ 				if (!menu_get_item(current_menu, curr)->separator) {
+ 					do_run = true;
+@@ -297,12 +334,15 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 	}
+ 
+ 	if (do_run) {
+-		// Save the command, we're deleting the menu
+-		command = strdup(menu_get_item(current_menu, curr)->command);
++		menuentry *selected = menu_get_item(current_menu, curr);
++
++		command = selected->command;
++		selected->command = NULL;
+ 	}
+ 
+ 	// Cleanup
+ 	delwin(current_menu->menu);
++	delwin(current_menu->help);
+ 	delwin(current_menu->window);
+ 	wrefresh(stdscr);
+ 	endwin();
+@@ -317,6 +357,7 @@ static int do_show(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]
+ 
+ 	if (do_run) {
+ 		// Run the command
++		clear_ctrlc();
+ 		ret = run_command(command, 0);
+ 		free(command);
+ 	}
+@@ -330,8 +371,16 @@ static int do_separator(struct cmd_tbl *cmdtp, int flag, int argc, char *const a
+ 	if (!current_menu) {
+ 		current_menu = calloc(1, sizeof(menustate));
+ 	}
++	if (!current_menu) {
++		printf("ERROR: Could not allocate the Tow-Boot menu.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+-	entry = menu_add_entry(current_menu, "", "", "");
++	entry = menu_add_entry(current_menu, NULL, NULL, NULL);
++	if (!entry) {
++		printf("ERROR: Could not allocate a menu separator.\n");
++		return CMD_RET_FAILURE;
++	}
+ 	entry->separator = true;
+ 
+ 	return CMD_RET_SUCCESS;
+@@ -356,12 +405,23 @@ static int do_add(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+ 	if (!current_menu) {
+ 		current_menu = calloc(1, sizeof(menustate));
+ 	}
++	if (!current_menu) {
++		printf("ERROR: Could not allocate the Tow-Boot menu.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+ 	label = strdup(argv[1]);
+ 	description = strdup(argv[2]);
+ 	command = strdup(argv[3]);
+ 
+-	(void)menu_add_entry(current_menu, label, description, command);
++	if (!label || !description || !command ||
++	    !menu_add_entry(current_menu, label, description, command)) {
++		free(label);
++		free(description);
++		free(command);
++		printf("ERROR: Could not allocate a menu entry.\n");
++		return CMD_RET_FAILURE;
++	}
+ 
+ 	return CMD_RET_SUCCESS;
+ }
+@@ -404,4 +464,4 @@ U_BOOT_CMD(
+ 	"tb_menu show                                 - Shows the current menu, dropped on exit.\n"
+ 	"tb_menu add <label> <description> <command>  - Add entry\n"
+ 	"tb_menu separator                            - Add a separator\n"
+-)
++);
+diff --git a/common/autoboot.c b/common/autoboot.c
+index 4b80ddb..d239977 100644
+--- a/common/autoboot.c
++++ b/common/autoboot.c
+@@ -492,10 +492,13 @@ const char *bootdelay_process(void)
+ 
+ void autoboot_command(const char *s)
+ {
++	bool aborted = false;
++
+ 	debug("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
+ 
+ 	if (s && (stored_bootdelay == -2 ||
+-		 (stored_bootdelay != -1 && !abortboot(stored_bootdelay)))) {
++		 (stored_bootdelay != -1 &&
++		  !(aborted = abortboot(stored_bootdelay))))) {
+ 		bool lock;
+ 		int prev;
+ 
+@@ -510,6 +513,14 @@ void autoboot_command(const char *s)
+ 			disable_ctrlc(prev);	/* restore Ctrl-C checking */
+ 	}
+ 
++	if (IS_ENABLED(CONFIG_TOW_BOOT_MENU) && aborted) {
++		clear_ctrlc();
++		s = env_get("menucmd");
++		if (s)
++			run_command_list(s, -1, 0);
++		return;
++	}
++
+ 	if (IS_ENABLED(CONFIG_AUTOBOOT_USE_MENUKEY) &&
+ 	    menukey == AUTOBOOT_MENUKEY) {
+ 		s = env_get("menucmd");
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 24e55ad..2a749bd 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -1,5 +1,7 @@
+ menu "Library routines"
+ 
++source "lib/PDCursesMod/Kconfig"
++
+ config ADDR_MAP
+ 	bool "Enable support for non-identity virtual-physical mappings"
+ 	help
+diff --git a/lib/Makefile b/lib/Makefile
+index 222378a..7117a70 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0+
++obj-$(CONFIG_PDCURSES) += PDCursesMod/
+ #
+ # (C) Copyright 2000-2006
+ # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+diff --git a/lib/PDCursesMod/ansi/pdcscrn.c b/lib/PDCursesMod/ansi/pdcscrn.c
+index 07d9b0c..b90ef99 100644
+--- a/lib/PDCursesMod/ansi/pdcscrn.c
++++ b/lib/PDCursesMod/ansi/pdcscrn.c
+@@ -21,7 +21,8 @@ static struct termios orig_term;
+ #include "../common/pdccolor.c"
+ 
+ #ifdef __U_BOOT__
+-#include <common.h>
++#include <stdio_dev.h>
++#include <time.h>
+ #include <dm/device.h>
+ #include <env.h>
+ #include <video_console.h>
+@@ -167,7 +168,7 @@ static int __maybe_unused query_vidconsole(int *rows, int *cols)
+ 	struct udevice *dev;
+ 	struct vidconsole_priv *priv;
+ 
+-	if (!stdout_name || strncmp(stdout_name, "vidconsole", 10) == 0)
++	if (!stdout_name || !strstr(stdout_name, "vidconsole"))
+ 		return -ENODEV;
+ 	stdout_dev = stdio_get_by_name("vidconsole");
+ 	if (!stdout_dev)
+diff --git a/lib/PDCursesMod/curspriv.h b/lib/PDCursesMod/curspriv.h
+index 756f5ef..26dc061 100644
+--- a/lib/PDCursesMod/curspriv.h
++++ b/lib/PDCursesMod/curspriv.h
+@@ -23,6 +23,7 @@
+ #endif
+ 
+ #ifdef __U_BOOT__
++#include <linux/kernel.h>
+ #include <vsprintf.h>
+ #endif
+ 
+diff --git a/lib/smbios.c b/lib/smbios.c
+index afde640..b893fea 100644
+--- a/lib/smbios.c
++++ b/lib/smbios.c
+@@ -472,10 +472,10 @@ static int smbios_write_type0(ulong *current, int *handle,
+ 	fill_smbios_header(t, SMBIOS_BIOS_INFORMATION, len, *handle);
+ 	smbios_set_eos(ctx, t->eos);
+ 	t->vendor = smbios_add_prop_si(ctx, NULL, SYSID_SM_BIOS_VENDOR,
+-				       "U-Boot");
++				       "Tow-Boot");
+ 
+ 	t->bios_ver = smbios_add_prop_si(ctx, "version", SYSID_SM_BIOS_VER,
+-					 PLAIN_VERSION);
++					 U_BOOT_VERSION CONFIG_IDENT_STRING);
+ 	if (t->bios_ver)
+ 		gd->smbios_version = ctx->last_str;
+ 	log_debug("smbios_version = %p: '%s'\n", gd->smbios_version,
