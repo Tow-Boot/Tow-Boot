@@ -1,0 +1,74 @@
+name: Build R8Q boot image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Galaxy S20 FE (R8Q) experimental Tow-Boot port
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/nix-installer-action@v17
+      - name: Install packaging dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends device-tree-compiler
+      - name: Build R8Q firmware
+        run: nix-build -A samsung-galaxyS20FER8q -o result-r8q
+      - name: Verify Tow-Boot features and complete boot environment
+        run: |
+          python3 boards/samsung-galaxyS20FER8q/check-port.py \
+            result-r8q/r8q-build/u-boot.bin result-r8q/config/noenv.config
+      - name: Extract matching packaging tools and Samsung inputs
+        run: |
+          archive=$(nix-build -A samsung-galaxyS20FER8q.config.Tow-Boot.src --no-out-link)
+          mkdir r8q-source
+          tar -xf "$archive" -C r8q-source --strip-components=1
+      - name: Test boot image packaging
+        run: bash r8q-source/.github/scripts/test-r8q-package.sh
+      - name: Assemble and verify Android boot image
+        run: |
+          bash r8q-source/.github/scripts/r8q-package.sh \
+            "$PWD/result-r8q/r8q-build" "$PWD/artifacts/r8q"
+          cp result-r8q/config/noenv.config artifacts/r8q/build.config
+          {
+            echo "Experimental Tow-Boot port for Samsung Galaxy S20 FE (R8Q/SM8250)"
+            echo "No hardware boot test performed by CI."
+            echo "Samsung boot image inputs come from the pinned U-Boot source."
+            echo "Verify compatibility with your exact model and firmware before flashing."
+            echo "Tow-Boot repository revision: $(git rev-parse HEAD)"
+            echo "U-Boot source URL:"
+            nix-instantiate --eval --strict --json \
+              -A samsung-galaxyS20FER8q.config.Tow-Boot.src.url
+            echo "Tow-Boot menu source revision:"
+            nix-instantiate --eval --strict --json \
+              -A samsung-galaxyS20FER8q.config.Tow-Boot.outputs.firmware.towBootSource.rev
+          } > artifacts/r8q/BUILD_INFO.txt
+          (
+            cd artifacts/r8q
+            sha256sum u-boot.bin u-boot-control.dtb sm8250-samsung-r8q.dtb \
+              u-boot-r8q-boot.img build.config BUILD_INFO.txt > SHA256SUMS
+          )
+          {
+            echo "### Experimental R8Q image"
+            echo 'Download `r8q-boot-image` below and extract `u-boot-r8q-boot.img`.'
+            echo "This port includes the Tow-Boot menu, phone controls, and EFI/extlinux storage scanning."
+            echo "Packaging is validated; booting on hardware is not."
+            echo "The image uses the pinned fork's Samsung DTBs and header."
+            echo "Confirm they match your phone firmware and have a recovery path before flashing."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload boot image and matching artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: r8q-boot-image
+          path: artifacts/r8q/
+          if-no-files-found: error
+          retention-days: 30
